@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pharma-order-website-v2</title>
+  <title>Pharma Order Website</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -259,7 +259,7 @@
     <div class="layout">
       <section class="panel">
         <h2>Order Form</h2>
-        <p class="muted">Gujarati + English simple format. Ahiya demo chhe. Pachhi aa form ne Google Sheet, Jotform ke custom backend saathe connect kari shakay.</p>
+        <p class="muted">Gujarati + English simple format.</p>
 
         <form id="orderForm">
           <div class="grid">
@@ -299,7 +299,7 @@
             <button class="btn btn-ghost" type="reset">Reset Form</button>
           </div>
 
-          <div class="status info-box" id="successBox">Order submitted successfully. Tamaro order number save thai gayo chhe. We will contact you soon.</div>
+          <div class="status info-box" id="successBox">Order submitted successfully. We will contact you soon.</div>
         </form>
       </section>
     </div>
@@ -322,11 +322,13 @@
   </template>
 
   <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwZtr1J677OBAE-KgxLUpQv310M7h8KWDW9_ap-RqQkKwtY5_4ek1i3f1TvD_iq-ZoP/exec";
+    
     const productsEl = document.getElementById('products');
     const template = document.getElementById('productTemplate');
     const form = document.getElementById('orderForm');
     const successBox = document.getElementById('successBox');
-    let orderCounter = 2;
+    let orderCounter = Math.floor(1000 + Math.random() * 9000);
 
     function addProduct(defaults = {}) {
       const node = template.content.firstElementChild.cloneNode(true);
@@ -344,7 +346,7 @@
       const customer = document.getElementById('customerName').value.trim();
       const mobile = document.getElementById('mobile').value.trim();
       const priority = document.getElementById('priority').value;
-      const orderId = 'ORD-' + String(orderCounter).padStart(3, '0');
+      const orderId = 'ORD-' + orderCounter;
       const rows = [];
       document.querySelectorAll('.product-card').forEach(card => {
         const name = card.querySelector('.product-name').value.trim();
@@ -361,10 +363,33 @@
       const rows = collectRows();
       if (!rows.length) return;
       
-      successBox.style.display = 'block';
-      successBox.textContent = `Order submitted successfully. Your Order ID is ${rows[0].orderId}. We will contact you soon.`;
-      orderCounter += 1;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = "Sending Order...";
+      submitBtn.disabled = true;
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(rows),
+        mode: 'no-cors'
+      })
+      .then(() => {
+        successBox.style.display = 'block';
+        successBox.textContent = `Order submitted successfully. Your Order ID is ${rows[0].orderId}. We will contact you soon.`;
+        orderCounter++;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(() => {
+          form.reset();
+        }, 3000);
+      })
+      .catch(err => {
+        alert("Internet connection problem. Please try again.");
+      })
+      .finally(() => {
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+      });
     });
 
     form.addEventListener('reset', () => {

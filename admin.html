@@ -27,7 +27,6 @@
     h1 { margin: 0 0 6px; color: #0f766e; font-size: 28px; font-weight: 800; }
     p { color: #667085; margin: 0 0 20px 0; font-size: 15px; }
     
-    /* Latest Feature: Analytics Summary Cards */
     .stats-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -46,7 +45,6 @@
     .stat-value { font-size: 24px; font-weight: 800; color: #0f766e; margin-top: 4px; }
     .stat-urgent { color: #b42318; }
 
-    /* Controls Row (Search + Buttons) */
     .controls-row {
       display: flex;
       justify-content: space-between;
@@ -56,7 +54,6 @@
       flex-wrap: wrap;
     }
     
-    /* Latest Feature: Live Search Bar */
     .search-box {
       flex: 1;
       min-width: 280px;
@@ -97,7 +94,6 @@
     .btn-ghost { background: #fff; color: #1f2937; border: 1px solid #d9e2df; }
     .btn-ghost:hover { background: #f9fbfa; }
     
-    /* Table Styling */
     .table-container {
       overflow-x: auto;
       border: 1px solid #d9e2df;
@@ -121,7 +117,6 @@
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #f9fdfb; }
     
-    /* Badges */
     .badge {
       padding: 4px 8px;
       border-radius: 999px;
@@ -147,7 +142,6 @@
       <p>Customer na live orders nu tracking ane Excel export panel.</p>
     </div>
 
-    <!-- Latest Feature: Analytics Summary Cards -->
     <div class="stats-container">
       <div class="stat-card">
         <span class="stat-label">Total Orders</span>
@@ -163,9 +157,7 @@
       </div>
     </div>
 
-    <!-- Controls Row -->
     <div class="controls-row">
-      <!-- Latest Feature: Live Search Bar -->
       <div class="search-box">
         <input type="text" id="adminSearchInput" placeholder="🔍 Search by Customer Name, Order ID or Product...">
       </div>
@@ -177,7 +169,6 @@
       </div>
     </div>
 
-    <!-- Orders Table Container -->
     <div class="table-container">
       <table>
         <thead>
@@ -201,10 +192,7 @@
   </div>
 
   <script>
-    // -------------------------------------------------------------
-    // PASTE YOUR SAME GOOGLE APPS SCRIPT WEB APP URL HERE:
-    const WEB_APP_URL = "https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbyrLEKvadvQsaE10t4uFl4z2gmeo3xehXoXHTxhXOgqKSMy7cNCk-DKGdIu-L5lM4g/exec/exec";
-    // -------------------------------------------------------------
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwZtr1J677OBAE-KgxLUpQv310M7h8KWDW9_ap-RqQkKwtY5_4ek1i3f1TvD_iq-ZoP/exec";
 
     const tbody = document.getElementById('adminTableBody');
     const refreshBtn = document.getElementById('refreshBtn');
@@ -213,7 +201,6 @@
     
     let allOrders = [];
 
-    // Google Sheet mathi live data fetch karva mate
     function fetchLiveOrders() {
       tbody.innerHTML = '<tr><td colspan="7" class="loading-status">🔄 Fetching fresh data from Google Sheet...</td></tr>';
       
@@ -221,29 +208,27 @@
         .then(res => res.json())
         .then(data => {
           if(data.status === "error" || !Array.isArray(data)) {
-            tbody.innerHTML = '<tr><td colspan="7" class="loading-status" style="color:#b42318;">Configuration missing or no data found in Google Sheet.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="7" class="loading-status" style="color:#b42318;">No data found in Google Sheet. Make sure you submit an order first!</td></tr>';
             return;
           }
           
           allOrders = data;
-          allOrders.reverse(); // Latest orders upar dekhase
+          allOrders.reverse();
           
           updateDashboard(allOrders);
         })
         .catch(err => {
-          tbody.innerHTML = '<tr><td colspan="7" class="loading-status" style="color:#b42318;">Error loading data. Web App URL check karo.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" class="loading-status" style="color:#b42318;">Error loading data. Google Apps Script connection failed.</td></tr>';
           console.error(err);
         });
     }
 
-    // Dashboard dynamic update karva mate (Table + Cards)
     function updateDashboard(ordersList) {
       if(ordersList.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="loading-status">Koi matching orders nathi.</td></tr>';
         return;
       }
 
-      // 1. Table data render karvo
       tbody.innerHTML = ordersList.map(row => {
         const formattedDate = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
         const priorityBadge = row.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal';
@@ -261,7 +246,6 @@
         `;
       }).join('');
 
-      // 2. Latest Feature: Top Counter Cards Dynamic Update
       document.getElementById('totalOrdersCount').innerText = allOrders.length;
       document.getElementById('urgentOrdersCount').innerText = allOrders.filter(o => o.priority === 'Urgent').length;
       
@@ -269,7 +253,6 @@
       document.getElementById('uniqueCustomersCount').innerText = uniqueCustomers;
     }
 
-    // Latest Feature: Live Interactive Search/Filter
     searchInput.addEventListener('input', () => {
       const query = searchInput.value.toLowerCase().trim();
       if(!query) {
@@ -287,7 +270,6 @@
       updateDashboard(filtered);
     });
 
-    // Requirement: Excel CSV Download Button Implementation
     exportCsvBtn.addEventListener('click', () => {
       if(!allOrders.length) return alert('Export karva mate koi data nathi.');
       
@@ -317,10 +299,8 @@
       URL.revokeObjectURL(a.href);
     });
 
-    // Refresh Button Click
     refreshBtn.addEventListener('click', fetchLiveOrders);
 
-    // Initial Load
     document.addEventListener('DOMContentLoaded', fetchLiveOrders);
   </script>
 </body>
