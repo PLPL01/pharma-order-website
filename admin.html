@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <style>
+    body{font-family:Inter,Arial,sans-serif;background:#f4f8f7;margin:0;padding:24px;color:#1f2937}
+    .card{max-width:1100px;margin:0 auto;background:#fff;border:1px solid #d9e2df;border-radius:18px;padding:22px;box-shadow:0 10px 30px rgba(15,118,110,.08)}
+    h1{margin:0 0 10px;color:#0f766e}
+    p{color:#667085}
+    table{width:100%;border-collapse:collapse;margin-top:18px;font-size:14px}
+    th,td{border:1px solid #d9e2df;padding:10px;text-align:left;background:#fff}
+    th{background:#f2f7f5}
+    .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+    .btn{background:#0f766e;color:#fff;text-decoration:none;padding:10px 14px;border-radius:12px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p>Customer orders ne yaha view karo. Ahiya demo table chhe; live setup ma Sheets/DB connect karsho.</p>
+      </div>
+      <a class="btn" href="index.html">Customer Page</a>
+    </div>
+    <table>
+      <thead><tr><th>Order ID</th><th>Customer</th><th>Mobile</th><th>Product</th><th>Qty in Strip</th><th>Priority</th></tr></thead>
+      <tbody>
+        <tr><td>ORD-001</td><td>Raj Medical</td><td>9876543210</td><td>Dolo 650</td><td>10</td><td>Normal</td></tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
