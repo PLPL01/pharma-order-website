@@ -8,448 +8,57 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', Arial, sans-serif;
-      background: #f4f8f7;
-      margin: 0;
-      padding: 24px;
-      color: #1f2937;
-    }
-    .card {
-      max-width: 1400px;
-      margin: 0 auto;
-      background: #fff;
-      border: 1px solid #d9e2df;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
-    }
-    h1 { margin: 0 0 6px; color: #0f766e; font-size: 28px; font-weight: 800; }
-    p { color: #667085; margin: 0 0 20px 0; font-size: 15px; }
-    
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
-    }
-    .stat-card {
-      background: #f9fbfa;
-      border: 1px solid #e5ede9;
-      border-radius: 14px;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-    }
-    .stat-label { font-size: 13px; color: #667085; font-weight: 600; text-transform: uppercase; }
-    .stat-value { font-size: 24px; font-weight: 800; color: #0f766e; margin-top: 4px; }
-
-    .controls-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-    
-    .filters-group {
-      display: flex;
-      gap: 12px;
-      flex: 1;
-      flex-wrap: wrap;
-    }
-
-    .search-box {
-      flex: 1;
-      min-width: 250px;
-      position: relative;
-    }
-    .search-box input, .date-box input {
-      width: 100%;
-      padding: 12px 16px;
-      border: 1px solid #d9e2df;
-      border-radius: 12px;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    .search-box input:focus, .date-box input:focus {
-      border-color: #0f766e;
-      box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
-    }
-    
-    .date-box { width: 160px; }
-    .top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    
-    .btn {
-      background: #0f766e;
-      color: #fff;
-      text-decoration: none;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 14px;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s;
-    }
-    .btn:hover { background: #115e59; }
-    .btn-ghost { background: #fff; color: #1f2937; border: 1px solid #d9e2df; }
-    .btn-ghost:hover { background: #f9fbfa; }
-    .btn-danger { background: #fff; color: #b42318; border: 1px solid #fde8e8; }
-    .btn-danger:hover { background: #fde8e8; }
-    .btn-fetch { background: #1e3a8a; color: #fff; }
-    .btn-fetch:hover { background: #1e40af; }
-    
-    .table-container {
-      overflow-x: auto;
-      border: 1px solid #d9e2df;
-      border-radius: 14px;
-      max-height: 600px;
-      overflow-y: auto;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      text-align: left;
-    }
-    thead { position: sticky; top: 0; background: #f2f7f5; z-index: 10; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
-    th, td {
-      padding: 12px 14px;
-      border-bottom: 1px solid #d9e2df;
-      vertical-align: middle;
-    }
-    th {
-      color: #374151;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    .filter-row th { padding: 6px 14px 14px 14px; border-bottom: 2px solid #cbd5e1; }
-    .col-filter {
-      width: 100%;
-      padding: 6px 8px;
-      border: 1px solid #d9e2df;
-      border-radius: 6px;
-      font-size: 12px;
-      outline: none;
-    }
-    
-    tr:last-child td { border-bottom: none; }
-    tr:hover td { background: #f9fdfb; }
-    
-    .badge {
-      padding: 4px 8px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .badge-normal { background: #f3f4f6; color: #374151; }
-    .badge-urgent { background: #fee2e2; color: #991b1b; }
-    
-    .status-dropdown {
-      border: 1px solid transparent;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-weight: 700;
-      font-size: 13px;
-      cursor: pointer;
-      outline: none;
-      font-family: inherit;
-      width: 130px;
-    }
-    .status-saving { opacity: 0.5; pointer-events: none; }
-
-    .loading-status {
-      text-align: center;
-      padding: 40px;
-      color: #667085;
-      font-weight: 500;
-    }
+    :root { --bg: #f4f8f7; --surface: #ffffff; --primary: #0f766e; --text: #1f2937; --border: #d9e2df; }
+    body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text); }
+    .card { max-width: 1400px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px; box-shadow: 0 10px 30px rgba(15, 118, 110, 0.08); }
+    h1 { color: var(--primary); font-size: 26px; font-weight: 800; margin: 0 0 15px; }
+    .table-container { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th { background: #f2f7f5; padding: 12px; border-bottom: 2px solid var(--border); text-align: left; }
+    td { padding: 12px; border-bottom: 1px solid var(--border); }
+    .order-group-border { border-top: 3px solid var(--primary); }
+    .status-dropdown { padding: 6px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+    .controls { display: flex; gap: 10px; margin-bottom: 15px; }
+    input, select { padding: 10px; border: 1px solid var(--border); border-radius: 8px; }
   </style>
 </head>
 <body>
-
   <div class="card">
-    <div>
-      <h1>Admin Dashboard</h1>
-      <p>Live Orders Tracker, Persistent Database, & Advance Filters.</p>
+    <h1>Admin Dashboard</h1>
+    <div class="controls">
+      <input type="text" id="search" placeholder="Search...">
+      <select id="priorityFilter"><option value="">All Priorities</option><option value="Normal">Normal</option><option value="Urgent">Urgent</option></select>
+      <select id="statusFilter"><option value="">All Statuses</option><option value="Pending">Pending</option><option value="Skyway">Skyway</option></select>
     </div>
-
-    <div class="stats-container">
-      <div class="stat-card">
-        <span class="stat-label">Total Orders (Filtered)</span>
-        <span class="stat-value" id="totalOrdersCount">0</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Pending Orders</span>
-        <span class="stat-value" style="color:#d97706;" id="pendingOrdersCount">0</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Skyway Orders</span>
-        <span class="stat-value" style="color:#059669;" id="skywayOrdersCount">0</span>
-      </div>
-    </div>
-
-    <div class="controls-row">
-      <div class="filters-group">
-        <div class="search-box">
-          <input type="text" id="globalSearchInput" placeholder="🔍 Global Search...">
-        </div>
-        <div class="date-box">
-          <input type="date" id="globalDateInput" title="Filter Date">
-        </div>
-      </div>
-      
-      <div class="top-actions">
-        <button class="btn btn-fetch" id="fetchDataBtn">🔄 Fetch Data from Server</button>
-        <button class="btn btn-ghost" id="resetFiltersBtn">🧹 Reset Filters</button>
-        <button class="btn" id="exportCsvBtn">📥 Export Excel</button>
-        <a class="btn btn-ghost" href="index.html" target="_blank">Customer Page</a>
-      </div>
-    </div>
-
     <div class="table-container">
       <table>
-        <thead>
-          <tr>
-            <th>Date & Time</th>
-            <th>Order ID</th>
-            <th>Customer Name</th>
-            <th>Mobile</th>
-            <th>Product Name</th>
-            <th>Qty</th>
-            <th>Priority</th>
-            <th>Order Status</th>
-          </tr>
-          <tr class="filter-row">
-            <th><input type="text" id="colDate" class="col-filter" placeholder="Filter Date..."></th>
-            <th><input type="text" id="colOrder" class="col-filter" placeholder="Filter ID..."></th>
-            <th><input type="text" id="colCustomer" class="col-filter" placeholder="Filter Name..."></th>
-            <th><input type="text" id="colMobile" class="col-filter" placeholder="Filter Mobile..."></th>
-            <th><input type="text" id="colProduct" class="col-filter" placeholder="Filter Product..."></th>
-            <th><input type="text" id="colQty" class="col-filter" placeholder="Filter Qty..."></th>
-            <th>
-              <select id="colPriority" class="col-filter">
-                <option value="">All</option>
-                <option value="Normal">Normal</option>
-                <option value="Urgent">Urgent</option>
-              </select>
-            </th>
-            <th>
-              <select id="colStatus" class="col-filter">
-                <option value="">All Statuses</option>
-                <option value="Pending">Pending</option>
-                <option value="Skyway">Skyway</option>
-                <option value="Not available">Not available</option>
-              </select>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="adminTableBody">
-          <tr>
-            <td colspan="8" class="loading-status">Click "Fetch Data from Server" to load orders.</td>
-          </tr>
-        </tbody>
+        <thead><tr><th>Time</th><th>Order ID</th><th>Customer</th><th>Product</th><th>Qty</th><th>Priority</th><th>Status</th></tr></thead>
+        <tbody id="tbody"></tbody>
       </table>
     </div>
   </div>
-
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmU2xKySlRSHcCp-bs7xYFhoLdHOs08-nVxb9yuIz37UbVPOq9hSYHfS3uVEcTbo8/exec";
-
-    const tbody = document.getElementById('adminTableBody');
-    const fetchDataBtn = document.getElementById('fetchDataBtn');
-    const resetFiltersBtn = document.getElementById('resetFiltersBtn');
-    const exportCsvBtn = document.getElementById('exportCsvBtn');
-    
-    const globalSearchInput = document.getElementById('globalSearchInput');
-    const globalDateInput = document.getElementById('globalDateInput');
-    const colFilters = document.querySelectorAll('.col-filter');
-    
+    const WEB_APP_URL = "PASTE_YOUR_LINK_HERE";
     let allOrders = [];
-
-    function fetchLiveOrders() {
-      tbody.innerHTML = '<tr><td colspan="8" class="loading-status">🔄 Downloading live data from Google Sheet...</td></tr>';
-      
-      fetch(WEB_APP_URL)
-        .then(res => res.json())
-        .then(data => {
-          if(data.status === "error" || !Array.isArray(data)) {
-            tbody.innerHTML = '<tr><td colspan="8" class="loading-status" style="color:#b42318;">No data found.</td></tr>';
-            return;
-          }
-          allOrders = data;
-          allOrders.reverse();
-          applyFilters();
-        })
-        .catch(err => {
-          tbody.innerHTML = '<tr><td colspan="8" class="loading-status" style="color:#b42318;">Connection error. Check URL or Internet.</td></tr>';
-        });
+    async function fetchData() {
+      const res = await fetch(WEB_APP_URL);
+      allOrders = await res.json();
+      renderTable();
     }
-
-    function applyFilters() {
-      const gSearch = globalSearchInput.value.toLowerCase().trim();
-      const gDate = globalDateInput.value;
-      
-      const fDate = document.getElementById('colDate').value.toLowerCase().trim();
-      const fOrder = document.getElementById('colOrder').value.toLowerCase().trim();
-      const fCustomer = document.getElementById('colCustomer').value.toLowerCase().trim();
-      const fMobile = document.getElementById('colMobile').value.toLowerCase().trim();
-      const fProduct = document.getElementById('colProduct').value.toLowerCase().trim();
-      const fQty = document.getElementById('colQty').value.toLowerCase().trim();
-      const fPriority = document.getElementById('colPriority').value.toLowerCase().trim();
-      const fStatus = document.getElementById('colStatus').value.toLowerCase().trim();
-
-      let filtered = allOrders.filter(o => {
-        const rowDateStr = o.timestamp ? new Date(o.timestamp).toLocaleString('en-IN').toLowerCase() : '';
-        const rowDateIso = o.timestamp ? new Date(o.timestamp).toISOString().split('T')[0] : '';
-        
-        if (gSearch) {
-          const combined = Object.values(o).join(' ').toLowerCase();
-          if (!combined.includes(gSearch)) return false;
-        }
-        if (gDate && rowDateIso !== gDate) return false;
-        if (fDate && !rowDateStr.includes(fDate)) return false;
-        if (fOrder && !(o.orderId || '').toLowerCase().includes(fOrder)) return false;
-        if (fCustomer && !(o.customer || '').toLowerCase().includes(fCustomer)) return false;
-        if (fMobile && !(String(o.mobile) || '').toLowerCase().includes(fMobile)) return false;
-        if (fProduct && !(o.product || '').toLowerCase().includes(fProduct)) return false;
-        if (fQty && !(String(o.qty) || '').toLowerCase().includes(fQty)) return false;
-        if (fPriority && !(o.priority || '').toLowerCase() === fPriority) return false;
-        if (fStatus && !(o.orderStatus || 'pending').toLowerCase() === fStatus) return false;
-
-        return true;
+    function renderTable() {
+      const tbody = document.getElementById('tbody');
+      tbody.innerHTML = '';
+      let lastOrderId = '';
+      allOrders.forEach(o => {
+        const isNewGroup = lastOrderId !== o.orderId;
+        const row = document.createElement('tr');
+        if(isNewGroup) row.classList.add('order-group-border');
+        row.innerHTML = `<td>${o.timestamp || ''}</td><td>${o.orderId}</td><td>${o.customer}</td><td>${o.product}</td><td>${o.qty}</td><td>${o.priority}</td><td>${o.orderStatus}</td>`;
+        tbody.appendChild(row);
+        lastOrderId = o.orderId;
       });
-
-      updateDashboard(filtered);
     }
-
-    function getStatusColors(status) {
-      if(status === 'Skyway') return { bg: '#def7ec', text: '#03543f' };
-      if(status === 'Not available') return { bg: '#fde8e8', text: '#9b1c1c' };
-      return { bg: '#fef3c7', text: '#92400e' };
-    }
-
-    function updateDashboard(ordersList) {
-      if(ordersList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="loading-status">Koi matching orders nathi.</td></tr>';
-        document.getElementById('totalOrdersCount').innerText = '0';
-        document.getElementById('pendingOrdersCount').innerText = '0';
-        document.getElementById('skywayOrdersCount').innerText = '0';
-        return;
-      }
-
-      tbody.innerHTML = ordersList.map(row => {
-        const formattedDate = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
-        const priorityBadge = row.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal';
-        const currentStatus = row.orderStatus || 'Pending';
-        const colors = getStatusColors(currentStatus);
-
-        return `
-          <tr>
-            <td style="color: #667085; font-size:13px;">${formattedDate}</td>
-            <td style="font-weight: 700; color: #0f766e;">${row.orderId || 'N/A'}</td>
-            <td style="font-weight: 600;">${row.customer || 'N/A'}</td>
-            <td>${row.mobile || 'N/A'}</td>
-            <td style="font-weight: 500;">${row.product || 'N/A'}</td>
-            <td><strong>${row.qty || '0'}</strong></td>
-            <td><span class="${priorityBadge}">${row.priority || 'Normal'}</span></td>
-            <td>
-              <select class="status-dropdown" data-id="${row.orderId}" style="background:${colors.bg}; color:${colors.text};">
-                <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option value="Skyway" ${currentStatus === 'Skyway' ? 'selected' : ''}>Skyway</option>
-                <option value="Not available" ${currentStatus === 'Not available' ? 'selected' : ''}>Not available</option>
-              </select>
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      document.getElementById('totalOrdersCount').innerText = ordersList.length;
-      document.getElementById('pendingOrdersCount').innerText = ordersList.filter(o => (o.orderStatus||'Pending') === 'Pending').length;
-      document.getElementById('skywayOrdersCount').innerText = ordersList.filter(o => o.orderStatus === 'Skyway').length;
-    }
-
-    tbody.addEventListener('change', (e) => {
-      if(e.target.classList.contains('status-dropdown')) {
-        const orderId = e.target.getAttribute('data-id');
-        const newStatus = e.target.value;
-        const selectEl = e.target;
-        
-        selectEl.classList.add('status-saving');
-        
-        fetch(WEB_APP_URL, {
-          method: 'POST',
-          body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus }),
-          mode: 'no-cors'
-        })
-        .then(() => {
-          const colors = getStatusColors(newStatus);
-          selectEl.style.background = colors.bg;
-          selectEl.style.color = colors.text;
-          
-          allOrders.forEach(o => {
-            if(o.orderId === orderId) o.orderStatus = newStatus;
-          });
-          
-          document.getElementById('pendingOrdersCount').innerText = allOrders.filter(o => (o.orderStatus||'Pending') === 'Pending').length;
-          document.getElementById('skywayOrdersCount').innerText = allOrders.filter(o => o.orderStatus === 'Skyway').length;
-        })
-        .catch(err => alert("Error updating status in database."))
-        .finally(() => {
-          selectEl.classList.remove('status-saving');
-        });
-      }
-    });
-
-    globalSearchInput.addEventListener('input', applyFilters);
-    globalDateInput.addEventListener('change', applyFilters);
-    
-    colFilters.forEach(input => {
-      input.addEventListener('input', applyFilters);
-      input.addEventListener('change', applyFilters);
-    });
-
-    resetFiltersBtn.addEventListener('click', () => {
-      globalSearchInput.value = '';
-      globalDateInput.value = '';
-      colFilters.forEach(f => f.value = '');
-      applyFilters();
-    });
-
-    fetchDataBtn.addEventListener('click', fetchLiveOrders);
-
-    exportCsvBtn.addEventListener('click', () => {
-      if(!allOrders.length) return alert('Export karva mate koi data nathi.');
-      const header = ['Date Time', 'Order ID', 'Customer Name', 'Mobile', 'Product Name', 'Qty', 'Priority', 'Order Status'];
-      const csvRows = [header.join(',')];
-      
-      allOrders.forEach(row => {
-        const dateStr = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
-        const currentStatus = row.orderStatus || 'Pending';
-        const formattedRow = [
-          `"${dateStr}"`, `"${row.orderId || ''}"`, `"${row.customer || ''}"`, `"${row.mobile || ''}"`,
-          `"${row.product || ''}"`, `"${row.qty || '0'}"`, `"${row.priority || 'Normal'}", "${currentStatus}"`
-        ];
-        csvRows.push(formattedRow.join(','));
-      });
-      
-      const csvContent = csvRows.join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'Pharma_Orders_' + new Date().toISOString().split('T')[0] + '.csv';
-      a.click();
-      URL.revokeObjectURL(a.href);
-    });
-
-    document.addEventListener('DOMContentLoaded', fetchLiveOrders);
+    fetchData();
   </script>
 </body>
 </html>
