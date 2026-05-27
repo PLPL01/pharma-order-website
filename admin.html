@@ -16,7 +16,7 @@
       color: #1f2937;
     }
     .card {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       background: #fff;
       border: 1px solid #d9e2df;
@@ -54,12 +54,19 @@
       flex-wrap: wrap;
     }
     
+    .filters-group {
+      display: flex;
+      gap: 12px;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
     .search-box {
       flex: 1;
-      min-width: 280px;
+      min-width: 250px;
       position: relative;
     }
-    .search-box input {
+    .search-box input, .date-box input {
       width: 100%;
       padding: 12px 16px;
       border: 1px solid #d9e2df;
@@ -67,10 +74,15 @@
       font-size: 14px;
       outline: none;
       transition: all 0.2s;
+      font-family: inherit;
     }
-    .search-box input:focus {
+    .search-box input:focus, .date-box input:focus {
       border-color: #0f766e;
       box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+    }
+    
+    .date-box {
+      width: 160px;
     }
 
     .top-actions { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -93,6 +105,8 @@
     .btn:hover { background: #115e59; }
     .btn-ghost { background: #fff; color: #1f2937; border: 1px solid #d9e2df; }
     .btn-ghost:hover { background: #f9fbfa; }
+    .btn-danger { background: #fff; color: #b42318; border: 1px solid #fde8e8; }
+    .btn-danger:hover { background: #fde8e8; }
     
     .table-container {
       overflow-x: auto;
@@ -108,11 +122,13 @@
     th, td {
       padding: 14px 16px;
       border-bottom: 1px solid #d9e2df;
+      vertical-align: middle;
     }
     th {
       background: #f2f7f5;
       color: #374151;
       font-weight: 700;
+      white-space: nowrap;
     }
     tr:last-child td { border-bottom: none; }
     tr:hover td { background: #f9fdfb; }
@@ -126,6 +142,17 @@
     .badge-normal { background: #f3f4f6; color: #374151; }
     .badge-urgent { background: #fee2e2; color: #991b1b; }
     
+    .status-dropdown {
+      border: 1px solid transparent;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      outline: none;
+      font-family: inherit;
+    }
+
     .loading-status {
       text-align: center;
       padding: 30px;
@@ -158,14 +185,20 @@
     </div>
 
     <div class="controls-row">
-      <div class="search-box">
-        <input type="text" id="adminSearchInput" placeholder="🔍 Search by Customer Name, Order ID or Product...">
+      <div class="filters-group">
+        <div class="search-box">
+          <input type="text" id="adminSearchInput" placeholder="🔍 Search by Customer Name, Order ID or Product...">
+        </div>
+        <div class="date-box">
+          <input type="date" id="dateFilterInput" title="Filter Date">
+        </div>
       </div>
       
       <div class="top-actions">
+        <button class="btn btn-danger" id="clearDateBtn" style="display:none;">Clear Date</button>
         <button class="btn btn-ghost" id="refreshBtn">🔄 Refresh Data</button>
         <button class="btn" id="exportCsvBtn">📥 Export Excel CSV</button>
-        <a class="btn btn-ghost" href="index.html">Customer Page</a>
+        <a class="btn btn-ghost" href="index.html" target="_blank">Customer Page</a>
       </div>
     </div>
 
@@ -178,13 +211,14 @@
             <th>Customer Name</th>
             <th>Mobile</th>
             <th>Product Name</th>
-            <th>Qty in Strip</th>
+            <th>Qty</th>
             <th>Priority</th>
+            <th>Order Status</th>
           </tr>
         </thead>
         <tbody id="adminTableBody">
           <tr>
-            <td colspan="7" class="loading-status">Loading live orders from Google Sheet...</td>
+            <td colspan="8" class="loading-status">Loading live orders from Google Sheet...</td>
           </tr>
         </tbody>
       </table>
@@ -198,34 +232,85 @@
     const refreshBtn = document.getElementById('refreshBtn');
     const exportCsvBtn = document.getElementById('exportCsvBtn');
     const searchInput = document.getElementById('adminSearchInput');
+    const dateInput = document.getElementById('dateFilterInput');
+    const clearDateBtn = document.getElementById('clearDateBtn');
     
     let allOrders = [];
 
+    // Load custom statuses saved in Browser
+    const savedStatuses = JSON.parse(localStorage.getItem('pharmaOrderStatuses') || '{}');
+
     function fetchLiveOrders() {
-      tbody.innerHTML = '<tr><td colspan="7" class="loading-status">🔄 Fetching fresh data from Google Sheet...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="loading-status">🔄 Fetching fresh data from Google Sheet...</td></tr>';
       
       fetch(WEB_APP_URL)
         .then(res => res.json())
         .then(data => {
           if(data.status === "error" || !Array.isArray(data)) {
-            tbody.innerHTML = '<tr><td colspan="7" class="loading-status" style="color:#b42318;">No data found in Google Sheet. Make sure you submit an order first!</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="loading-status" style="color:#b42318;">No data found in Google Sheet.</td></tr>';
             return;
           }
           
           allOrders = data;
           allOrders.reverse();
-          
-          updateDashboard(allOrders);
+          applyFilters(); // Re-apply search/date if active
         })
         .catch(err => {
-          tbody.innerHTML = '<tr><td colspan="7" class="loading-status" style="color:#b42318;">Error loading data. Google Apps Script connection failed.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="loading-status" style="color:#b42318;">Error loading data. Internet check karo.</td></tr>';
           console.error(err);
         });
     }
 
+    function applyFilters() {
+      const query = searchInput.value.toLowerCase().trim();
+      const dateQuery = dateInput.value; 
+
+      if(dateQuery) {
+        clearDateBtn.style.display = 'inline-flex';
+      } else {
+        clearDateBtn.style.display = 'none';
+      }
+
+      let filtered = allOrders;
+
+      // Filter by Search Query
+      if(query) {
+        filtered = filtered.filter(o => 
+          (o.customer && String(o.customer).toLowerCase().includes(query)) ||
+          (o.orderId && String(o.orderId).toLowerCase().includes(query)) ||
+          (o.product && String(o.product).toLowerCase().includes(query)) ||
+          (o.mobile && String(o.mobile).includes(query))
+        );
+      }
+
+      // Filter by Date
+      if(dateQuery) {
+        filtered = filtered.filter(o => {
+          if(!o.timestamp) return false;
+          const d = new Date(o.timestamp);
+          // Convert JS date to YYYY-MM-DD
+          const rowDate = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          return rowDate === dateQuery;
+        });
+      }
+
+      updateDashboard(filtered);
+    }
+
+    function getStatusColors(status) {
+      if(status === 'Sky') return { bg: '#def7ec', text: '#03543f' }; // Green
+      if(status === 'Rpt') return { bg: '#fde8e8', text: '#9b1c1c' }; // Red
+      return { bg: '#fef3c7', text: '#92400e' }; // Pnd -> Yellow
+    }
+
     function updateDashboard(ordersList) {
       if(ordersList.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" class="loading-status">Koi matching orders nathi.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="loading-status">Koi matching orders nathi.</td></tr>';
+        
+        // Zero out counters
+        document.getElementById('totalOrdersCount').innerText = '0';
+        document.getElementById('urgentOrdersCount').innerText = '0';
+        document.getElementById('uniqueCustomersCount').innerText = '0';
         return;
       }
 
@@ -233,6 +318,10 @@
         const formattedDate = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
         const priorityBadge = row.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal';
         
+        // Status Logic
+        const currentStatus = savedStatuses[row.orderId] || 'Pnd';
+        const colors = getStatusColors(currentStatus);
+
         return `
           <tr>
             <td style="color: #667085;">${formattedDate}</td>
@@ -242,42 +331,59 @@
             <td style="font-weight: 500;">${row.product || 'N/A'}</td>
             <td><strong>${row.qty || '0'}</strong></td>
             <td><span class="${priorityBadge}">${row.priority || 'Normal'}</span></td>
+            <td>
+              <select class="status-dropdown" data-id="${row.orderId}" style="background:${colors.bg}; color:${colors.text};">
+                <option value="Pnd" ${currentStatus === 'Pnd' ? 'selected' : ''}>Pnd (Pending)</option>
+                <option value="Sky" ${currentStatus === 'Sky' ? 'selected' : ''}>Sky (Clear)</option>
+                <option value="Rpt" ${currentStatus === 'Rpt' ? 'selected' : ''}>Rpt (Return)</option>
+              </select>
+            </td>
           </tr>
         `;
       }).join('');
 
-      document.getElementById('totalOrdersCount').innerText = allOrders.length;
-      document.getElementById('urgentOrdersCount').innerText = allOrders.filter(o => o.priority === 'Urgent').length;
-      
-      const uniqueCustomers = [...new Set(allOrders.map(o => o.customer.toLowerCase()))].length;
+      document.getElementById('totalOrdersCount').innerText = ordersList.length;
+      document.getElementById('urgentOrdersCount').innerText = ordersList.filter(o => o.priority === 'Urgent').length;
+      const uniqueCustomers = [...new Set(ordersList.map(o => String(o.customer).toLowerCase()))].length;
       document.getElementById('uniqueCustomersCount').innerText = uniqueCustomers;
     }
 
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.toLowerCase().trim();
-      if(!query) {
-        updateDashboard(allOrders);
-        return;
+    // Status Dropdown Change Event
+    tbody.addEventListener('change', (e) => {
+      if(e.target.classList.contains('status-dropdown')) {
+        const orderId = e.target.getAttribute('data-id');
+        const newStatus = e.target.value;
+        
+        // Update styling instantly
+        const colors = getStatusColors(newStatus);
+        e.target.style.background = colors.bg;
+        e.target.style.color = colors.text;
+        
+        // Save to browser memory
+        savedStatuses[orderId] = newStatus;
+        localStorage.setItem('pharmaOrderStatuses', JSON.stringify(savedStatuses));
       }
-      
-      const filtered = allOrders.filter(o => 
-        (o.customer && o.customer.toLowerCase().includes(query)) ||
-        (o.orderId && o.orderId.toLowerCase().includes(query)) ||
-        (o.product && o.product.toLowerCase().includes(query)) ||
-        (o.mobile && o.mobile.includes(query))
-      );
-      
-      updateDashboard(filtered);
     });
 
+    // Listeners for filters
+    searchInput.addEventListener('input', applyFilters);
+    dateInput.addEventListener('change', applyFilters);
+    
+    clearDateBtn.addEventListener('click', () => {
+      dateInput.value = '';
+      applyFilters();
+    });
+
+    // Export CSV logic (includes status)
     exportCsvBtn.addEventListener('click', () => {
       if(!allOrders.length) return alert('Export karva mate koi data nathi.');
       
-      const header = ['Date Time', 'Order ID', 'Customer Name', 'Mobile', 'Product Name', 'Qty', 'Priority'];
+      const header = ['Date Time', 'Order ID', 'Customer Name', 'Mobile', 'Product Name', 'Qty', 'Priority', 'Order Status'];
       const csvRows = [header.join(',')];
       
       allOrders.forEach(row => {
         const dateStr = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
+        const currentStatus = savedStatuses[row.orderId] || 'Pnd';
         const formattedRow = [
           `"${dateStr}"`,
           `"${row.orderId || ''}"`,
@@ -285,7 +391,8 @@
           `"${row.mobile || ''}"`,
           `"${row.product || ''}"`,
           `"${row.qty || '0'}"`,
-          `"${row.priority || 'Normal'}"`
+          `"${row.priority || 'Normal'}",
+          "${currentStatus}"`
         ];
         csvRows.push(formattedRow.join(','));
       });
@@ -294,13 +401,14 @@
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
       const a = document.createElement('a');
       a.href = URL.createObjectURL(blob);
-      a.download = 'Pharma_All_Orders_' + new Date().toISOString().split('T')[0] + '.csv';
+      a.download = 'Pharma_Orders_' + new Date().toISOString().split('T')[0] + '.csv';
       a.click();
       URL.revokeObjectURL(a.href);
     });
 
     refreshBtn.addEventListener('click', fetchLiveOrders);
 
+    // Initial Load
     document.addEventListener('DOMContentLoaded', fetchLiveOrders);
   </script>
 </body>
