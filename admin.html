@@ -6,7 +6,7 @@
   <title>Admin Dashboard - ERP protected Pharma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2 family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     // 🛡️ SECURE TOKEN CHECK
     const myToken = sessionStorage.getItem('pharmaAdminToken');
@@ -25,7 +25,6 @@
     body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); margin: 0; padding: 30px; color: var(--text-main); }
     .card { max-width: 1400px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-lg); }
     
-    /* Header & Profile Styles */
     .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; }
     h1 { margin: 0 0 4px; color: var(--text-main); font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
     p { color: var(--text-muted); margin: 0; font-size: 14px; }
@@ -40,13 +39,11 @@
     .dropdown-item.logout-item { color: #991b1b; }
     .dropdown-item.logout-item:hover { background: #fee2e2; }
     
-    /* 🗂️ PREMIUM TABS STYLES */
     .tabs-container { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 8px; }
     .tab-btn { background: none; border: none; padding: 10px 20px; font-size: 15px; font-weight: 700; color: var(--text-muted); cursor: pointer; border-radius: 10px; transition: all 0.2s; }
     .tab-btn:hover { background: #f1f5f9; color: var(--text-main); }
     .tab-btn.active { background: var(--primary); color: #fff; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2); }
 
-    /* ⚡ QUICK SHORTCUT FILTERS */
     .quick-filters-row { display: flex; gap: 10px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; background: #f8fafc; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); }
     .quick-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; border: 1px solid var(--border); background: #fff; cursor: pointer; transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px; }
     .quick-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
@@ -54,7 +51,7 @@
     .quick-btn.active-pending { background: #fef3c7; color: #92400e; border-color: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.2); }
     .quick-btn.active-notavail { background: #fee2e2; color: #991b1b; border-color: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.2); }
 
-    /* Modal Styles */
+    /* Modals CSS */
     .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
     .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -126,27 +123,25 @@
         </button>
         <div class="profile-dropdown" id="profileDropdownMenu">
           <button class="dropdown-item" id="openUserModalBtn">🔑 Manage Users & Pass</button>
+          <button class="dropdown-item" id="openTabsModalBtn">⚙️ Rename Dashboard Tabs</button>
           <hr style="border:0; border-top:1px solid var(--border); margin:4px 0;">
           <button class="dropdown-item logout-item" id="logoutBtn">🚪 Logout Securely</button>
         </div>
       </div>
     </div>
 
-    <!-- 🗂️ NEW TABS SYSTEM SYSTEM -->
     <div class="tabs-container">
-       <button class="tab-btn active" id="tabToday">📦 આજના ઓર્ડર્સ (Today's Orders)</button>
-       <button class="tab-btn" id="tabHistory">📜 ઓર્ડર હિસ્ટ્રી (Order History)</button>
+       <button class="tab-btn active" id="tabToday">📦 Today's Orders</button>
+       <button class="tab-btn" id="tabHistory">📜 Order History</button>
     </div>
 
-    <!-- ⚡ NEW QUICK SHORTCUT FILTERS FOR PENDING / NOT AVAILABLE -->
     <div class="quick-filters-row">
-       <span style="font-size:13px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">🔍 ઝડપી ફિલ્ટર:</span>
-       <button class="quick-btn active-all" id="quickAllBtn">📁 બધા ઓર્ડર્સ</button>
-       <button class="quick-btn" id="quickPendingBtn">🟡 બાકી ઓર્ડર્સ (Pending)</button>
-       <button class="quick-btn" id="quickNotAvailBtn">🔴 સ્ટોકમાં નથી (Not available)</button>
+       <span style="font-size:13px; font-weight:800; color:var(--text-muted); text-transform:uppercase;">🔍 Quick Filter:</span>
+       <button class="quick-btn active-all" id="quickAllBtn">📁 All Orders</button>
+       <button class="quick-btn" id="quickPendingBtn">🟡 Pending</button>
+       <button class="quick-btn" id="quickNotAvailBtn">🔴 Not Available</button>
     </div>
 
-    <!-- Hidden Popup for User Management -->
     <div class="modal-backdrop" id="userModalBackdrop">
        <div class="modal-box">
           <div class="modal-header">
@@ -154,7 +149,7 @@
              <button class="modal-close" id="closeUserModalBtn">&times;</button>
           </div>
           <p style="font-size: 12px; margin: 0 0 16px; color: var(--text-muted); line-height: 1.5;">
-             નવો સ્ટાફ આઈડી બનાવવા માટે નવું નામ લખો. <br><b>મેઈન એડમિનનો પાસવર્ડ બદલવા માટે User ID માં "admin" લખો.</b>
+             Enter a new name to create a staff ID. <br><b>To change the main admin password, use User ID "admin".</b>
           </p>
           <div style="display:flex; flex-direction:column; gap:14px;">
              <div>
@@ -171,23 +166,30 @@
        </div>
     </div>
 
-    <div class="stats-container">
-      <div class="stat-card">
-        <div class="refresh-indicator" title="Live Auto-Refresh Active"></div>
-        <span class="stat-label">Total Orders</span>
-        <span class="stat-value" id="totalOrdersCount">0</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Pending</span>
-        <span class="stat-value" style="color:#d97706;" id="pendingOrdersCount">0</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">Skyway (Clear)</span>
-        <span class="stat-value" style="color:#059669;" id="skywayOrdersCount">0</span>
-      </div>
+    <div class="modal-backdrop" id="tabsModalBackdrop">
+       <div class="modal-box">
+          <div class="modal-header">
+             <h3 class="modal-title">⚙️ Rename Dashboard Tabs</h3>
+             <button class="modal-close" id="closeTabsModalBtn">&times;</button>
+          </div>
+          <p style="font-size: 12px; margin: 0 0 16px; color: var(--text-muted);">
+             Change the display labels for your dashboard tabs instantly without code:
+          </p>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+             <div>
+                <label style="font-size:12px; font-weight:700; color:var(--text-main);">Today's Tab Label</label>
+                <input type="text" id="inputTabToday" placeholder="e.g. Today's Orders" style="margin-top:4px;">
+             </div>
+             <div>
+                <label style="font-size:12px; font-weight:700; color:var(--text-main);">History Tab Label</label>
+                <input type="text" id="inputTabHistory" placeholder="e.g. Order History" style="margin-top:4px;">
+             </div>
+             <button class="btn btn-primary" id="saveTabsBtn">💾 Update Tab Names</button>
+             <div id="tabsActionStatus" style="font-size: 13px; font-weight: 700; display: none; text-align:center; padding: 8px; border-radius: 8px;"></div>
+          </div>
+       </div>
     </div>
 
-    <!-- Filters Panel -->
     <div class="controls-panel" id="controlsPanel" style="display: none;">
       <div class="filters-row">
         <div class="input-box" style="flex: 2;">
@@ -201,25 +203,15 @@
             <option value="Urgent">Urgent</option>
           </select>
         </div>
-        <div class="filter-box" style="display:none;">
-          <select id="statusFilter">
-            <option value="">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="Skyway">Skyway</option>
-            <option value="Not available">Not available</option>
-          </select>
-        </div>
       </div>
-      
       <div class="actions-row">
         <button class="btn btn-ghost" id="resetFiltersBtn">🧹 Reset Filters</button>
         <button class="btn btn-ghost" id="fetchDataBtn">🔄 Refresh Data</button>
       </div>
     </div>
 
-    <!-- Search box specifically for Today's Tab (Keeps UI very simple) -->
     <div id="todaySearchBox" style="margin-bottom: 20px;">
-       <input type="text" id="todaySearchInput" placeholder="🔍 આજના ઓર્ડરમાં સર્ચ કરો (Name, Mobile, Product)...">
+       <input type="text" id="todaySearchInput" placeholder="🔍 Search Today's Orders (Name, Mobile, Product)...">
     </div>
 
     <div id="cardsContainer" class="order-cards-container">
@@ -228,12 +220,12 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSPOJkI7OD76N17vZboLVXtrE0JHmJi19EdHauZtsmfN5UsVkIDkfk2qhu6g0ycFY4/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyM7IldJ4TWlvcXWW4joDo1VHe-LnpnXhvJDS2wVEu9eOs5YXdysosW1DTxkCPuxd3-/exec";
     
     document.getElementById('welcomeUser').innerText = currentAdminUser;
 
-    let currentTab = 'today'; // global tab tracker ('today' or 'history')
-    let currentStatusQuickFilter = ''; // global quick filter status ('', 'pending', 'not available')
+    let currentTab = 'today'; 
+    let currentStatusQuickFilter = ''; 
 
     // Profile menu toggle
     const profileToggleBtn = document.getElementById('profileToggleBtn');
@@ -244,10 +236,15 @@
     });
     document.addEventListener('click', () => { profileDropdownMenu.style.display = 'none'; });
 
-    // Modal logic
+    // Modals visibility logic
     const userModalBackdrop = document.getElementById('userModalBackdrop');
+    const tabsModalBackdrop = document.getElementById('tabsModalBackdrop');
+    
     document.getElementById('openUserModalBtn').addEventListener('click', () => { userModalBackdrop.style.display = 'flex'; });
     document.getElementById('closeUserModalBtn').addEventListener('click', () => { userModalBackdrop.style.display = 'none'; });
+    
+    document.getElementById('openTabsModalBtn').addEventListener('click', () => { tabsModalBackdrop.style.display = 'flex'; });
+    document.getElementById('closeTabsModalBtn').addEventListener('click', () => { tabsModalBackdrop.style.display = 'none'; });
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -265,7 +262,7 @@
 
        if(!targetId || !newPass) {
           statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b";
-          statusDiv.innerText = "⚠️ ID અને પાસવર્ડ બંને લખો!"; return;
+          statusDiv.innerText = "⚠️ Both ID and Password are required!"; return;
        }
        btn.innerText = "Processing..."; btn.disabled = true;
 
@@ -282,12 +279,43 @@
              statusDiv.innerText = "✅ " + data.message;
              document.getElementById('targetUserid').value = ''; document.getElementById('newPassword').value = '';
              setTimeout(() => { userModalBackdrop.style.display = 'none'; }, 1500);
-          } else {
-             statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ ભૂલ: " + data.message;
-          }
+          } else { statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Error: " + data.message; }
        })
-       .catch(err => { statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ સર્વર ફેલ!"; })
+       .catch(err => { statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Server Connection Failed!"; })
        .finally(() => { btn.innerText = "💾 Save Changes"; btn.disabled = false; setTimeout(() => { statusDiv.style.display = "none"; }, 3000); });
+    });
+
+    // SAVE TAB NAMES DYNAMICALLY LOGIC
+    document.getElementById('saveTabsBtn').addEventListener('click', () => {
+       const tabTodayVal = document.getElementById('inputTabToday').value.trim();
+       const tabHistoryVal = document.getElementById('inputTabHistory').value.trim();
+       const statusDiv = document.getElementById('tabsActionStatus');
+       const btn = document.getElementById('saveTabsBtn');
+
+       if(!tabTodayVal || !tabHistoryVal) {
+          statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b";
+          statusDiv.innerText = "⚠️ Fill both fields!"; return;
+       }
+       btn.innerText = "Saving Labels..."; btn.disabled = true;
+
+       fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify({ action: 'updateTabNames', token: myToken, tabToday: tabTodayVal, tabHistory: tabHistoryVal })
+       })
+       .then(res => res.json())
+       .then(data => {
+          statusDiv.style.display = "block";
+          if(data.status === 'success') {
+             statusDiv.style.background = "#d1fae5"; statusDiv.style.color = "#065f46";
+             statusDiv.innerText = "✅ " + data.message;
+             document.getElementById('tabToday').innerText = tabTodayVal;
+             document.getElementById('tabHistory').innerText = tabHistoryVal;
+             setTimeout(() => { tabsModalBackdrop.style.display = 'none'; }, 1500);
+          } else { statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Failed!"; }
+       })
+       .catch(err => { statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Error!"; })
+       .finally(() => { btn.innerText = "💾 Update Tab Names"; btn.disabled = false; setTimeout(() => { statusDiv.style.display = "none"; }, 3000); });
     });
 
     const cardsContainer = document.getElementById('cardsContainer');
@@ -303,10 +331,20 @@
       })
       .then(res => res.json())
       .then(data => {
-        if(data.status === 'unauthorized') { alert("Security Error!"); document.getElementById('logoutBtn').click(); return; }
+        if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
         if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) {
           cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">No data found.</div>'; return;
         }
+        
+        if(data.tabTodayName) {
+           document.getElementById('tabToday').innerText = data.tabTodayName;
+           document.getElementById('inputTabToday').value = data.tabTodayName;
+        }
+        if(data.tabHistoryName) {
+           document.getElementById('tabHistory').innerText = data.tabHistoryName;
+           document.getElementById('inputTabHistory').value = data.tabHistoryName;
+        }
+
         allOrders = data.data; 
         allOrders.reverse();
         applyFilters();
@@ -345,9 +383,8 @@
         const rowStatus = (o.orderStatus || 'Pending').toLowerCase();
         const rowPriority = (o.priority || 'Normal').toLowerCase();
 
-        // 1. Handle Tabs separation
         if (currentTab === 'today') {
-           if (rowDateIso !== todayIso) return false; // આજના ઓર્ડરમાં માત્ર આજની જ ડેટ દેખાશે
+           if (rowDateIso !== todayIso) return false; 
            if (todaySearchQuery) {
               const combined = Object.values(o).join(' ').toLowerCase();
               if (!combined.includes(todaySearchQuery)) return false;
@@ -361,7 +398,6 @@
            if (priorityQuery && rowPriority !== priorityQuery) return false;
         }
 
-        // 2. Handle Quick Status Filter Toggle
         if (currentStatusQuickFilter && rowStatus !== currentStatusQuickFilter) return false;
 
         return true;
@@ -475,7 +511,7 @@
       }
     });
 
-    // 🗂️ TABS CLICK LOGIC
+    // TABS CLICK LOGIC
     const tabToday = document.getElementById('tabToday');
     const tabHistory = document.getElementById('tabHistory');
     const controlsPanel = document.getElementById('controlsPanel');
@@ -483,51 +519,37 @@
 
     tabToday.addEventListener('click', () => {
        currentTab = 'today';
-       tabToday.classList.add('active');
-       tabHistory.classList.remove('active');
-       controlsPanel.style.display = 'none';
-       todaySearchBox.style.display = 'block';
+       tabToday.classList.add('active'); tabHistory.classList.remove('active');
+       controlsPanel.style.display = 'none'; todaySearchBox.style.display = 'block';
        applyFilters();
     });
 
     tabHistory.addEventListener('click', () => {
        currentTab = 'history';
-       tabHistory.classList.add('active');
-       tabToday.classList.remove('active');
-       controlsPanel.style.display = 'block';
-       todaySearchBox.style.display = 'none';
+       tabHistory.classList.add('active'); tabToday.classList.remove('active');
+       controlsPanel.style.display = 'block'; todaySearchBox.style.display = 'none';
        applyFilters();
     });
 
-    // ⚡ QUICK FILTERS LOGIC
+    // QUICK FILTERS LOGIC
     const qAll = document.getElementById('quickAllBtn');
     const qPending = document.getElementById('quickPendingBtn');
     const qNotAvail = document.getElementById('quickNotAvailBtn');
 
-    function resetQuickBtnStyles() {
-       qAll.className = 'quick-btn'; qPending.className = 'quick-btn'; qNotAvail.className = 'quick-btn';
-    }
+    function resetQuickBtnStyles() { qAll.className = 'quick-btn'; qPending.className = 'quick-btn'; qNotAvail.className = 'quick-btn'; }
 
-    qAll.addEventListener('click', () => {
-       currentStatusQuickFilter = ''; resetQuickBtnStyles(); qAll.classList.add('active-all'); applyFilters();
-    });
-    qPending.addEventListener('click', () => {
-       currentStatusQuickFilter = 'pending'; resetQuickBtnStyles(); qPending.classList.add('active-pending'); applyFilters();
-    });
-    qNotAvail.addEventListener('click', () => {
-       currentStatusQuickFilter = 'not available'; resetQuickBtnStyles(); qNotAvail.classList.add('active-notavail'); applyFilters();
-    });
+    qAll.addEventListener('click', () => { currentStatusQuickFilter = ''; resetQuickBtnStyles(); qAll.classList.add('active-all'); applyFilters(); });
+    qPending.addEventListener('click', () => { currentStatusQuickFilter = 'pending'; resetQuickBtnStyles(); qPending.classList.add('active-pending'); applyFilters(); });
+    qNotAvail.addEventListener('click', () => { currentStatusQuickFilter = 'not available'; resetQuickBtnStyles(); qNotAvail.classList.add('active-notavail'); applyFilters(); });
 
-    // Other listeners
+    // Listeners
     document.getElementById('todaySearchInput').addEventListener('input', applyFilters);
     document.getElementById('globalSearchInput').addEventListener('input', applyFilters);
     document.getElementById('dateFilterInput').addEventListener('change', applyFilters);
     document.getElementById('priorityFilter').addEventListener('change', applyFilters);
 
     document.getElementById('resetFiltersBtn').addEventListener('click', () => {
-      document.getElementById('globalSearchInput').value = '';
-      document.getElementById('dateFilterInput').value = '';
-      document.getElementById('priorityFilter').value = '';
+      document.getElementById('globalSearchInput').value = ''; document.getElementById('dateFilterInput').value = ''; document.getElementById('priorityFilter').value = '';
       applyFilters();
     });
 
