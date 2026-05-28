@@ -26,7 +26,6 @@
 </head>
 <body>
 
-  <!-- STEP 1: USER/PASS -->
   <div class="login-card" id="loginView">
     <h2>Secure Login</h2>
     <p>2-Step Verification Protected.</p>
@@ -43,7 +42,6 @@
     <div id="loginMsg" class="message"></div>
   </div>
 
-  <!-- STEP 2: OTP -->
   <div class="login-card" id="otpView" style="display: none;">
     <h2>Enter OTP</h2>
     <p>We've sent a 4-digit OTP to your email.</p>
@@ -56,7 +54,6 @@
     <div id="otpMsg" class="message"></div>
   </div>
 
-  <!-- FORGOT PASSWORD -->
   <div class="login-card" id="forgotView" style="display: none;">
     <h2>Reset Password</h2>
     <p>Receive password on recovery email.</p>
@@ -70,7 +67,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmQZF6nm_uc_BlwGKizJ0pOg3QTMG5dyuQU7TFh20WTLHkViXAc4Uu4yy-imW1JaD/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzBTnnybXVa6fwkmmslsnBVgCcxegOUp2ZyCkHXDrRQI-IWXVX9t4pw9YyFdgtezNph/exec";
     
     const loginView = document.getElementById('loginView');
     const otpView = document.getElementById('otpView');
@@ -136,7 +133,6 @@
       .then(data => {
         if(data.status === 'success') {
           showMsg('otpMsg', 'Login Verified!', 'msg-success');
-          // 🛡️ SECURE TOKEN SAVED HERE
           sessionStorage.setItem('pharmaAdminToken', data.token);
           setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
         } else {
