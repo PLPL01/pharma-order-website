@@ -144,7 +144,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmQZF6nm_uc_BlwGKizJ0pOg3QTMG5dyuQU7TFh20WTLHkViXAc4Uu4yy-imW1JaD/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzBTnnybXVa6fwkmmslsnBVgCcxegOUp2ZyCkHXDrRQI-IWXVX9t4pw9YyFdgtezNph/exec";
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -175,7 +175,7 @@
           cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">No data found. Please wait for new orders.</div>';
           return;
         }
-        allOrders = data.data; // Data object andar aave chhe
+        allOrders = data.data; 
         allOrders.reverse();
         applyFilters();
       })
@@ -200,13 +200,13 @@
                applyFilters();
             }
          } else if (data.status === 'unauthorized') {
-            document.getElementById('logoutBtn').click(); // Auto-kickout if token fails
+            document.getElementById('logoutBtn').click();
          }
        })
        .catch(err => console.log("Silent update failed"));
     }
     
-    setInterval(fetchOrdersQuietly, 30000); // 30 sec silent refresh
+    setInterval(fetchOrdersQuietly, 30000); 
 
     function applyFilters() {
       const query = document.getElementById('globalSearchInput').value.toLowerCase().trim();
