@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Dashboard - Pharma Wholesale</title>
+  <title>Admin Dashboard - High Security Pharma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
-    // 🔒 SECURITY CHECK: Jo login nathi karyu, to redirect to login page
-    if (sessionStorage.getItem('isPharmaAdminLoggedIn') !== 'true') {
+    // 🛡️ SECURE TOKEN CHECK
+    const myToken = sessionStorage.getItem('pharmaAdminToken');
+    if (!myToken) {
       window.location.href = 'login.html';
     }
   </script>
@@ -23,14 +24,13 @@
     body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); margin: 0; padding: 30px; color: var(--text-main); }
     .card { max-width: 1400px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-lg); }
     .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-    h1 { margin: 0 0 8px; color: var(--text-main); font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+    h1 { margin: 0 0 8px; color: var(--text-main); font-size: 32px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
     p { color: var(--text-muted); margin: 0; font-size: 15px; }
     .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
     .stat-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; position: relative; }
     .stat-label { font-size: 13px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     .stat-value { font-size: 28px; font-weight: 800; color: var(--primary); margin-top: 8px; }
     
-    /* Auto-refresh indicator */
     .refresh-indicator { position: absolute; top: 20px; right: 20px; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 8px #10b981; animation: pulse 2s infinite; }
     @keyframes pulse { 0% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
 
@@ -85,11 +85,11 @@
   <div class="card">
     <div class="header-section">
       <div>
-        <h1>Admin Dashboard</h1>
-        <p>Live Auto-Refresh Secure Mode</p>
+        <h1>🔒 High Security Admin</h1>
+        <p>Token-Based Protected Data Access</p>
       </div>
       <div>
-        <button class="btn btn-danger" id="logoutBtn">🚪 Logout</button>
+        <button class="btn btn-danger" id="logoutBtn">🚪 Logout Securely</button>
       </div>
     </div>
 
@@ -135,67 +135,78 @@
       <div class="actions-row">
         <button class="btn btn-ghost" id="resetFiltersBtn">🧹 Reset Filters</button>
         <button class="btn btn-ghost" id="fetchDataBtn">🔄 Refresh Data</button>
-        <button class="btn btn-primary" id="exportCsvBtn">📥 Export to Excel</button>
       </div>
     </div>
 
     <div id="cardsContainer" class="order-cards-container">
-       <div class="loading-status">🔄 Fetching fresh data from Server...</div>
+       <div class="loading-status">🔄 Authenticating & Fetching Secure Data...</div>
     </div>
   </div>
 
   <script>
-    // TAMARI CURRENT WEB APP URL
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmQZF6nm_uc_BlwGKizJ0pOg3QTMG5dyuQU7TFh20WTLHkViXAc4Uu4yy-imW1JaD/exec";
 
-    // Logout Function
+    // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
-       sessionStorage.removeItem('isPharmaAdminLoggedIn');
+       sessionStorage.removeItem('pharmaAdminToken');
        window.location.href = 'login.html';
     });
 
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // Pehli vaar load thay tyare aavu dekhay
+    // 🛡️ API FETCH WITH TOKEN
     function fetchLiveOrders() {
-      cardsContainer.innerHTML = '<div class="loading-status">🔄 Downloading live data from Google Sheet...</div>';
+      cardsContainer.innerHTML = '<div class="loading-status">🔄 Verifying Token & Fetching Data...</div>';
       
-      fetch(WEB_APP_URL)
-        .then(res => res.json())
-        .then(data => {
-          if(data.status === "error" || !Array.isArray(data) || data.length === 0) {
-            cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">No data found. Please wait for new orders.</div>';
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'fetchOrders', token: myToken })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === 'unauthorized') {
+            alert("Security Error: Your session has expired or token is invalid.");
+            document.getElementById('logoutBtn').click();
             return;
-          }
-          allOrders = data;
-          allOrders.reverse();
-          applyFilters();
-        })
-        .catch(err => {
-          cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">Connection error. Check Internet.</div>';
-        });
+        }
+        if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) {
+          cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">No data found. Please wait for new orders.</div>';
+          return;
+        }
+        allOrders = data.data; // Data object andar aave chhe
+        allOrders.reverse();
+        applyFilters();
+      })
+      .catch(err => {
+        cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">Connection error. Secure Fetch Failed.</div>';
+      });
     }
 
-    // 🌟 SILENT AUTO-REFRESH LOGIC (Every 30 Seconds) 🌟
+    // SILENT AUTO REFRESH
     function fetchOrdersQuietly() {
-       fetch(WEB_APP_URL)
-        .then(res => res.json())
-        .then(data => {
-          if(data.status !== "error" && Array.isArray(data) && data.length > 0) {
-             // Jo tame koi dropdown click kari rahya hoy to page refresh na thay jethi disturb na thay
-             if (!document.querySelector('.status-saving')) {
-                allOrders = data;
-                allOrders.reverse();
-                applyFilters();
-             }
-          }
-        })
-        .catch(err => console.log("Silent update failed"));
+       fetch(WEB_APP_URL, {
+         method: 'POST',
+         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+         body: JSON.stringify({ action: 'fetchOrders', token: myToken })
+       })
+       .then(res => res.json())
+       .then(data => {
+         if(data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
+            if (!document.querySelector('.status-saving')) {
+               allOrders = data.data;
+               allOrders.reverse();
+               applyFilters();
+            }
+         } else if (data.status === 'unauthorized') {
+            document.getElementById('logoutBtn').click(); // Auto-kickout if token fails
+         }
+       })
+       .catch(err => console.log("Silent update failed"));
     }
     
-    // 30000 ms = 30 seconds
-    setInterval(fetchOrdersQuietly, 30000);
+    setInterval(fetchOrdersQuietly, 30000); // 30 sec silent refresh
 
     function applyFilters() {
       const query = document.getElementById('globalSearchInput').value.toLowerCase().trim();
@@ -309,6 +320,7 @@
       document.getElementById('skywayOrdersCount').innerText = skywayCount;
     }
 
+    // 🛡️ SECURE STATUS UPDATE
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id');
@@ -321,9 +333,16 @@
         fetch(WEB_APP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus })
+          body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken })
         })
-        .then(() => {
+        .then(res => res.json())
+        .then(data => {
+          if(data.status === 'unauthorized') {
+              alert("Security Error! Unauthorized Action.");
+              document.getElementById('logoutBtn').click();
+              return;
+          }
+          
           const colors = getStatusColors(newStatus);
           selectEl.style.background = colors.bg;
           selectEl.style.color = colors.text;
@@ -352,6 +371,7 @@
       }
     });
 
+    // Listeners
     document.getElementById('globalSearchInput').addEventListener('input', applyFilters);
     document.getElementById('dateFilterInput').addEventListener('change', applyFilters);
     document.getElementById('priorityFilter').addEventListener('change', applyFilters);
@@ -366,23 +386,6 @@
     });
 
     document.getElementById('fetchDataBtn').addEventListener('click', fetchLiveOrders);
-
-    document.getElementById('exportCsvBtn').addEventListener('click', () => {
-      if(!allOrders.length) return alert('No data to export.');
-      const header = ['Date Time', 'Order ID', 'Customer Name', 'Mobile', 'Product Name', 'Qty', 'Priority', 'Order Status'];
-      const csvRows = [header.join(',')];
-      allOrders.forEach(row => {
-        const dateStr = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
-        const currentStatus = row.orderStatus || 'Pending';
-        const formattedRow = [`"${dateStr}"`, `"${row.orderId || ''}"`, `"${row.customer || ''}"`, `"${row.mobile || ''}"`, `"${row.product || ''}"`, `"${row.qty || '0'}"`, `"${row.priority || 'Normal'}"`, `"${currentStatus}"`];
-        csvRows.push(formattedRow.join(','));
-      });
-      const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'Pharma_Orders_' + new Date().toISOString().split('T')[0] + '.csv';
-      a.click();
-    });
 
     document.addEventListener('DOMContentLoaded', fetchLiveOrders);
   </script>
