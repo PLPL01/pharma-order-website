@@ -24,14 +24,30 @@
     }
     body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); margin: 0; padding: 30px; color: var(--text-main); }
     .card { max-width: 1400px; margin: 0 auto; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-lg); }
-    .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
-    h1 { margin: 0 0 8px; color: var(--text-main); font-size: 32px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
-    p { color: var(--text-muted); margin: 0; font-size: 15px; }
     
-    /* User Management Panel Style */
-    .user-manage-panel { background: #f8fafc; border: 2px dashed var(--primary); border-radius: 16px; padding: 20px; margin-bottom: 24px; display: flex; flex-direction: column; gap: 12px; }
-    .user-form-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-    .user-form-row input { flex: 1; min-width: 180px; }
+    /* Premium Header Style */
+    .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; position: relative; }
+    h1 { margin: 0 0 4px; color: var(--text-main); font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    p { color: var(--text-muted); margin: 0; font-size: 14px; }
+    
+    /* 👤 PROFILE DROPDOWN STYLES */
+    .profile-container { position: relative; display: inline-block; }
+    .profile-btn { background: #fff; border: 1px solid var(--border); padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 14px; color: var(--text-main); cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: var(--shadow-sm); transition: all 0.2s; }
+    .profile-btn:hover { background: #f8fafc; border-color: var(--primary); }
+    .profile-btn .avatar { background: #ccfbf1; color: var(--primary); padding: 4px 8px; border-radius: 8px; font-size: 14px; }
+    .profile-dropdown { display: none; position: absolute; right: 0; top: 52px; background: #fff; border: 1px solid var(--border); border-radius: 12px; width: 220px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 1000; padding: 6px; }
+    .dropdown-item { width: 100%; padding: 10px 14px; border: none; background: none; text-align: left; font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text-main); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-sizing: border-box; }
+    .dropdown-item:hover { background: #f1f5f9; color: var(--primary); }
+    .dropdown-item.logout-item { color: #991b1b; }
+    .dropdown-item.logout-item:hover { background: #fee2e2; }
+    
+    /* 🛠️ MODAL OVERLAY STYLES (Add User/Change Pass) */
+    .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
+    .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .modal-title { margin: 0; font-size: 18px; font-weight: 800; color: var(--text-main); }
+    .modal-close { background: none; border: none; font-size: 20px; font-weight: 700; color: var(--text-muted); cursor: pointer; }
+    .modal-close:hover { color: #000; }
     
     .stats-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
     .stat-card { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; position: relative; }
@@ -48,13 +64,12 @@
     .filter-box { min-width: 150px; }
     input, select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 500; color: var(--text-main); background: #fff; outline: none; font-family: inherit; box-sizing: border-box; }
     input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1); }
-    .btn { padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
-    .btn-primary { background: var(--primary); color: #fff; }
+    
+    .btn { padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-family: inherit; }
+    .btn-primary { background: var(--primary); color: #fff; width: 100%; justify-content: center; }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-ghost { background: #fff; color: var(--text-main); border: 1px solid var(--border); }
     .btn-ghost:hover { background: #f1f5f9; }
-    .btn-danger { background: #fee2e2; color: #991b1b; }
-    .btn-danger:hover { background: #fca5a5; }
     
     .order-cards-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
     .order-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 16px; border-top: 6px solid var(--primary); transition: transform 0.2s; }
@@ -93,23 +108,47 @@
     <div class="header-section">
       <div>
         <h1>🔒 Protected Admin Dashboard</h1>
-        <p>Welcome back, <b id="welcomeUser" style="color:var(--primary);">User</b>! | Security Node Online</p>
+        <p>Security Node Online</p>
       </div>
-      <div>
-        <button class="btn btn-danger" id="logoutBtn">🚪 Logout Securely</button>
+      
+      <!-- 👤 NEW PROFILE DROPDOWN COMPONENT -->
+      <div class="profile-container">
+        <button class="profile-btn" id="profileToggleBtn">
+          <span class="avatar">👤</span>
+          <span id="welcomeUser">User</span>
+          <span style="font-size:10px; margin-left:2px;">▼</span>
+        </button>
+        <div class="profile-dropdown" id="profileDropdownMenu">
+          <button class="dropdown-item" id="openUserModalBtn">🔑 Manage Users & Pass</button>
+          <hr style="border:0; border-top:1px solid var(--border); margin:4px 0;">
+          <button class="dropdown-item logout-item" id="logoutBtn">🚪 Logout Securely</button>
+        </div>
       </div>
     </div>
 
-    <!-- 👥 🌟 NEW STAFF & USER MANAGEMENT PANEL 🌟 -->
-    <div class="user-manage-panel">
-       <h3 style="margin: 0 0 4px; color: var(--primary); font-size: 18px; font-weight: 800;">👥 Staff & Password Management</h3>
-       <p style="font-size: 13px; margin: 0 0 10px; color: var(--text-muted);">નવો સ્ટાફ આઈડી બનાવવા અથવા કોઈ યુઝરનો પાસવર્ડ બદલવા માટે નીચે વિગતો ભરો:</p>
-       <div class="user-form-row">
-          <input type="text" id="targetUserid" placeholder="Enter Staff User ID (e.g. staff1)">
-          <input type="text" id="newPassword" placeholder="Enter New Password (e.g. Pass@999)">
-          <button class="btn btn-primary" id="saveUserBtn">💾 Save / Update User</button>
+    <!-- 🛠️ HIDDEN MODERN POPUP FOR USER MANAGEMENT -->
+    <div class="modal-backdrop" id="userModalBackdrop">
+       <div class="modal-box">
+          <div class="modal-header">
+             <h3 class="modal-title">👥 User & Password Manager</h3>
+             <button class="modal-close" id="closeUserModalBtn">&times;</button>
+          </div>
+          <p style="font-size: 12px; margin: 0 0 16px; color: var(--text-muted); line-height: 1.5;">
+             નવો સ્ટાફ આઈડી બનાવવા માટે નવું નામ લખો. <br><b>મેઈન એડમિનનો પાસવર્ડ બદલવા માટે User ID માં "admin" લખો.</b>
+          </p>
+          <div style="display:flex; flex-direction:column; gap:14px;">
+             <div>
+                <label style="font-size:12px; font-weight:700; color:var(--text-main);">User ID</label>
+                <input type="text" id="targetUserid" placeholder="e.g. admin or staff1" style="margin-top:4px;">
+             </div>
+             <div>
+                <label style="font-size:12px; font-weight:700; color:var(--text-main);">New Password</label>
+                <input type="password" id="newPassword" placeholder="Enter New Password" style="margin-top:4px;">
+             </div>
+             <button class="btn btn-primary" id="saveUserBtn">💾 Save Changes</button>
+             <div id="userActionStatus" style="font-size: 13px; font-weight: 700; display: none; text-align:center; padding: 8px; border-radius: 8px;"></div>
+          </div>
        </div>
-       <div id="userActionStatus" style="font-size: 13px; font-weight: 700; display: none; padding: 4px 0;"></div>
     </div>
 
     <div class="stats-container">
@@ -167,6 +206,28 @@
     
     document.getElementById('welcomeUser').innerText = currentAdminUser;
 
+    // 👤 PROFILE DROPDOWN TOGGLE LOGIC
+    const profileToggleBtn = document.getElementById('profileToggleBtn');
+    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
+    
+    profileToggleBtn.addEventListener('click', (e) => {
+       e.stopPropagation();
+       profileDropdownMenu.style.display = profileDropdownMenu.style.display === 'block' ? 'none' : 'block';
+    });
+    
+    document.addEventListener('click', () => {
+       profileDropdownMenu.style.display = 'none';
+    });
+
+    // 🛠️ MODAL OPEN/CLOSE LOGIC
+    const userModalBackdrop = document.getElementById('userModalBackdrop');
+    document.getElementById('openUserModalBtn').addEventListener('click', () => {
+       userModalBackdrop.style.display = 'flex';
+    });
+    document.getElementById('closeUserModalBtn').addEventListener('click', () => {
+       userModalBackdrop.style.display = 'none';
+    });
+
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
        sessionStorage.removeItem('pharmaAdminToken');
@@ -174,7 +235,7 @@
        window.location.href = 'login.html';
     });
 
-    // 👥 LIVE USER MANAGEMENT LOGIC
+    // LIVE USER MANAGEMENT / PASSWORD CHANGE
     document.getElementById('saveUserBtn').addEventListener('click', () => {
        const targetId = document.getElementById('targetUserid').value.trim();
        const newPass = document.getElementById('newPassword').value.trim();
@@ -183,8 +244,9 @@
 
        if(!targetId || !newPass) {
           statusDiv.style.display = "block";
+          statusDiv.style.background = "#fee2e2";
           statusDiv.style.color = "#991b1b";
-          statusDiv.innerText = "⚠️ કૃપા કરીને User ID અને Password બંને લખો!";
+          statusDiv.innerText = "⚠️ ID અને પાસવર્ડ બંને લખો!";
           return;
        }
 
@@ -205,31 +267,35 @@
        .then(data => {
           statusDiv.style.display = "block";
           if(data.status === 'success') {
+             statusDiv.style.background = "#d1fae5";
              statusDiv.style.color = "#065f46";
              statusDiv.innerText = "✅ " + data.message;
              document.getElementById('targetUserid').value = '';
              document.getElementById('newPassword').value = '';
+             setTimeout(() => { userModalBackdrop.style.display = 'none'; }, 1500);
           } else {
+             statusDiv.style.background = "#fee2e2";
              statusDiv.style.color = "#991b1b";
-             statusDiv.innerText = "❌ ભૂલ આવી: " + data.message;
+             statusDiv.innerText = "❌ ભૂલ: " + data.message;
           }
        })
        .catch(err => {
           statusDiv.style.display = "block";
+          statusDiv.style.background = "#fee2e2";
           statusDiv.style.color = "#991b1b";
-          statusDiv.innerText = "❌ કનેક્શન પ્રોબ્લેમ થયો!";
+          statusDiv.innerText = "❌ સર્વર કનેક્શન ફેલ થયું!";
        })
        .finally(() => {
-          btn.innerText = "💾 Save / Update User";
+          btn.innerText = "💾 Save Changes";
           btn.disabled = false;
-          setTimeout(() => { statusDiv.style.display = "none"; }, 4000);
+          setTimeout(() => { statusDiv.style.display = "none"; }, 3000);
        });
     });
 
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // API FETCH WITH TOKEN
+    // Fetch Orders
     function fetchLiveOrders() {
       cardsContainer.innerHTML = '<div class="loading-status">🔄 Verifying Token & Fetching Data...</div>';
       
@@ -258,7 +324,7 @@
       });
     }
 
-    // SILENT AUTO REFRESH
+    // Silent Auto Refresh
     function fetchOrdersQuietly() {
        fetch(WEB_APP_URL, {
          method: 'POST',
@@ -323,7 +389,6 @@
       }
 
       cardsContainer.innerHTML = '';
-      
       const groupedOrders = {};
       ordersList.forEach(order => {
          if (!groupedOrders[order.orderId]) {
@@ -394,14 +459,13 @@
       document.getElementById('skywayOrdersCount').innerText = skywayCount;
     }
 
-    // SECURE STATUS UPDATE
+    // Status Update Listener
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id');
         const newStatus = e.target.value;
         const selectEl = e.target;
         const parentCard = selectEl.closest('.order-card');
-        
         selectEl.classList.add('status-saving');
         
         fetch(WEB_APP_URL, {
@@ -412,22 +476,18 @@
         .then(res => res.json())
         .then(data => {
           if(data.status === 'unauthorized') {
-              alert("Security Error! Unauthorized Action.");
+              alert("Security Error!");
               document.getElementById('logoutBtn').click();
               return;
           }
-          
           const colors = getStatusColors(newStatus);
           selectEl.style.background = colors.bg;
           selectEl.style.color = colors.text;
-          
           if(parentCard) {
              parentCard.style.border = `2px solid ${colors.border}`;
              parentCard.style.boxShadow = `0 4px 12px ${colors.bg}`;
           }
-          
           allOrders.forEach(o => { if(o.orderId === orderId) o.orderStatus = newStatus; });
-          
           let pCount=0, sCount=0;
           const uniqueIds = new Set();
           allOrders.forEach(o => {
@@ -459,7 +519,6 @@
     });
 
     document.getElementById('fetchDataBtn').addEventListener('click', fetchLiveOrders);
-
     document.addEventListener('DOMContentLoaded', fetchLiveOrders);
   </script>
 </body>
