@@ -131,7 +131,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmU2xKySlRSHcCp-bs7xYFhoLdHOs08-nVxb9yuIz37UbVPOq9hSYHfS3uVEcTbo8/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmQZF6nm_uc_BlwGKizJ0pOg3QTMG5dyuQU7TFh20WTLHkViXAc4Uu4yy-imW1JaD/exec";
 
     // Logout Function
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -334,7 +334,7 @@
       allOrders.forEach(row => {
         const dateStr = row.timestamp ? new Date(row.timestamp).toLocaleString('en-IN') : 'N/A';
         const currentStatus = row.orderStatus || 'Pending';
-        const formattedRow = [`"${dateStr}"`, `"${row.orderId || ''}"`, `"${row.customer || ''}"`, `"${row.mobile || ''}"`, `"${row.product || ''}"`, `"${row.qty || '0'}"`, `"${row.priority || 'Normal'}", "${currentStatus}"`];
+        const formattedRow = [`"${dateStr}"`, `"${row.orderId || ''}"`, `"${row.customer || ''}"`, `"${row.mobile || ''}"`, `"${row.product || ''}"`, `"${row.qty || '0'}"`, `"${row.priority || 'Normal'}"`, `"${currentStatus}"`];
         csvRows.push(formattedRow.join(','));
       });
       const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
