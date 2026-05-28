@@ -28,7 +28,7 @@
 
   <div class="login-card" id="loginView">
     <h2>Secure Login</h2>
-    <p>2-Step Verification Protected.</p>
+    <p>Multi-User Portal Active.</p>
     <div class="input-group">
       <label>User ID</label>
       <input type="text" id="useridInput" placeholder="Enter User ID">
@@ -37,23 +37,12 @@
       <label>Password</label>
       <input type="password" id="passwordInput" placeholder="••••••••">
     </div>
-    <button class="btn" id="loginBtn">Continue to OTP</button>
+    <button class="btn" id="loginBtn">Login securely</button>
     <a class="forgot-link" id="showForgotBtn">Forgot Password?</a>
     <div id="loginMsg" class="message"></div>
   </div>
 
-  <div class="login-card" id="otpView" style="display: none;">
-    <h2>Enter OTP</h2>
-    <p>We've sent a 4-digit OTP to your email.</p>
-    <div class="input-group">
-      <label>Security Code (OTP)</label>
-      <input type="text" id="otpInput" placeholder="1 2 3 4" maxlength="4" style="font-size: 20px; font-weight: 800; letter-spacing: 8px;">
-    </div>
-    <button class="btn" id="verifyOtpBtn">Verify & Login</button>
-    <a class="forgot-link" id="backToLoginBtn">Cancel</a>
-    <div id="otpMsg" class="message"></div>
-  </div>
-
+  <!-- FORGOT PASSWORD -->
   <div class="login-card" id="forgotView" style="display: none;">
     <h2>Reset Password</h2>
     <p>Receive password on recovery email.</p>
@@ -67,16 +56,13 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzBTnnybXVa6fwkmmslsnBVgCcxegOUp2ZyCkHXDrRQI-IWXVX9t4pw9YyFdgtezNph/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwSPOJkI7OD76N17vZboLVXtrE0JHmJi19EdHauZtsmfN5UsVkIDkfk2qhu6g0ycFY4/exec";
     
     const loginView = document.getElementById('loginView');
-    const otpView = document.getElementById('otpView');
     const forgotView = document.getElementById('forgotView');
     
-    // View Switchers
     document.getElementById('showForgotBtn').addEventListener('click', () => { loginView.style.display='none'; forgotView.style.display='block'; });
     document.getElementById('showLoginBtn').addEventListener('click', () => { forgotView.style.display='none'; loginView.style.display='block'; });
-    document.getElementById('backToLoginBtn').addEventListener('click', () => { otpView.style.display='none'; loginView.style.display='block'; });
 
     function showMsg(id, text, className) {
       const el = document.getElementById(id);
@@ -84,7 +70,6 @@
       el.className = 'message ' + className;
     }
 
-    // LOGIN STEP 1
     document.getElementById('loginBtn').addEventListener('click', () => {
       const userid = document.getElementById('useridInput').value.trim();
       const password = document.getElementById('passwordInput').value.trim();
@@ -92,58 +77,29 @@
       
       if(!userid || !password) return showMsg('loginMsg', 'Enter User ID and Password!', 'msg-error');
 
-      btn.innerText = "Checking...";
+      btn.innerText = "Authenticating...";
       btn.disabled = true;
       
       fetch(WEB_APP_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'login_step1', userid: userid, password: password })
+        body: JSON.stringify({ action: 'login', userid: userid, password: password })
       })
       .then(res => res.json())
       .then(data => {
-        if(data.status === 'otp_sent') {
-          loginView.style.display = 'none';
-          otpView.style.display = 'block';
-          showMsg('otpMsg', 'OTP sent to your email.', 'msg-success');
+        if(data.status === 'success') {
+          showMsg('loginMsg', 'Login Successful!', 'msg-success');
+          sessionStorage.setItem('pharmaAdminToken', data.token);
+          sessionStorage.setItem('pharmaCurrentUsername', data.username);
+          setTimeout(() => { window.location.href = 'admin.html'; }, 800);
         } else {
           showMsg('loginMsg', data.message || 'Invalid details!', 'msg-error');
         }
       })
       .catch(err => showMsg('loginMsg', 'Internet error. Try again.', 'msg-error'))
-      .finally(() => { btn.innerText = "Continue to OTP"; btn.disabled = false; });
+      .finally(() => { btn.innerText = "Login securely"; btn.disabled = false; });
     });
 
-    // LOGIN STEP 2 (OTP)
-    document.getElementById('verifyOtpBtn').addEventListener('click', () => {
-      const otp = document.getElementById('otpInput').value.trim();
-      const btn = document.getElementById('verifyOtpBtn');
-      
-      if(!otp) return showMsg('otpMsg', 'Please enter OTP!', 'msg-error');
-
-      btn.innerText = "Verifying...";
-      btn.disabled = true;
-
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'login_step2', otp: otp })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === 'success') {
-          showMsg('otpMsg', 'Login Verified!', 'msg-success');
-          sessionStorage.setItem('pharmaAdminToken', data.token);
-          setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
-        } else {
-          showMsg('otpMsg', data.message || 'Invalid OTP!', 'msg-error');
-        }
-      })
-      .catch(err => showMsg('otpMsg', 'Internet error.', 'msg-error'))
-      .finally(() => { btn.innerText = "Verify & Login"; btn.disabled = false; });
-    });
-
-    // FORGOT PASSWORD
     document.getElementById('sendEmailBtn').addEventListener('click', () => {
       const userid = document.getElementById('forgotUseridInput').value.trim();
       const btn = document.getElementById('sendEmailBtn');
