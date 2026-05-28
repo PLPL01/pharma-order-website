@@ -81,10 +81,9 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
-      border-top: 6px solid var(--primary);
       transition: transform 0.2s;
     }
-    .order-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+    .order-card:hover { transform: translateY(-3px); }
 
     .order-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
     .order-id { font-weight: 800; color: var(--primary); font-size: 18px; margin-bottom: 4px; }
@@ -197,7 +196,6 @@
   </div>
 
   <script>
-    // TAMARI SCRIPT LINK ALREADY NAKHELI CHHE
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxWmU2xKySlRSHcCp-bs7xYFhoLdHOs08-nVxb9yuIz37UbVPOq9hSYHfS3uVEcTbo8/exec";
 
     const cardsContainer = document.getElementById('cardsContainer');
@@ -264,7 +262,6 @@
 
       cardsContainer.innerHTML = '';
       
-      // 🌟 SMART GROUPING LOGIC (1 Order ID = 1 Card) 🌟
       const groupedOrders = {};
       ordersList.forEach(order => {
          if (!groupedOrders[order.orderId]) {
@@ -287,16 +284,16 @@
          if(currentStatus === 'Pending') pendingCount++;
          if(currentStatus === 'Skyway') skywayCount++;
 
-         // Generate Items List inside the Card
-         const itemsHtml = items.map(item => `
+         // Generate Items List inside the Card with numbering
+         const itemsHtml = items.map((item, index) => `
             <div class="item-row">
-               <span class="item-name">${item.product}</span>
+               <span class="item-name">${index + 1}. ${item.product}</span>
                <span class="item-qty">Qty: ${item.qty}</span>
             </div>
          `).join('');
 
          const cardHtml = `
-            <div class="order-card" style="border-top-color: ${colors.border}">
+            <div class="order-card" style="border: 2px solid ${colors.border}; box-shadow: 0 4px 12px ${colors.bg};">
                <div class="order-header">
                   <div>
                      <div class="order-id">${orderId}</div>
@@ -351,11 +348,14 @@
           const colors = getStatusColors(newStatus);
           selectEl.style.background = colors.bg;
           selectEl.style.color = colors.text;
-          if(parentCard) parentCard.style.borderTopColor = colors.border;
+          
+          if(parentCard) {
+             parentCard.style.border = `2px solid ${colors.border}`;
+             parentCard.style.boxShadow = `0 4px 12px ${colors.bg}`;
+          }
           
           allOrders.forEach(o => { if(o.orderId === orderId) o.orderStatus = newStatus; });
           
-          // Recalculate top stats
           let pCount=0, sCount=0;
           const uniqueIds = new Set();
           allOrders.forEach(o => {
