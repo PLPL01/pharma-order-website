@@ -51,7 +51,6 @@
     .quick-btn.active-pending { background: #fef3c7; color: #92400e; border-color: #f59e0b; box-shadow: 0 0 8px rgba(245, 158, 11, 0.2); }
     .quick-btn.active-notavail { background: #fee2e2; color: #991b1b; border-color: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.2); }
 
-    /* Modals CSS */
     .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; }
     .modal-box { background: #fff; border-radius: 16px; width: 100%; max-width: 400px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); position: relative; box-sizing: border-box; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -200,14 +199,13 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxk4cGbuSZwA9SHQeKBysvBPr_gtfHegplOZzn0Lri_K5WvcAQnhViyBItHMJRts0UF/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrnWtXr83C9uTVrGHvqgKlGaRPOqSdFMRlGizbprwQ1bWH2g5eLPu5pOUrfQJvI_03/exec";
     
     document.getElementById('welcomeUser').innerText = currentAdminUser;
 
     let currentTab = 'today'; 
     let currentStatusQuickFilter = ''; 
 
-    // Profile menu toggle
     const profileToggleBtn = document.getElementById('profileToggleBtn');
     const profileDropdownMenu = document.getElementById('profileDropdownMenu');
     profileToggleBtn.addEventListener('click', (e) => {
@@ -216,20 +214,16 @@
     });
     document.addEventListener('click', () => { profileDropdownMenu.style.display = 'none'; });
 
-    // Modals visibility logic
     const userModalBackdrop = document.getElementById('userModalBackdrop');
-    
     document.getElementById('openUserModalBtn').addEventListener('click', () => { userModalBackdrop.style.display = 'flex'; });
     document.getElementById('closeUserModalBtn').addEventListener('click', () => { userModalBackdrop.style.display = 'none'; });
 
-    // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
        sessionStorage.removeItem('pharmaAdminToken');
        sessionStorage.removeItem('pharmaCurrentUsername');
        window.location.href = 'login.html';
     });
 
-    // Save/Update User Logic
     document.getElementById('saveUserBtn').addEventListener('click', () => {
        const targetId = document.getElementById('targetUserid').value.trim();
        const newPass = document.getElementById('newPassword').value.trim();
@@ -264,7 +258,7 @@
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // Fetch Orders Main
+    // Fetch Orders Main (એરર પકડવા વાળા એડવાન્સ લાલ બોક્સ સાથે)
     function fetchLiveOrders() {
       cardsContainer.innerHTML = '<div class="loading-status">🔄 Verifying Token & Fetching Data...</div>';
       fetch(WEB_APP_URL, {
@@ -272,25 +266,33 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ action: 'fetchOrders', token: myToken })
       })
-      .then(res => res.json())
+      .then(res => {
+         if (!res.ok) throw new Error("HTTP Status Error: " + res.status);
+         return res.json();
+      })
       .then(data => {
         if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
         
-        // Handle empty data perfectly so it doesn't crash
         if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) {
-          allOrders = [];
-          applyFilters();
-          return;
+          allOrders = []; applyFilters(); return;
         }
         
         allOrders = data.data; 
         allOrders.reverse();
         applyFilters();
       })
-      .catch(err => { cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">⚠️ Fetch Failed. કૃપા કરીને પેજ રિફ્રેશ કરો.</div>'; });
+      .catch(err => {
+        // જો કોઈ પણ પ્રોબ્લેમ હશે તો સીધો સ્ક્રીન પર છપાઈ જશે 
+        cardsContainer.innerHTML = `
+        <div style="background:#fee2e2; border: 2px solid #ef4444; padding:30px; border-radius:12px; text-align:center; max-width: 600px; margin: 0 auto; grid-column: 1 / -1;">
+          <h3 style="color:#991b1b; margin-top:0;">⚠️ Fetch Failed!</h3>
+          <p style="color:#1e293b; font-weight:600;">સિસ્ટમમાં આ એરર આવી રહી છે:</p>
+          <p style="font-family:monospace; color:#ef4444; background:#fff; padding:10px; border-radius:8px;">${err.message || err}</p>
+          <p style="color:#64748b; font-size:13px; margin-bottom:0;">કૃપા કરીને આ લાલ બોક્સનો ફોટો મને મોકલો.</p>
+        </div>`;
+      });
     }
 
-    // Quiet Refresh
     function fetchOrdersQuietly() {
        fetch(WEB_APP_URL, {
          method: 'POST',
@@ -307,10 +309,8 @@
     }
     setInterval(fetchOrdersQuietly, 30000); 
 
-    // FILTER MASTER LOGIC (BUG FIXED)
     function applyFilters() {
       const now = new Date();
-      // Local IST Date format properly matched
       const todayIso = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
       
       const todaySearchQuery = document.getElementById('todaySearchInput').value.toLowerCase().trim();
@@ -320,8 +320,6 @@
 
       let filtered = allOrders.filter(o => {
         let rowDateIso = '';
-        
-        // 100% Safe Local Time Extraction
         if (o.timestamp) {
            try {
                let d = new Date(o.timestamp);
@@ -434,7 +432,6 @@
       document.getElementById('skywayOrdersCount').innerText = skywayCount;
     }
 
-    // Status Dropdown Change
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id');
@@ -462,7 +459,6 @@
       }
     });
 
-    // TABS CLICK LOGIC
     const tabToday = document.getElementById('tabToday');
     const tabHistory = document.getElementById('tabHistory');
     const controlsPanel = document.getElementById('controlsPanel');
@@ -482,7 +478,6 @@
        applyFilters();
     });
 
-    // QUICK FILTERS LOGIC
     const qAll = document.getElementById('quickAllBtn');
     const qPending = document.getElementById('quickPendingBtn');
     const qNotAvail = document.getElementById('quickNotAvailBtn');
@@ -493,7 +488,6 @@
     qPending.addEventListener('click', () => { currentStatusQuickFilter = 'pending'; resetQuickBtnStyles(); qPending.classList.add('active-pending'); applyFilters(); });
     qNotAvail.addEventListener('click', () => { currentStatusQuickFilter = 'not available'; resetQuickBtnStyles(); qNotAvail.classList.add('active-notavail'); applyFilters(); });
 
-    // Listeners
     document.getElementById('todaySearchInput').addEventListener('input', applyFilters);
     document.getElementById('globalSearchInput').addEventListener('input', applyFilters);
     document.getElementById('dateFilterInput').addEventListener('change', applyFilters);
