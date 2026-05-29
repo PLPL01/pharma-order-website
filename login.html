@@ -6,19 +6,16 @@
   <title>Admin Login - Secure Pharma</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
-    // Theme sync with Admin panel
     const savedTheme = localStorage.getItem('pharmaTheme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
   <style>
-    /* 🌞 LIGHT MODE */
     :root {
       --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
       --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
       --shadow: 0 10px 25px rgba(15, 118, 110, 0.1); --input-bg: #ffffff;
     }
     
-    /* 🌙 PREMIUM OLED DARK MODE */
     [data-theme="dark"] {
       --bg: #000000; --surface: #0f0f0f; --primary: #14b8a6; --primary-hover: #0d9488;
       --text-main: #f8fafc; --text-muted: #94a3b8; --border: #27272a;
@@ -27,7 +24,6 @@
 
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; transition: background 0.3s ease, color 0.3s ease; }
     
-    /* Theme Toggle Button */
     .theme-btn { position: absolute; top: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; box-shadow: var(--shadow); transition: 0.2s; color: var(--text-main); }
     .theme-btn:hover { border-color: var(--primary); }
 
@@ -56,7 +52,6 @@
 </head>
 <body>
 
-  <!-- Theme Toggle Button -->
   <button class="theme-btn" id="themeToggleBtn" title="Toggle Theme"></button>
 
   <div class="login-card">
@@ -75,7 +70,6 @@
   </div>
 
   <script>
-    // Theme Manager
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
     
@@ -87,7 +81,7 @@
       themeBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     });
 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4u4mNA85vAfEJLPmY2ebz0SX2aKzlt9gGlNeXkK6Jl0RoeQD0OtHFv0XZ0kyeTCY_/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw1w85cDhuWfGmgV_RyDivdAtoiYzpSXcTpMVUU162FGzqc7cnbdNNqc-ycGUReUSVZ/exec";
 
     document.getElementById('loginBtn').addEventListener('click', () => {
       const userid = document.getElementById('useridInput').value.trim();

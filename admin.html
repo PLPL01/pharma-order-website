@@ -12,12 +12,10 @@
     const currentAdminUser = sessionStorage.getItem('pharmaCurrentUsername') || 'User';
     const currentUserRole = sessionStorage.getItem('pharmaUserRole') || 'Staff'; 
     if (!myToken) { window.location.href = 'login.html'; }
-    // Load theme before page renders to prevent flickering
     const savedTheme = localStorage.getItem('pharmaTheme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
   <style>
-    /* 🌞 LIGHT MODE (Default) */
     :root {
       --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
       --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --radius: 16px;
@@ -26,11 +24,10 @@
       --card-bg: #fff; --btn-ghost-bg: #fff; --btn-action-bg: #e2e8f0; --item-bg: #f8fafc;
     }
     
-    /* 🌙 PREMIUM OLED DARK MODE */
     [data-theme="dark"] {
-      --bg: #000000; /* True OLED Black for luxurious feel */
-      --surface: #0f0f0f; /* Deep dark grey for cards */
-      --primary: #14b8a6; /* Bright teal for contrast */
+      --bg: #000000; 
+      --surface: #0f0f0f; 
+      --primary: #14b8a6; 
       --primary-hover: #0d9488;
       --text-main: #f8fafc; --text-muted: #94a3b8; --border: #27272a;
       --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -86,7 +83,7 @@
     input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2); }
     
     .btn { padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: inherit; }
-    .btn-primary { background: var(--primary); color: #fff; width: 100%; justify-content: center; }
+    .btn-primary { background: var(--primary); color: #fff; justify-content: center; }
     .btn-primary:hover { background: var(--primary-hover); }
     .btn-ghost { background: var(--btn-ghost-bg); color: var(--text-main); border: 1px solid var(--border); }
     .btn-ghost:hover { border-color: var(--primary); }
@@ -134,6 +131,9 @@
     .history-table th, .history-table td { padding: 10px; border-bottom: 1px solid var(--border); text-align: left; color: var(--text-main); }
     .history-table th { background: var(--item-bg); font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
 
+    .msg-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; }
+    .msg-error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; }
+
     @media (max-width: 768px) {
       body { padding: 10px; }
       .card { padding: 15px; border-radius: 12px; }
@@ -149,6 +149,7 @@
       .quick-btn { flex: 1 1 calc(50% - 10px); padding: 8px 10px; font-size: 12px; }
       .order-footer { flex-direction: column; align-items: stretch; }
       .status-dropdown { width: 100%; text-align: center; }
+      .user-mng-inputs { flex-direction: column; }
     }
   </style>
 </head>
@@ -162,7 +163,6 @@
       </div>
       
       <div class="top-controls">
-        <!-- 🌙 Theme Toggle Button -->
         <button class="theme-btn" id="themeToggleBtn" title="Toggle OLED Dark Mode">☀️</button>
         
         <div class="profile-container">
@@ -180,13 +180,11 @@
       </div>
     </div>
 
-    <!-- 🗂️ TABS -->
     <div class="tabs-container">
        <button class="tab-btn active" id="tabToday">📦 Today's Orders</button>
        <button class="tab-btn" id="tabHistory">📜 Order History</button>
     </div>
 
-    <!-- ⚡ QUICK SHORTCUT FILTERS -->
     <div class="quick-filters-row">
        <span style="font-size:13px; font-weight:800; color:var(--text-muted); text-transform:uppercase; width: 100%; margin-bottom: 4px;">🔍 Quick Filter:</span>
        <button class="quick-btn active-all" id="quickAllBtn">📁 All Orders</button>
@@ -194,7 +192,6 @@
        <button class="quick-btn" id="quickNotAvailBtn">🔴 Not Available</button>
     </div>
 
-    <!-- 📊 STATS CARDS -->
     <div class="stats-container">
       <div class="stat-card">
         <span class="stat-label">Total Orders</span>
@@ -210,7 +207,6 @@
       </div>
     </div>
 
-    <!-- Filters Panel -->
     <div class="controls-panel" id="controlsPanel" style="display: none;">
       <div class="filters-row">
         <div class="input-box"><input type="text" id="globalSearchInput" placeholder="🔍 Search Order or Mobile..."></div>
@@ -234,23 +230,37 @@
        <input type="text" id="todaySearchInput" placeholder="🔍 Search Today's Orders...">
     </div>
 
-    <div id="cardsContainer" class="order-cards-container">
-       <!-- ⏳ Skeletons will load here via JS -->
-    </div>
+    <div id="cardsContainer" class="order-cards-container"></div>
   </div>
 
-  <!-- Modals remain unchanged in HTML structure, CSS auto applies theme -->
   <div class="modal-backdrop" id="userModalBackdrop">
-     <div class="modal-box">
+     <div class="modal-box" style="max-width: 550px;">
         <div class="modal-header">
-           <h3 class="modal-title">👥 Manage Staff</h3>
+           <h3 class="modal-title">👥 Smart User Management</h3>
            <button class="modal-close" onclick="document.getElementById('userModalBackdrop').style.display='none'">&times;</button>
         </div>
-        <div style="display:flex; flex-direction:column; gap:14px;">
-           <input type="text" id="targetUserid" placeholder="User ID">
-           <input type="password" id="newPassword" placeholder="New Password">
-           <button class="btn btn-primary" id="saveUserBtn">💾 Save Changes</button>
-           <div id="userActionStatus" style="font-size: 13px; font-weight: 700; display: none; text-align:center; padding: 8px; border-radius: 8px;"></div>
+        <div class="modal-content-scroll">
+           
+           <div style="background: var(--item-bg); padding: 16px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border);">
+               <h4 style="margin-top:0; margin-bottom: 12px; font-size:14px; color:var(--text-main);">➕ Add New / ✏️ Update Password</h4>
+               <div class="user-mng-inputs" style="display:flex; gap:10px;">
+                   <input type="text" id="targetUserid" placeholder="Staff ID" style="flex:1;">
+                   <input type="password" id="newPassword" placeholder="New Password" style="flex:1;">
+                   <button class="btn btn-primary" id="saveUserBtn" style="width:auto; padding: 10px 20px;">Save</button>
+               </div>
+               <div id="userActionStatus" style="font-size: 13px; font-weight: 700; display: none; margin-top: 12px; padding: 10px; border-radius: 8px; text-align:center;"></div>
+           </div>
+
+           <h4 style="margin-top:0; margin-bottom: 12px; font-size:14px; color:var(--text-main);">👨‍💻 Active Staff</h4>
+           <div style="border: 1px solid var(--border); border-radius: 12px; overflow: hidden;">
+             <table class="history-table" style="margin-top: 0;">
+               <thead><tr><th>User ID</th><th>Role</th><th>Action</th></tr></thead>
+               <tbody id="usersTableBody">
+                 <tr><td colspan="3" style="text-align:center;">Loading users...</td></tr>
+               </tbody>
+             </table>
+           </div>
+           
         </div>
      </div>
   </div>
@@ -285,9 +295,8 @@
 </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4u4mNA85vAfEJLPmY2ebz0SX2aKzlt9gGlNeXkK6Jl0RoeQD0OtHFv0XZ0kyeTCY_/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw1w85cDhuWfGmgV_RyDivdAtoiYzpSXcTpMVUU162FGzqc7cnbdNNqc-ycGUReUSVZ/exec";
     
-    // Theme Manager
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
     themeBtn.addEventListener('click', () => {
@@ -302,60 +311,75 @@
     const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
     if(!isAdmin) { document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none'); }
 
-    let currentTab = 'today'; 
-    let currentStatusQuickFilter = ''; 
+    let currentTab = 'today'; let currentStatusQuickFilter = ''; 
 
     document.getElementById('profileToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('profileDropdownMenu').style.display = 'block'; });
     document.addEventListener('click', () => { document.getElementById('profileDropdownMenu').style.display = 'none'; });
-    document.getElementById('openUserModalBtn').addEventListener('click', () => { document.getElementById('userModalBackdrop').style.display = 'flex'; });
-    document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.clear(); window.location.href = 'login.html'; });
+    
+    document.getElementById('openUserModalBtn').addEventListener('click', () => { 
+        document.getElementById('userModalBackdrop').style.display = 'flex'; 
+        fetchUsersList();
+    });
+
+    function fetchUsersList() {
+        const tbody = document.getElementById('usersTableBody');
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">🔄 Fetching staff...</td></tr>';
+        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchUsers', token: myToken }) })
+        .then(res => res.json()).then(data => {
+            if(data.status === 'success') {
+                tbody.innerHTML = '';
+                data.data.forEach(u => {
+                    const isMainAdmin = u.userid.toLowerCase() === 'admin';
+                    const deleteBtn = isMainAdmin ? '<span style="color:var(--text-muted); font-size:12px; font-weight:700;">🔒 Master</span>' : `<button class="btn-action" style="background:rgba(239, 68, 68, 0.15); color:#ef4444; border:1px solid #ef4444; padding: 6px 12px; font-size: 12px;" onclick="deleteStaff('${u.userid}')">🗑️ Delete</button>`;
+                    tbody.innerHTML += `<tr><td style="font-weight:700; color:var(--text-main);">${u.userid}</td><td><span class="badge badge-normal" style="font-size:11px;">${u.role}</span></td><td>${deleteBtn}</td></tr>`;
+                });
+            } else { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load users.</td></tr>'; }
+        });
+    }
 
     document.getElementById('saveUserBtn').addEventListener('click', () => {
        const targetId = document.getElementById('targetUserid').value.trim();
        const newPass = document.getElementById('newPassword').value.trim();
+       if(!targetId || !newPass) { alert("Please enter Staff ID and Password!"); return; }
+       
+       const btn = document.getElementById('saveUserBtn');
+       btn.innerText = "⏳..."; btn.disabled = true;
        const statusDiv = document.getElementById('userActionStatus');
+       
        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'manageUser', token: myToken, targetUserid: targetId, newPassword: newPass }) })
        .then(res => res.json()).then(data => {
-          statusDiv.style.display = "block"; statusDiv.innerText = data.message;
-          setTimeout(() => { document.getElementById('userModalBackdrop').style.display = 'none'; }, 1500);
-       });
+          statusDiv.style.display = "block"; statusDiv.className = data.status === 'success' ? 'msg-success' : 'msg-error';
+          statusDiv.innerText = data.message; document.getElementById('targetUserid').value = ''; document.getElementById('newPassword').value = '';
+          fetchUsersList(); setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
+       }).finally(() => { btn.innerText = "Save"; btn.disabled = false; });
     });
+
+    window.deleteStaff = function(userid) {
+        if(!confirm(`Are you sure you want to permanently delete staff ID: "${userid}"?`)) return;
+        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteUser', token: myToken, targetUserid: userid }) })
+        .then(res => res.json()).then(data => { if(data.status === 'success') { alert(data.message); fetchUsersList(); } else { alert("Error: " + data.message); } });
+    }
+
+    document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.clear(); window.location.href = 'login.html'; });
 
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // ⏳ Skeleton Loading Function
     function showSkeletonLoaders() {
       let skeletonHtml = '';
       for(let i=0; i<6; i++) {
-        skeletonHtml += `
-          <div class="skeleton-card">
-            <div style="display:flex; justify-content:space-between;">
-              <div class="skeleton-line" style="height:22px; width:40%;"></div>
-              <div class="skeleton-line" style="height:22px; width:20%; border-radius:20px;"></div>
-            </div>
-            <div class="skeleton-line" style="height:16px; width:60%;"></div>
-            <div class="skeleton-line" style="height:80px; width:100%; margin-top:10px;"></div>
-            <div style="display:flex; justify-content:space-between; margin-top:auto; padding-top:16px; border-top:1px solid var(--border);">
-              <div class="skeleton-line" style="height:35px; width:120px; border-radius:10px;"></div>
-              <div class="skeleton-line" style="height:25px; width:60px;"></div>
-            </div>
-          </div>`;
+        skeletonHtml += `<div class="skeleton-card"><div style="display:flex; justify-content:space-between;"><div class="skeleton-line" style="height:22px; width:40%;"></div><div class="skeleton-line" style="height:22px; width:20%; border-radius:20px;"></div></div><div class="skeleton-line" style="height:16px; width:60%;"></div><div class="skeleton-line" style="height:80px; width:100%; margin-top:10px;"></div><div style="display:flex; justify-content:space-between; margin-top:auto; padding-top:16px; border-top:1px solid var(--border);"><div class="skeleton-line" style="height:35px; width:120px; border-radius:10px;"></div><div class="skeleton-line" style="height:25px; width:60px;"></div></div></div>`;
       }
       cardsContainer.innerHTML = skeletonHtml;
     }
 
     function fetchLiveOrders() {
-      showSkeletonLoaders(); // Trigger skeleton animation before fetching
+      showSkeletonLoaders();
       fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
-      .then(res => res.json())
-      .then(data => {
+      .then(res => res.json()).then(data => {
         if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
-        allOrders = data.data; allOrders.reverse();
-        applyFilters();
-      }).catch(err => {
-        cardsContainer.innerHTML = `<div class="loading-status" style="color:#ef4444;">⚠️ Network Error. Cannot fetch data.</div>`;
-      });
+        allOrders = data.data; allOrders.reverse(); applyFilters();
+      }).catch(err => { cardsContainer.innerHTML = `<div class="loading-status" style="color:#ef4444;">⚠️ Network Error. Cannot fetch data.</div>`; });
     }
 
     function applyFilters() {
@@ -392,9 +416,7 @@
 
     function renderCards(ordersList) {
       cardsContainer.innerHTML = '';
-      if(ordersList.length === 0) {
-        cardsContainer.innerHTML = '<div class="loading-status">📭 No matching orders found.</div>'; return;
-      }
+      if(ordersList.length === 0) { cardsContainer.innerHTML = '<div class="loading-status">📭 No matching orders found.</div>'; return; }
       const groupedOrders = {};
       ordersList.forEach(order => { if (!groupedOrders[order.orderId]) groupedOrders[order.orderId] = []; groupedOrders[order.orderId].push(order); });
 
@@ -417,18 +439,8 @@
 
          cardsContainer.innerHTML += `
             <div class="order-card" style="border: 2px solid ${colors.border}; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-               <div class="order-header">
-                  <div style="flex:1;">
-                     <div class="order-id">${orderId}</div>
-                     <div class="order-time">${new Date(firstItem.timestamp).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'})}</div>
-                     ${processedBadge}
-                  </div>
-                  <span class="${firstItem.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal'}">${firstItem.priority || 'Normal'}</span>
-               </div>
-               <div>
-                  <div class="customer-info">${firstItem.customer} ${historyBtn}</div>
-                  <div class="customer-mobile">📱 ${firstItem.mobile}</div>
-               </div>
+               <div class="order-header"><div style="flex:1;"><div class="order-id">${orderId}</div><div class="order-time">${new Date(firstItem.timestamp).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'})}</div>${processedBadge}</div><span class="${firstItem.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal'}">${firstItem.priority || 'Normal'}</span></div>
+               <div><div class="customer-info">${firstItem.customer} ${historyBtn}</div><div class="customer-mobile">📱 ${firstItem.mobile}</div></div>
                ${fileBadge ? `<div style="margin-top:-5px;">${fileBadge}</div>` : ''}
                <div class="items-box"><div class="items-list-scroll">${itemsHtml}</div></div>
                <div class="order-footer">
@@ -454,17 +466,14 @@
       }
     });
 
-    // History Search
     window.showCustomerHistory = function(mobile, name) {
        document.getElementById('historyCustomerDetails').innerText = `Customer: ${name} (${mobile})`;
-       const tbody = document.getElementById('historyTableBody');
-       tbody.innerHTML = '';
+       const tbody = document.getElementById('historyTableBody'); tbody.innerHTML = '';
        const cleanMobile = String(mobile).replace(/\D/g, '').slice(-10);
        const customerOrders = allOrders.filter(o => { if(!o.mobile) return false; return String(o.mobile).replace(/\D/g, '').slice(-10) === cleanMobile; });
 
-       if(customerOrders.length === 0) {
-          tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No past orders found.</td></tr>`;
-       } else {
+       if(customerOrders.length === 0) { tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No past orders found.</td></tr>`; } 
+       else {
           customerOrders.forEach(o => {
              const dateStr = o.timestamp ? new Date(o.timestamp).toLocaleDateString('en-IN') : 'N/A';
              let statusColor = o.orderStatus === 'Skyway' ? '#10b981' : (o.orderStatus === 'Not available' ? '#ef4444' : '#f59e0b');
@@ -485,19 +494,13 @@
     if(isAdmin) {
        document.getElementById('exportExcelBtn').addEventListener('click', () => {
           let csvContent = "data:text/csv;charset=utf-8,Date,Order ID,Customer Name,Mobile,Product,Qty,Priority,Status,Processed By\n";
-          allOrders.forEach(o => {
-             let d = o.timestamp ? new Date(o.timestamp).toLocaleString('en-IN') : '';
-             let row = `"${d}","${o.orderId}","${o.customer}","${o.mobile}","${o.product}","${o.qty}","${o.priority}","${o.orderStatus}","${o.processedBy}"`;
-             csvContent += row + "\n";
-          });
-          var encodedUri = encodeURI(csvContent);
-          var link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", `Pharma_Orders_${new Date().toLocaleDateString('en-IN')}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
+          allOrders.forEach(o => { let d = o.timestamp ? new Date(o.timestamp).toLocaleString('en-IN') : ''; csvContent += `"${d}","${o.orderId}","${o.customer}","${o.mobile}","${o.product}","${o.qty}","${o.priority}","${o.orderStatus}","${o.processedBy}"\n`; });
+          var link = document.createElement("a"); link.setAttribute("href", encodeURI(csvContent)); link.setAttribute("download", `Pharma_Orders_${new Date().toLocaleDateString('en-IN')}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
        });
     }
 
     document.getElementById('tabToday').addEventListener('click', () => { currentTab = 'today'; document.getElementById('tabToday').classList.add('active'); document.getElementById('tabHistory').classList.remove('active'); document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('todaySearchBox').style.display = 'block'; applyFilters(); });
     document.getElementById('tabHistory').addEventListener('click', () => { currentTab = 'history'; document.getElementById('tabHistory').classList.add('active'); document.getElementById('tabToday').classList.remove('active'); document.getElementById('controlsPanel').style.display = 'block'; document.getElementById('todaySearchBox').style.display = 'none'; applyFilters(); });
-    
     document.getElementById('quickAllBtn').addEventListener('click', () => { currentStatusQuickFilter = ''; applyFilters(); });
     document.getElementById('quickPendingBtn').addEventListener('click', () => { currentStatusQuickFilter = 'pending'; applyFilters(); });
     document.getElementById('quickNotAvailBtn').addEventListener('click', () => { currentStatusQuickFilter = 'not available'; applyFilters(); });
