@@ -123,7 +123,6 @@
         </button>
         <div class="profile-dropdown" id="profileDropdownMenu">
           <button class="dropdown-item" id="openUserModalBtn">🔑 Manage Users & Pass</button>
-          <button class="dropdown-item" id="openTabsModalBtn">⚙️ Rename Dashboard Tabs</button>
           <hr style="border:0; border-top:1px solid var(--border); margin:4px 0;">
           <button class="dropdown-item logout-item" id="logoutBtn">🚪 Logout Securely</button>
         </div>
@@ -169,31 +168,6 @@
        </div>
     </div>
 
-    <!-- ⚙️ Modal 2: Dashboard Tabs Rename Manager -->
-    <div class="modal-backdrop" id="tabsModalBackdrop">
-       <div class="modal-box">
-          <div class="modal-header">
-             <h3 class="modal-title">⚙️ Rename Dashboard Tabs</h3>
-             <button class="modal-close" id="closeTabsModalBtn">&times;</button>
-          </div>
-          <p style="font-size: 12px; margin: 0 0 16px; color: var(--text-muted);">
-             Change the display labels for your dashboard tabs instantly without code:
-          </p>
-          <div style="display:flex; flex-direction:column; gap:14px;">
-             <div>
-                <label style="font-size:12px; font-weight:700; color:var(--text-main);">Today's Tab Label</label>
-                <input type="text" id="inputTabToday" placeholder="e.g. Today's Orders" style="margin-top:4px;">
-             </div>
-             <div>
-                <label style="font-size:12px; font-weight:700; color:var(--text-main);">History Tab Label</label>
-                <input type="text" id="inputTabHistory" placeholder="e.g. Order History" style="margin-top:4px;">
-             </div>
-             <button class="btn btn-primary" id="saveTabsBtn">💾 Update Tab Names</button>
-             <div id="tabsActionStatus" style="font-size: 13px; font-weight: 700; display: none; text-align:center; padding: 8px; border-radius: 8px;"></div>
-          </div>
-       </div>
-    </div>
-
     <!-- Filters Panel -->
     <div class="controls-panel" id="controlsPanel" style="display: none;">
       <div class="filters-row">
@@ -226,7 +200,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzla4z5ZYvtsWtRAMZUX9PWAPinAbbmOcXPXA-QKiM2mkpy8ui2is4w1pCwyl5SlbLM/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxk4cGbuSZwA9SHQeKBysvBPr_gtfHegplOZzn0Lri_K5WvcAQnhViyBItHMJRts0UF/exec";
     
     document.getElementById('welcomeUser').innerText = currentAdminUser;
 
@@ -244,13 +218,9 @@
 
     // Modals visibility logic
     const userModalBackdrop = document.getElementById('userModalBackdrop');
-    const tabsModalBackdrop = document.getElementById('tabsModalBackdrop');
     
     document.getElementById('openUserModalBtn').addEventListener('click', () => { userModalBackdrop.style.display = 'flex'; });
     document.getElementById('closeUserModalBtn').addEventListener('click', () => { userModalBackdrop.style.display = 'none'; });
-    
-    document.getElementById('openTabsModalBtn').addEventListener('click', () => { tabsModalBackdrop.style.display = 'flex'; });
-    document.getElementById('closeTabsModalBtn').addEventListener('click', () => { tabsModalBackdrop.style.display = 'none'; });
 
     // Logout
     document.getElementById('logoutBtn').addEventListener('click', () => {
@@ -291,39 +261,6 @@
        .finally(() => { btn.innerText = "💾 Save Changes"; btn.disabled = false; setTimeout(() => { statusDiv.style.display = "none"; }, 3000); });
     });
 
-    // SAVE TAB NAMES DYNAMICALLY LOGIC
-    document.getElementById('saveTabsBtn').addEventListener('click', () => {
-       const tabTodayVal = document.getElementById('inputTabToday').value.trim();
-       const tabHistoryVal = document.getElementById('inputTabHistory').value.trim();
-       const statusDiv = document.getElementById('tabsActionStatus');
-       const btn = document.getElementById('saveTabsBtn');
-
-       if(!tabTodayVal || !tabHistoryVal) {
-          statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b";
-          statusDiv.innerText = "⚠️ Fill both fields!"; return;
-       }
-       btn.innerText = "Saving Labels..."; btn.disabled = true;
-
-       fetch(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'updateTabNames', token: myToken, tabToday: tabTodayVal, tabHistory: tabHistoryVal })
-       })
-       .then(res => res.json())
-       .then(data => {
-          statusDiv.style.display = "block";
-          if(data.status === 'success') {
-             statusDiv.style.background = "#d1fae5"; statusDiv.style.color = "#065f46";
-             statusDiv.innerText = "✅ " + data.message;
-             document.getElementById('tabToday').innerText = tabTodayVal;
-             document.getElementById('tabHistory').innerText = tabHistoryVal;
-             setTimeout(() => { tabsModalBackdrop.style.display = 'none'; }, 1500);
-          } else { statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Failed!"; }
-       })
-       .catch(err => { statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Error!"; })
-       .finally(() => { btn.innerText = "💾 Update Tab Names"; btn.disabled = false; setTimeout(() => { statusDiv.style.display = "none"; }, 3000); });
-    });
-
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
@@ -339,16 +276,6 @@
       .then(data => {
         if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
         
-        // Update tab names dynamically
-        if(data.tabTodayName) {
-           document.getElementById('tabToday').innerText = data.tabTodayName;
-           document.getElementById('inputTabToday').value = data.tabTodayName;
-        }
-        if(data.tabHistoryName) {
-           document.getElementById('tabHistory').innerText = data.tabHistoryName;
-           document.getElementById('inputTabHistory').value = data.tabHistoryName;
-        }
-
         // Handle empty data perfectly so it doesn't crash
         if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) {
           allOrders = [];
