@@ -17,21 +17,14 @@
     .btn { background: #0f766e; color: #fff; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
     .btn:hover { background: #115e59; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,118,110,0.2); }
     .btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-    .forgot-link { display: inline-block; margin-top: 20px; font-size: 13px; color: #0f766e; text-decoration: none; font-weight: 600; cursor: pointer; padding: 5px; }
-    .forgot-link:hover { text-decoration: underline; }
     .message { margin-top: 16px; font-size: 13px; font-weight: 600; display: none; padding: 12px; border-radius: 10px; }
     .msg-error { background: #fee2e2; color: #991b1b; display: block; }
     .msg-success { background: #d1fae5; color: #065f46; display: block; }
-    @media (max-width: 480px) {
-      .login-card { padding: 30px 20px; border-radius: 16px; }
-      h2 { font-size: 22px; }
-      input, .btn { padding: 12px; font-size: 14px; }
-    }
   </style>
 </head>
 <body>
 
-  <div class="login-card" id="loginView">
+  <div class="login-card">
     <h2>Secure Login</h2>
     <p>Multi-User Portal Active.</p>
     <div class="input-group">
@@ -43,91 +36,55 @@
       <input type="password" id="passwordInput" placeholder="••••••••">
     </div>
     <button class="btn" id="loginBtn">Login securely</button>
-    <a class="forgot-link" id="showForgotBtn">Forgot Password?</a>
     <div id="loginMsg" class="message"></div>
   </div>
 
-  <div class="login-card" id="forgotView" style="display: none;">
-    <h2>Reset Password</h2>
-    <p>Receive password on recovery email.</p>
-    <div class="input-group">
-      <label>User ID</label>
-      <input type="text" id="forgotUseridInput" placeholder="Enter User ID">
-    </div>
-    <button class="btn" id="sendEmailBtn">Send Password</button>
-    <a class="forgot-link" id="showLoginBtn">Back to Login</a>
-    <div id="forgotMsg" class="message"></div>
-  </div>
-
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzzqLopNzvsO9Nnor_oLsG-rjD-E7pafUAs0eFf87-C3f4PdSQeDQ7NDylcHqLKYVtY/exec";
-    
-    const loginView = document.getElementById('loginView');
-    const forgotView = document.getElementById('forgotView');
-    
-    document.getElementById('showForgotBtn').addEventListener('click', () => { loginView.style.display='none'; forgotView.style.display='block'; });
-    document.getElementById('showLoginBtn').addEventListener('click', () => { forgotView.style.display='none'; loginView.style.display='block'; });
-
-    function showMsg(id, text, className) {
-      const el = document.getElementById(id);
-      el.textContent = text;
-      el.className = 'message ' + className;
-    }
+    // 👇 તમારી લિંક અહીં સેટ જ છે
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
 
     document.getElementById('loginBtn').addEventListener('click', () => {
       const userid = document.getElementById('useridInput').value.trim();
       const password = document.getElementById('passwordInput').value.trim();
       const btn = document.getElementById('loginBtn');
+      const msgDiv = document.getElementById('loginMsg');
       
-      if(!userid || !password) return showMsg('loginMsg', 'Enter User ID and Password!', 'msg-error');
+      if(!userid || !password) {
+        msgDiv.innerText = "Please enter User ID and Password!";
+        msgDiv.className = 'message msg-error';
+        return;
+      }
 
-      btn.innerText = "Authenticating...";
+      btn.innerText = "Authenticating..."; 
       btn.disabled = true;
+      msgDiv.style.display = 'none';
       
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'login', userid: userid, password: password })
+      fetch(WEB_APP_URL, { 
+        method: 'POST', 
+        body: JSON.stringify({ action: 'login', userid: userid, password: password }) 
       })
       .then(res => res.json())
       .then(data => {
         if(data.status === 'success') {
-          showMsg('loginMsg', 'Login Successful!', 'msg-success');
+          msgDiv.innerText = "Login Successful!";
+          msgDiv.className = 'message msg-success';
           sessionStorage.setItem('pharmaAdminToken', data.token);
           sessionStorage.setItem('pharmaCurrentUsername', data.username);
           sessionStorage.setItem('pharmaUserRole', data.role);
           setTimeout(() => { window.location.href = 'admin.html'; }, 800);
         } else {
-          showMsg('loginMsg', data.message || 'Invalid details!', 'msg-error');
+          msgDiv.innerText = data.message || "Invalid details!";
+          msgDiv.className = 'message msg-error';
         }
       })
-      .catch(err => showMsg('loginMsg', 'Internet error. Try again.', 'msg-error'))
-      .finally(() => { btn.innerText = "Login securely"; btn.disabled = false; });
-    });
-
-    document.getElementById('sendEmailBtn').addEventListener('click', () => {
-      const userid = document.getElementById('forgotUseridInput').value.trim();
-      const btn = document.getElementById('sendEmailBtn');
-      if(!userid) return showMsg('forgotMsg', 'Enter User ID!', 'msg-error');
-
-      btn.innerText = "Sending...";
-      btn.disabled = true;
-
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'forgotPassword', userid: userid })
+      .catch(err => {
+        msgDiv.innerText = "Internet error. Try again.";
+        msgDiv.className = 'message msg-error';
       })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === 'success') {
-          showMsg('forgotMsg', 'Password sent to email!', 'msg-success');
-        } else {
-          showMsg('forgotMsg', data.message, 'msg-error');
-        }
-      })
-      .catch(err => showMsg('forgotMsg', 'Internet error.', 'msg-error'))
-      .finally(() => { btn.innerText = "Send Password"; btn.disabled = false; });
+      .finally(() => { 
+        btn.innerText = "Login securely"; 
+        btn.disabled = false; 
+      });
     });
   </script>
 </body>
