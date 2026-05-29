@@ -203,8 +203,8 @@
  </div>
 
   <script>
-    // --- નવી અપડેટ કરેલી URL ---
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzYdkPH92JOIn_-mtFJbMIdOe9Z7onzJOJkI0-iE4lbRdWmwZ23vdcosrfowYvzmA5t/exec";
+    // નવી URL અહિયાં અપડેટ કરેલ છે
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz6D6dN9LvFJpYZiTs0tteQde3RcaxfBZM34fdyctnznA_lCfsN96Lw8kylsod9wiIO/exec";
     
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
@@ -226,7 +226,6 @@
     document.addEventListener('click', () => { document.getElementById('profileDropdownMenu').style.display = 'none'; });
     document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.clear(); window.location.href = 'login.html'; });
 
-    // --- Users Code ---
     document.getElementById('openUserModalBtn').addEventListener('click', () => { document.getElementById('userModalBackdrop').style.display = 'flex'; fetchUsersList(); });
     function fetchUsersList() {
         const tbody = document.getElementById('usersTableBody');
@@ -261,7 +260,6 @@
         .then(res => res.json()).then(data => { if(data.status === 'success') { fetchUsersList(); } else alert(data.message); });
     }
 
-    // --- Core Orders Logic ---
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
@@ -269,36 +267,52 @@
       if (!isAutoRefresh) cardsContainer.innerHTML = `<div class="skeleton-card"><div class="skeleton-line" style="height:22px; width:40%;"></div><div class="skeleton-line" style="height:16px; width:60%;"></div><div class="skeleton-line" style="height:80px; width:100%; margin-top:10px;"></div></div>`; 
       else document.getElementById('autoRefreshStatus').innerText = "(Syncing...)";
 
-      fetch(WEB_APP_URL, { method: 'POST', cache: 'no-store', body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
+      const nocacheUrl = WEB_APP_URL + "?_nocache=" + new Date().getTime(); 
+
+      fetch(nocacheUrl, { method: 'POST', body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
       .then(res => res.json()).then(data => {
         document.getElementById('autoRefreshStatus').innerText = "";
-        if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
-        allOrders = data.data; allOrders.reverse(); applyFilters();
+        
+        if(data.status === 'unauthorized') { 
+            alert("Security Session Expired. Please login again.");
+            sessionStorage.clear(); window.location.href = 'login.html'; return; 
+        }
+
+        if(data.status === 'success' && data.data) {
+            allOrders = data.data; allOrders.reverse(); applyFilters();
+        }
       }).catch(err => { document.getElementById('autoRefreshStatus').innerText = "(Sync Failed)"; });
     }
 
     function applyFilters() {
-      const now = new Date();
-      const todayIso = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      const todayDateStr = new Date().toLocaleDateString('en-IN'); 
+
       const todaySearchQuery = document.getElementById('todaySearchInput') ? document.getElementById('todaySearchInput').value.toLowerCase().trim() : '';
       const historyGlobalQuery = document.getElementById('globalSearchInput') ? document.getElementById('globalSearchInput').value.toLowerCase().trim() : '';
       const dateQuery = document.getElementById('dateFilterInput') ? document.getElementById('dateFilterInput').value : '';
 
-      // 1. પહેલા માત્ર ટેબ (Today/History) અને સર્ચ પ્રમાણે ફિલ્ટર કરો
       let tabFiltered = allOrders.filter(o => {
-        let rowDateIso = '';
-        if (o.timestamp) { try { let d = new Date(o.timestamp); if (!isNaN(d.getTime())) { rowDateIso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); } } catch(e) {} }
+        let rowDateStr = '';
+        if (o.timestamp) { 
+            try { 
+                let d = new Date(o.timestamp); 
+                if (!isNaN(d.getTime())) { rowDateStr = d.toLocaleDateString('en-IN'); } 
+            } catch(e) {} 
+        }
+
         if (currentTab === 'today') {
-           if (rowDateIso !== todayIso) return false; 
+           if (rowDateStr !== todayDateStr) return false; 
            if (todaySearchQuery) { const combined = Object.values(o).join(' ').toLowerCase(); if (!combined.includes(todaySearchQuery)) return false; }
         } else if (currentTab === 'history') {
-           if (dateQuery && rowDateIso !== dateQuery) return false;
+           if (dateQuery) {
+               const dq = new Date(dateQuery).toLocaleDateString('en-IN');
+               if(rowDateStr !== dq) return false;
+           }
            if (historyGlobalQuery) { const combined = Object.values(o).join(' ').toLowerCase(); if (!combined.includes(historyGlobalQuery)) return false; }
         }
         return true;
       });
 
-      // 2. કાઉન્ટર હંમેશા સાચું બતાવે (ફિલ્ટર પહેલાંની ગણતરી)
       const groupedForStats = {};
       tabFiltered.forEach(o => { if(!groupedForStats[o.orderId]) groupedForStats[o.orderId] = []; groupedForStats[o.orderId].push(o); });
       let pCount = 0, sCount = 0;
@@ -311,7 +325,6 @@
       document.getElementById('pendingOrdersCount').innerText = pCount;
       document.getElementById('skywayOrdersCount').innerText = sCount;
 
-      // 3. Quick Filter (Pending/Not Available) લગાવીને કાર્ડ્સ બતાવો
       let finalFiltered = tabFiltered.filter(o => {
         const rowStatus = (o.orderStatus || 'Pending').toLowerCase().trim();
         if (currentStatusQuickFilter && rowStatus !== currentStatusQuickFilter) return false;
