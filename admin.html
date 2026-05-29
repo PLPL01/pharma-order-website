@@ -203,7 +203,8 @@
  </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz6D6dN9LvFJpYZiTs0tteQde3RcaxfBZM34fdyctnznA_lCfsN96Lw8kylsod9wiIO/exec";
+    // Navi URL update kari chhe
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRju9C_1S14BJcPlRyOCnb03vjvqGx1ZdSPu3X8_PicTLSCpWHv4T2tn3OtP7hJ07E/exec";
     
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
@@ -231,8 +232,7 @@
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">🔄 Fetching staff...</td></tr>';
         
-        // CORS ERROR SOLVED: Simple POST call without headers
-        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchUsers', token: myToken }) })
+        fetch(WEB_APP_URL, { method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'fetchUsers', token: myToken }) })
         .then(res => res.json()).then(data => {
             if(data.status === 'success') {
                 tbody.innerHTML = '';
@@ -250,7 +250,7 @@
        const btn = document.getElementById('saveUserBtn'); btn.innerText = "⏳..."; btn.disabled = true;
        const statusDiv = document.getElementById('userActionStatus');
        
-       fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'manageUser', token: myToken, targetUserid: targetId, newPassword: newPass }) })
+       fetch(WEB_APP_URL, { method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'manageUser', token: myToken, targetUserid: targetId, newPassword: newPass }) })
        .then(res => res.json()).then(data => {
           statusDiv.style.display = "block"; statusDiv.className = data.status === 'success' ? 'msg-success' : 'msg-error';
           statusDiv.innerText = data.message; document.getElementById('targetUserid').value = ''; document.getElementById('newPassword').value = '';
@@ -259,21 +259,21 @@
     });
     window.deleteStaff = function(userid) {
         if(!confirm(`Delete staff ID: "${userid}"?`)) return;
-        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'deleteUser', token: myToken, targetUserid: userid }) })
+        fetch(WEB_APP_URL, { method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'deleteUser', token: myToken, targetUserid: userid }) })
         .then(res => res.json()).then(data => { if(data.status === 'success') { fetchUsersList(); } else alert(data.message); });
     }
 
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // --- સુધારેલ ફેચ ફંક્શન (CORS ERROR ફિક્સ કરેલ) ---
+    // --- Sudharel fetch function ---
     function fetchLiveOrders(isAutoRefresh = false) {
       if (!isAutoRefresh) cardsContainer.innerHTML = `<div class="skeleton-card"><div class="skeleton-line" style="height:22px; width:40%;"></div><div class="skeleton-line" style="height:16px; width:60%;"></div><div class="skeleton-line" style="height:80px; width:100%; margin-top:10px;"></div></div>`; 
       else document.getElementById('autoRefreshStatus').innerText = "(Syncing...)";
 
-      // અહિંયા માત્ર સાદો POST કમાન્ડ રાખ્યો છે જેથી ક્યારેય એરર ન આવે
       fetch(WEB_APP_URL, { 
           method: 'POST', 
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ action: 'fetchOrders', token: myToken }) 
       })
       .then(res => res.json())
@@ -296,7 +296,7 @@
       });
     }
 
-    // --- સુધારેલ ડેટ ફિલ્ટર (તારીખ) ફંક્શન ---
+    // --- Sudharel date filter ---
     function applyFilters() {
       const now = new Date();
       const tY = now.getFullYear();
@@ -311,7 +311,6 @@
         let isToday = false;
         let isDateQueryMatch = false;
 
-        // તારીખ ચેક કરવાનું 100% સાચું અને સરળ લોજિક
         if (o.timestamp) { 
             try { 
                 let d = new Date(o.timestamp); 
@@ -319,7 +318,7 @@
                     isToday = (d.getDate() === tD && d.getMonth() === tM && d.getFullYear() === tY);
                     
                     if (dateQuery) {
-                        let parts = dateQuery.split('-'); // YYYY-MM-DD
+                        let parts = dateQuery.split('-'); 
                         if(parts.length === 3) {
                             isDateQueryMatch = (d.getFullYear() === parseInt(parts[0]) && d.getMonth() === (parseInt(parts[1]) - 1) && d.getDate() === parseInt(parts[2]));
                         }
@@ -406,8 +405,7 @@
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id'); const newStatus = e.target.value;
-        
-        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
+        fetch(WEB_APP_URL, { method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
         .then(() => fetchLiveOrders(true)); 
       }
     });
