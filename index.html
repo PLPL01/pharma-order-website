@@ -5,30 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Place Order - Secure Pharma</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    const savedTheme = localStorage.getItem('pharmaTheme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+  </script>
+
   <style>
-    :root { --primary: #0f766e; --bg: #f0fdfa; --surface: #ffffff; --border: #e2e8f0; --text: #1e293b; --shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.1); }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; box-sizing: border-box; }
-    .card { background: var(--surface); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; }
-    .header { text-align: center; margin-bottom: 25px; }
+    /* 🌞 LIGHT MODE */
+    :root { 
+      --primary: #0f766e; --bg: #f0fdfa; --surface: #ffffff; 
+      --border: #e2e8f0; --text: #1e293b; --input-bg: #f8fafc;
+      --shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.1); 
+    }
+    
+    /* 🌙 OLED DARK MODE */
+    [data-theme="dark"] { 
+      --primary: #14b8a6; --bg: #000000; --surface: #0f0f0f; 
+      --border: #27272a; --text: #f8fafc; --input-bg: #18181b;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; box-sizing: border-box; transition: 0.3s; }
+    
+    .card { background: var(--surface); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; border: 1px solid var(--border); transition: 0.3s; }
+    
+    .header { text-align: center; margin-bottom: 25px; position: relative; }
     .header h1 { margin: 0; color: var(--primary); font-size: 26px; }
+    
+    /* Theme Toggle Button */
+    #themeToggle { position: absolute; top: -10px; right: 0; background: var(--input-bg); border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 20px; transition: 0.3s; }
+    
     .input-group { margin-bottom: 18px; }
-    label { display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; text-transform: uppercase; }
-    input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: #f8fafc; }
-    input:focus { border-color: var(--primary); background: #fff; }
-    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--text); opacity: 0.8; margin-bottom: 6px; text-transform: uppercase; }
+    input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: var(--input-bg); color: var(--text); transition: 0.3s; }
+    input:focus { border-color: var(--primary); }
+    
+    .items-container { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
     .item-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; width: 100%; }
+    
+    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; width: 100%; transition: 0.2s; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-remove { background: #fee2e2; color: #991b1b; padding: 0 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
+    
     .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; text-align: center; display: none; }
-    .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
-    .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    .msg-success { background: #d1fae5; color: #065f46; }
+    .msg-error { background: #fee2e2; color: #991b1b; }
   </style>
 </head>
 <body>
 
   <div class="card">
     <div class="header">
+      <button id="themeToggle">☀️</button>
       <h1>📦 Place New Order</h1>
       <p>Enter details to request medicine</p>
     </div>
@@ -42,7 +71,7 @@
         <div id="itemsWrapper">
           <div class="item-row"><input type="text" class="productName" placeholder="Medicine Name" required><input type="number" class="productQty" placeholder="Qty" min="1" required><button type="button" class="btn-remove" disabled style="opacity:0.3">✖</button></div>
         </div>
-        <button type="button" class="btn" style="background:#e2e8f0; color:#334155; margin-top:10px; padding:10px;" onclick="addItem()">+ Add More</button>
+        <button type="button" class="btn" style="background:var(--border); color:var(--text); margin-top:10px; padding:10px;" onclick="addItem()">+ Add More</button>
       </div>
 
       <div class="input-group">
@@ -58,6 +87,17 @@
   </div>
 
   <script>
+    // Theme Toggle Logic
+    const toggleBtn = document.getElementById('themeToggle');
+    toggleBtn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('pharmaTheme', next);
+      toggleBtn.innerText = next === 'dark' ? '🌙' : '☀️';
+    });
+    toggleBtn.innerText = savedTheme === 'dark' ? '🌙' : '☀️';
+
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw1w85cDhuWfGmgV_RyDivdAtoiYzpSXcTpMVUU162FGzqc7cnbdNNqc-ycGUReUSVZ/exec";
 
     function addItem() {
