@@ -1,407 +1,252 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pharma Order Website</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Place Order - Secure Pharma</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f6f8f7;
-      --surface: #ffffff;
-      --surface-2: #eef5f3;
-      --surface-3: #f9fbfa;
-      --text: #1f2937;
-      --muted: #667085;
-      --primary: #0f766e;
-      --primary-dark: #115e59;
-      --line: #d9e2df;
-      --success-bg: #ecfdf3;
-      --success-text: #166534;
-      --warning-bg: #fff7ed;
-      --warning-text: #9a3412;
-      --radius: 18px;
-      --shadow: 0 10px 30px rgba(15, 118, 110, 0.08);
+      --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
+      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --radius: 16px;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
     }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(180deg, #f4f8f7 0%, #eef6f3 100%);
-      color: var(--text);
-      line-height: 1.55;
-    }
-    .wrap { max-width: 1180px; margin: 0 auto; padding: 22px; }
-    .hero {
-      background: linear-gradient(135deg, #e6f5f2 0%, #ffffff 100%);
-      border: 1px solid var(--line);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      padding: 28px;
-      margin-bottom: 22px;
-    }
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: -.02em;
-    }
-    .brand svg { width: 34px; height: 34px; }
-    .chip {
-      padding: 10px 14px;
-      background: #ffffff;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 600;
-    }
-    h1 {
-      margin: 0 0 10px;
-      font-size: clamp(32px, 5vw, 58px);
-      line-height: 1.02;
-      letter-spacing: -.03em;
-      max-width: 10ch;
-    }
-    .lead {
-      max-width: 760px;
-      color: var(--muted);
-      font-size: 17px;
-      margin: 0;
-    }
-    .layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 22px;
-      align-items: start;
-    }
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 22px;
-    }
-    .panel h2 {
-      margin: 0 0 8px;
-      font-size: 24px;
-      letter-spacing: -.02em;
-    }
-    .muted {
-      color: var(--muted);
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-    .field { margin-bottom: 14px; }
-    .full { grid-column: 1 / -1; }
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-    input, textarea, select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 14px 15px;
-      font-size: 15px;
-      background: #fff;
-      color: var(--text);
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(15,118,110,.12);
-    }
-    textarea { min-height: 95px; resize: vertical; }
-    .product-card {
-      border: 1px dashed #b9ccc7;
-      background: var(--surface-3);
-      border-radius: 16px;
-      padding: 12px;
-      margin-bottom: 8px;
-    }
-    .product-row {
-      display: grid;
-      grid-template-columns: 1.4fr 0.7fr auto;
-      gap: 10px;
-      align-items: end;
-    }
-    .product-name-field, .product-qty-field { margin-bottom: 0; }
-    .remove-btn {
-      border: 1px solid var(--line);
-      background: #fff;
-      color: #b42318;
-      border-radius: 10px;
-      padding: 12px 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 700;
-      height: 48px;
-    }
-    .upload {
-      border: 1px dashed #96b6af;
-      border-radius: 16px;
-      padding: 18px;
-      background: #fbfefd;
-      text-align: center;
-      color: var(--muted);
-    }
-    .upload input { margin-top: 10px; }
-    .btn-row {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-    .btn {
-      border: none;
-      border-radius: 14px;
-      padding: 14px 18px;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform .15s ease, background .2s ease;
-    }
-    .btn:hover { transform: translateY(-1px); }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-dark); }
-    .btn-soft { background: #e7f2f0; color: var(--primary-dark); }
-    .btn-ghost { background: #fff; color: var(--text); border: 1px solid var(--line); }
-    .info-box, .warn-box {
-      border-radius: 16px;
-      padding: 16px;
-      font-size: 14px;
-      margin-bottom: 14px;
-      border: 1px solid var(--line);
-    }
-    .info-box { background: var(--success-bg); color: var(--success-text); }
-    .warn-box { background: var(--warning-bg); color: var(--warning-text); }
-    .feature-list { display: grid; gap: 12px; margin-top: 14px; }
-    .feature {
-      padding: 14px;
-      border: 1px solid var(--line);
-      background: var(--surface-2);
-      border-radius: 14px;
-    }
-    .feature strong { display: block; margin-bottom: 4px; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 14px;
-      overflow: hidden;
-      border-radius: 14px;
-      font-size: 14px;
-    }
-    th, td {
-      border: 1px solid var(--line);
-      padding: 10px;
-      text-align: left;
-      background: #fff;
-      vertical-align: top;
-    }
-    th { background: #f2f7f5; }
-    .status { display: none; margin-top: 16px; }
-    .footer-note {
-      margin-top: 18px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-    @media (max-width: 900px) {
-      .layout, .grid { grid-template-columns: 1fr; }
-      .wrap { padding: 16px; }
-      .hero, .panel { padding: 18px; }
-      h1 { max-width: none; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 40px 20px; color: var(--text-main); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box; }
+    
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; box-shadow: var(--shadow-lg); width: 100%; max-width: 600px; box-sizing: border-box; }
+    
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 { margin: 0 0 8px; color: var(--primary); font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
+    .header p { color: var(--text-muted); margin: 0; font-size: 15px; }
+    
+    .input-group { margin-bottom: 20px; }
+    .input-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    input[type="text"], input[type="tel"], input[type="number"], select, input[type="file"] { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; font-weight: 500; color: var(--text-main); background: #f8fafc; outline: none; font-family: inherit; box-sizing: border-box; transition: all 0.2s; }
+    input:focus, select:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1); }
+    input[type="file"] { padding: 10px; background: #fff; border: 1px dashed var(--primary); cursor: pointer; }
+    
+    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
+    .items-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .items-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main); }
+    
+    .item-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+    .item-row input[type="text"] { flex: 2; }
+    .item-row input[type="number"] { flex: 1; }
+    
+    .btn { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; transition: all 0.2s; box-sizing: border-box; }
+    .btn-primary { background: var(--primary); color: #fff; width: 100%; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2); margin-top: 10px; }
+    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3); }
+    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+    
+    .btn-ghost { background: #e2e8f0; color: var(--text-main); padding: 8px 16px; font-size: 13px; }
+    .btn-ghost:hover { background: #cbd5e1; }
+    
+    .btn-remove { background: #fee2e2; color: #991b1b; padding: 14px; font-size: 16px; border-radius: 12px; cursor: pointer; border: none; transition: 0.2s; }
+    .btn-remove:hover { background: #fca5a5; }
+
+    .status-msg { margin-top: 20px; padding: 16px; border-radius: 12px; font-weight: 600; font-size: 14px; text-align: center; display: none; }
+    .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+    .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+
+    /* 📱 MOBILE RESPONSIVE CSS */
+    @media (max-width: 600px) {
+      body { padding: 15px; }
+      .card { padding: 24px 20px; border-radius: 20px; }
+      .header h1 { font-size: 24px; }
+      .item-row { flex-direction: column; gap: 10px; align-items: stretch; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
+      .btn-remove { padding: 10px; font-size: 14px; margin-top: 5px; }
+      input[type="text"], input[type="tel"], input[type="number"], select { padding: 12px 14px; font-size: 14px; }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="topbar">
-        <div class="brand">
-          <svg viewBox="0 0 48 48" fill="none" aria-label="Pharma Wholesale">
-            <rect x="7" y="10" width="34" height="28" rx="10" stroke="currentColor" stroke-width="3"></rect>
-            <path d="M24 16V32M16 24H32" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
-          </svg>
-          Pharma Wholesale Order
-        </div>
-        <div class="chip">Simple order website for customer direct entry</div>
-      </div>
-      <h1>Order direct website ma lo</h1>
-      <p class="lead">Customer WhatsApp karta direct aa form ma order muki shake. Product name, qty, image upload ane customer detail badhu ekaj jagya par malse.</p>
-    </section>
 
-    <div class="layout">
-      <section class="panel">
-        <h2>Order Form</h2>
-        <p class="muted">Gujarati + English simple format.</p>
-
-        <form id="orderForm">
-          <div class="grid">
-            <div class="field">
-              <label for="customerName">Customer Name / ગ્રાહક નામ</label>
-              <input id="customerName" name="customerName" type="text" placeholder="Enter customer name" required>
-            </div>
-            <div class="field">
-              <label for="mobile">Mobile Number / મોબાઇલ નંબર</label>
-              <input id="mobile" name="mobile" type="tel" placeholder="Enter mobile number" required>
-            </div>
-            <div class="field full">
-              <label for="priority">Order Priority</label>
-              <select id="priority" name="priority">
-                <option value="Normal">Normal</option>
-                <option value="Urgent">Urgent</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="products"></div>
-
-          <div class="btn-row" style="margin-bottom:14px;">
-            <button class="btn btn-soft" type="button" id="addProductBtn">+ Add More Product</button>
-          </div>
-
-          <div class="field">
-            <label>Upload Prescription / Bill / Product Image</label>
-            <div class="upload">
-              <div>Upload file for order reference</div>
-              <input id="imageFile" type="file" accept="image/*,.pdf">
-            </div>
-          </div>
-
-          <div class="btn-row">
-            <button class="btn btn-primary" type="submit">Submit Order</button>
-            <button class="btn btn-ghost" type="reset">Reset Form</button>
-          </div>
-
-          <div class="status info-box" id="successBox">Order submitted successfully. We will contact you soon.</div>
-        </form>
-      </section>
+  <div class="card">
+    <div class="header">
+      <h1>📦 Place New Order</h1>
+      <p>Fill details carefully to generate an order.</p>
     </div>
+
+    <form id="orderForm">
+      <div class="input-group">
+        <label>Customer Name *</label>
+        <input type="text" id="customerName" placeholder="Enter full name" required>
+      </div>
+      
+      <div class="input-group">
+        <label>Mobile Number *</label>
+        <input type="tel" id="mobileNumber" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+      </div>
+
+      <div class="items-container">
+        <div class="items-header">
+          <h3>💊 Order Items</h3>
+          <button type="button" class="btn btn-ghost" id="addItemBtn">+ Add Item</button>
+        </div>
+        <div id="itemsWrapper">
+          <div class="item-row">
+            <input type="text" class="productName" placeholder="Product / Medicine Name" required>
+            <input type="number" class="productQty" placeholder="Qty" min="1" required>
+            <button type="button" class="btn-remove" disabled style="opacity: 0.5;">✖</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label>Priority Level</label>
+        <select id="priorityLevel">
+          <option value="Normal">🟢 Normal Delivery</option>
+          <option value="Urgent">🔴 Urgent Delivery</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Upload Prescription (Optional)</label>
+        <input type="file" id="prescriptionFile" accept="image/*, .pdf">
+        <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Supported: JPG, PNG, PDF (Max 5MB)</p>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Order</button>
+      <div id="statusMessage" class="status-msg"></div>
+    </form>
   </div>
 
-  <template id="productTemplate">
-    <div class="product-card">
-      <div class="product-row">
-        <div class="field product-name-field">
-          <label>Product Name</label>
-          <input type="text" class="product-name" placeholder="Example: Dolo 650" required>
-        </div>
-        <div class="field product-qty-field">
-          <label>Qty in Strip</label>
-          <input type="number" class="product-qty" placeholder="10 strips" min="1" required>
-        </div>
-        <button class="remove-btn" type="button">Remove</button>
-      </div>
-    </div>
-  </template>
-
   <script>
+    // 👇 તમારી નવી લિંક અહીં સેટ જ છે
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrnWtXr83C9uTVrGHvqgKlGaRPOqSdFMRlGizbprwQ1bWH2g5eLPu5pOUrfQJvI_03/exec";
-    
-    const productsEl = document.getElementById('products');
-    const template = document.getElementById('productTemplate');
-    const form = document.getElementById('orderForm');
-    const successBox = document.getElementById('successBox');
-    let orderCounter = Math.floor(1000 + Math.random() * 9000);
 
-    function addProduct(defaults = {}) {
-      const node = template.content.firstElementChild.cloneNode(true);
-      node.querySelector('.product-name').value = defaults.name || '';
-      node.querySelector('.product-qty').value = defaults.qty || '';
-      node.querySelector('.remove-btn').addEventListener('click', () => {
-        if (productsEl.children.length > 1) node.remove();
-      });
-      productsEl.appendChild(node);
-    }
+    // Item Add/Remove Logic
+    const itemsWrapper = document.getElementById('itemsWrapper');
+    const addItemBtn = document.getElementById('addItemBtn');
 
-    document.getElementById('addProductBtn').addEventListener('click', () => addProduct());
+    addItemBtn.addEventListener('click', () => {
+      const newRow = document.createElement('div');
+      newRow.className = 'item-row';
+      newRow.innerHTML = `
+        <input type="text" class="productName" placeholder="Product / Medicine Name" required>
+        <input type="number" class="productQty" placeholder="Qty" min="1" required>
+        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>
+      `;
+      itemsWrapper.appendChild(newRow);
+    });
 
-    function collectRows() {
+    // Handle Form Submit
+    document.getElementById('orderForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBtn');
+      const statusMsg = document.getElementById('statusMessage');
+      
       const customer = document.getElementById('customerName').value.trim();
-      const mobile = document.getElementById('mobile').value.trim();
-      const priority = document.getElementById('priority').value;
-      const orderId = 'ORD-' + orderCounter;
-      const rows = [];
-      document.querySelectorAll('.product-card').forEach(card => {
-        const name = card.querySelector('.product-name').value.trim();
-        const qty = card.querySelector('.product-qty').value.trim();
-        if (name && qty) {
-          rows.push({ orderId, customer, mobile, product: name, qty, priority });
+      const mobile = document.getElementById('mobileNumber').value.trim();
+      const priority = document.getElementById('priorityLevel').value;
+      const fileInput = document.getElementById('prescriptionFile');
+
+      // Gather Items
+      const itemRows = document.querySelectorAll('.item-row');
+      const items = [];
+      const generateOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000); // Generate Unique ID
+
+      itemRows.forEach(row => {
+        const product = row.querySelector('.productName').value.trim();
+        const qty = row.querySelector('.productQty').value.trim();
+        if(product && qty) {
+          items.push({ orderId: generateOrderId, customer, mobile, product, qty, priority });
         }
       });
-      return rows;
+
+      if(items.length === 0) {
+        showStatus('error', '⚠️ Please add at least one item.');
+        return;
+      }
+
+      submitBtn.innerText = "⏳ Processing Securely...";
+      submitBtn.disabled = true;
+      statusMsg.style.display = "none";
+
+      try {
+        let fileBase64 = "";
+        let mimeType = "";
+        let fileName = "";
+
+        // If file selected, read as base64
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          
+          if(file.size > 5 * 1024 * 1024) {
+             showStatus('error', '⚠️ File size must be less than 5MB.');
+             submitBtn.innerText = "🚀 Submit Order";
+             submitBtn.disabled = false;
+             return;
+          }
+
+          mimeType = file.type;
+          fileName = customer.replace(/\s+/g, '_') + '_' + file.name;
+          fileBase64 = await toBase64(file);
+        }
+
+        const payload = {
+          action: 'newOrder',
+          items: items,
+          fileBase64: fileBase64,
+          mimeType: mimeType,
+          fileName: fileName
+        };
+
+        const response = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          showStatus('success', `✅ Order placed successfully! ID: <b>${generateOrderId}</b>`);
+          document.getElementById('orderForm').reset();
+          // Keep only one item row
+          itemsWrapper.innerHTML = `
+            <div class="item-row">
+              <input type="text" class="productName" placeholder="Product / Medicine Name" required>
+              <input type="number" class="productQty" placeholder="Qty" min="1" required>
+              <button type="button" class="btn-remove" disabled style="opacity: 0.5;">✖</button>
+            </div>
+          `;
+        } else {
+          showStatus('error', '❌ Failed to place order. ' + (result.message || ''));
+        }
+
+      } catch (error) {
+        showStatus('error', '❌ Network Error. Please try again.');
+      } finally {
+        submitBtn.innerText = "🚀 Submit Order";
+        submitBtn.disabled = false;
+      }
+    });
+
+    // Helper: Convert File to Base64
+    function toBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          let encoded = reader.result.toString().replace(/^data:(.*,)?/, '');
+          if ((encoded.length % 4) > 0) { encoded += '='.repeat(4 - (encoded.length % 4)); }
+          resolve(encoded);
+        };
+        reader.onerror = error => reject(error);
+      });
     }
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const rows = collectRows();
-      if (!rows.length) return;
-      
-      const submitBtn = form.querySelector('button[type="submit"]');
-      const originalText = submitBtn.innerText;
-      submitBtn.innerText = "Sending Order...";
-      submitBtn.disabled = true;
-
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        body: JSON.stringify(rows),
-        mode: 'no-cors'
-      })
-      .then(() => {
-        successBox.style.display = 'block';
-        successBox.textContent = `Order submitted successfully. Your Order ID is ${rows[0].orderId}. We will contact you soon.`;
-        orderCounter++;
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        setTimeout(() => {
-          form.reset();
-        }, 3000);
-      })
-      .catch(err => {
-        alert("Internet connection problem. Please try again.");
-      })
-      .finally(() => {
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
-      });
-    });
-
-    form.addEventListener('reset', () => {
-      setTimeout(() => {
-        productsEl.innerHTML = '';
-        addProduct();
-        successBox.style.display = 'none';
-      }, 0);
-    });
-
-    addProduct({ name: 'Dolo 650', qty: '10' });
-    addProduct({ name: 'Azithral 500', qty: '5' });
+    function showStatus(type, msg) {
+      const statusMsg = document.getElementById('statusMessage');
+      statusMsg.style.display = "block";
+      statusMsg.innerHTML = msg;
+      statusMsg.className = type === 'success' ? 'status-msg msg-success' : 'status-msg msg-error';
+    }
   </script>
 </body>
 </html>
