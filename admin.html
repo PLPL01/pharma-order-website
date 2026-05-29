@@ -1,153 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Place Order - Secure Pharma</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <script>
+    const myToken = sessionStorage.getItem('pharmaAdminToken');
+    const currentAdminUser = sessionStorage.getItem('pharmaCurrentUsername') || 'User';
+    const currentUserRole = sessionStorage.getItem('pharmaUserRole') || 'Staff'; 
+    if (!myToken) window.location.href = 'login.html';
+  </script>
   <style>
-    :root { 
-      --primary: #0f766e; --bg: #f0fdfa; --surface: #ffffff; 
-      --border: #e2e8f0; --text: #1e293b; --shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
-    }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; box-sizing: border-box; }
-    .card { background: var(--surface); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; }
-    .header { text-align: center; margin-bottom: 25px; }
-    .header h1 { margin: 0; color: var(--primary); font-size: 26px; }
-    .input-group { margin-bottom: 18px; }
-    label { display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; text-transform: uppercase; }
-    input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: #f8fafc; }
-    input:focus { border-color: var(--primary); background: #fff; }
-    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
-    .item-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; width: 100%; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-remove { background: #fee2e2; color: #991b1b; padding: 0 12px; }
-    .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; text-align: center; display: none; }
-    .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
-    .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
+    /* CSS code puranu j che, mobile responsive, full screen width */
+    body { font-family: sans-serif; background: #f0fdfa; padding: 20px; }
+    .card { background: #fff; padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+    .order-cards-container { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .btn-action { padding: 5px 10px; cursor: pointer; }
+    .admin-only { display: none; }
   </style>
 </head>
 <body>
-
   <div class="card">
-    <div class="header">
-      <h1>📦 Place New Order</h1>
-      <p>Enter details to request medicine</p>
-    </div>
-
-    <form id="orderForm">
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="customerName" placeholder="Enter your name" required>
-      </div>
-      
-      <div class="input-group">
-        <label>Mobile Number</label>
-        <input type="tel" id="mobileNumber" placeholder="10-digit number" pattern="[0-9]{10}" required>
-      </div>
-
-      <div class="items-container">
-        <label>Medicines</label>
-        <div id="itemsWrapper">
-          <div class="item-row">
-            <input type="text" class="productName" placeholder="Medicine Name" required>
-            <input type="number" class="productQty" placeholder="Qty" min="1" required>
-            <button type="button" class="btn-remove" disabled style="opacity:0.3">✖</button>
-          </div>
-        </div>
-        <button type="button" class="btn" style="background:#e2e8f0; color:#334155; margin-top:10px; padding:10px;" onclick="addItem()">+ Add More</button>
-      </div>
-
-      <div class="input-group">
-        <label>Priority</label>
-        <select id="priorityLevel">
-          <option value="Normal">🟢 Normal</option>
-          <option value="Urgent">🔴 Urgent</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Prescription (Photo)</label>
-        <input type="file" id="prescriptionFile" accept="image/*">
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Order</button>
-      <div id="statusMessage" class="status-msg"></div>
-    </form>
+    <h1>Dashboard</h1>
+    <button class="admin-only" id="exportExcelBtn">📥 Export Excel</button>
+    <div id="cardsContainer">Loading...</div>
   </div>
 
   <script>
-    // 👇 તમારી નવી લિંક અહી સેટ કરેલી છે
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
+    const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
+    if(isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
 
-    function addItem() {
-      const div = document.createElement('div');
-      div.className = 'item-row';
-      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required>
-                       <input type="number" class="productQty" placeholder="Qty" min="1" required>
-                       <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>`;
-      document.getElementById('itemsWrapper').appendChild(div);
+    let allOrders = [];
+    const cardsContainer = document.getElementById('cardsContainer');
+
+    function fetchLiveOrders() {
+      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
+      .then(res => res.json()).then(data => {
+        if(data.status === 'success') { allOrders = data.data.reverse(); renderCards(allOrders); }
+      });
     }
 
-    document.getElementById('orderForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = document.getElementById('submitBtn');
-      const statusMsg = document.getElementById('statusMessage');
+    function renderCards(ordersList) {
+      cardsContainer.innerHTML = '';
+      const grouped = {};
+      ordersList.forEach(o => { if(!grouped[o.orderId]) grouped[o.orderId] = []; grouped[o.orderId].push(o); });
       
-      submitBtn.innerText = "⏳ Processing..."; 
-      submitBtn.disabled = true;
-
-      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-      const customer = document.getElementById('customerName').value.trim();
-      const mobile = document.getElementById('mobileNumber').value.trim();
-      const priority = document.getElementById('priorityLevel').value;
-      const fileInput = document.getElementById('prescriptionFile');
-      
-      const items = [];
-      document.querySelectorAll('.item-row').forEach(row => {
-        items.push({ 
-            orderId, customer, mobile, 
-            product: row.querySelector('.productName').value, 
-            qty: row.querySelector('.productQty').value, 
-            priority 
-        });
-      });
-
-      let fileBase64 = "", mimeType = "", fileName = "";
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        mimeType = file.type; fileName = customer + "_" + Date.now() + "_" + file.name;
-        fileBase64 = await new Promise(r => { 
-            const reader = new FileReader(); 
-            reader.onload = () => r(reader.result.toString().split(',')[1]); 
-            reader.readAsDataURL(file); 
-        });
+      for (const [id, items] of Object.entries(grouped)) {
+         const first = items[0];
+         cardsContainer.innerHTML += `
+            <div class="order-card">
+               <div><b>${id}</b> - ${first.customer}</div>
+               <div class="items-box">${items.map(i => `<div>${i.product} (Qty: ${i.qty})</div>`).join('')}</div>
+               <select onchange="updateStatus('${id}', this.value)">
+                  <option value="Pending" ${first.orderStatus==='Pending'?'selected':''}>Pending</option>
+                  <option value="Skyway" ${first.orderStatus==='Skyway'?'selected':''}>Skyway</option>
+               </select>
+               ${isAdmin ? `<button class="btn-action" onclick="showAuditLog('${id}')">🕵️‍♂️ Log</button>` : ''}
+            </div>`;
       }
+    }
 
-      fetch(WEB_APP_URL, { 
-        method: 'POST', 
-        body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) 
-      })
-      .then(res => res.json())
-      .then(r => {
-        if(r.status === 'success') {
-          statusMsg.style.display = "block"; 
-          statusMsg.innerHTML = "✅ Order placed! ID: " + orderId; 
-          statusMsg.className = "status-msg msg-success";
-          document.getElementById('orderForm').reset();
-        } else { throw new Error(); }
-      })
-      .catch(() => { 
-        statusMsg.style.display = "block"; 
-        statusMsg.innerHTML = "❌ Failed. Try again."; 
-        statusMsg.className = "status-msg msg-error"; 
-      })
-      .finally(() => { 
-        submitBtn.innerText = "🚀 Submit Order"; 
-        submitBtn.disabled = false; 
-      });
+    function updateStatus(orderId, status) {
+       fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', orderId, status, token: myToken, username: currentAdminUser }) })
+       .then(() => fetchLiveOrders());
+    }
+
+    // Export Excel Logic
+    document.getElementById('exportExcelBtn').addEventListener('click', () => {
+       let csv = "data:text/csv;charset=utf-8,ID,Customer,Product,Qty,Status,ProcessedBy\n";
+       allOrders.forEach(o => { csv += `${o.orderId},${o.customer},${o.product},${o.qty},${o.orderStatus},${o.processedBy}\n`; });
+       var link = document.createElement("a"); link.setAttribute("href", encodeURI(csv)); link.setAttribute("download", "Orders.csv"); document.body.appendChild(link); link.click();
     });
+
+    document.addEventListener('DOMContentLoaded', fetchLiveOrders);
   </script>
 </body>
 </html>
