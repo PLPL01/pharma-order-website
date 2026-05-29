@@ -159,7 +159,7 @@
     <div class="header-section">
       <div>
         <h1>🔒 Premium Admin Panel</h1>
-        <p>Security Node Online</p>
+        <p>Security Node Online <span id="autoRefreshStatus" style="color:var(--primary); font-weight:bold; margin-left:10px;"></span></p>
       </div>
       
       <div class="top-controls">
@@ -295,6 +295,7 @@
 </div>
 
   <script>
+    // તમારી સાચી WEB_APP_URL અહિયાં મૂકવાની છે
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw1w85cDhuWfGmgV_RyDivdAtoiYzpSXcTpMVUU162FGzqc7cnbdNNqc-ycGUReUSVZ/exec";
     
     const themeBtn = document.getElementById('themeToggleBtn');
@@ -373,13 +374,28 @@
       cardsContainer.innerHTML = skeletonHtml;
     }
 
-    function fetchLiveOrders() {
-      showSkeletonLoaders();
-      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
+    // --- અહિયાં થી મેઈન અપડેટ શરુ થાય છે (Auto Refresh & Cache Fix) ---
+    function fetchLiveOrders(isAutoRefresh = false) {
+      // જો ઓટો-રિફ્રેશ હોય, તો પેલા ગોળ-ગોળ ફરતા સ્કેલેટન ના દેખાડો, જેથી કામ ન અટકે.
+      if (!isAutoRefresh) {
+        showSkeletonLoaders();
+      } else {
+        document.getElementById('autoRefreshStatus').innerText = "(Syncing...)";
+      }
+
+      fetch(WEB_APP_URL, { 
+        method: 'POST', 
+        cache: 'no-store', // આનાથી જૂનો ડેટા નહીં આવે 
+        body: JSON.stringify({ action: 'fetchOrders', token: myToken }) 
+      })
       .then(res => res.json()).then(data => {
+        document.getElementById('autoRefreshStatus').innerText = "";
         if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
         allOrders = data.data; allOrders.reverse(); applyFilters();
-      }).catch(err => { cardsContainer.innerHTML = `<div class="loading-status" style="color:#ef4444;">⚠️ Network Error. Cannot fetch data.</div>`; });
+      }).catch(err => { 
+        document.getElementById('autoRefreshStatus').innerText = "(Sync Failed)";
+        if (!isAutoRefresh) cardsContainer.innerHTML = `<div class="loading-status" style="color:#ef4444;">⚠️ Network Error. Cannot fetch data.</div>`; 
+      });
     }
 
     function applyFilters() {
@@ -462,7 +478,7 @@
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id'); const newStatus = e.target.value;
         fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
-        .then(() => fetchLiveOrders());
+        .then(() => fetchLiveOrders()); // મેન્યુઅલ રિફ્રેશ 
       }
     });
 
@@ -509,9 +525,16 @@
     if(document.getElementById('globalSearchInput')) document.getElementById('globalSearchInput').addEventListener('input', applyFilters);
     if(document.getElementById('dateFilterInput')) document.getElementById('dateFilterInput').addEventListener('change', applyFilters);
     if(document.getElementById('resetFiltersBtn')) document.getElementById('resetFiltersBtn').addEventListener('click', () => { document.getElementById('globalSearchInput').value = ''; document.getElementById('dateFilterInput').value = ''; applyFilters(); });
-    if(document.getElementById('fetchDataBtn')) document.getElementById('fetchDataBtn').addEventListener('click', fetchLiveOrders);
+    
+    // બટન પર ક્લિક કરવાથી મેન્યુઅલ રિફ્રેશ 
+    if(document.getElementById('fetchDataBtn')) document.getElementById('fetchDataBtn').addEventListener('click', () => fetchLiveOrders(false));
 
-    document.addEventListener('DOMContentLoaded', fetchLiveOrders);
+    // --- આ રહ્યો ઓટો-રિફ્રેશ નો કમાન્ડ (જે પહેલા મિસિંગ હતો) ---
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchLiveOrders(false); // પહેલીવાર પેજ ખુલે ત્યારે ડેટા લાવો
+      setInterval(() => fetchLiveOrders(true), 30000); // દર 30 સેકન્ડે ડેટા લાવો 
+    });
+
   </script>
 </body>
 </html>
