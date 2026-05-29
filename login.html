@@ -22,8 +22,6 @@
     .message { margin-top: 16px; font-size: 13px; font-weight: 600; display: none; padding: 12px; border-radius: 10px; }
     .msg-error { background: #fee2e2; color: #991b1b; display: block; }
     .msg-success { background: #d1fae5; color: #065f46; display: block; }
-    
-    /* 📱 MOBILE RESPONSIVE CSS */
     @media (max-width: 480px) {
       .login-card { padding: 30px 20px; border-radius: 16px; }
       h2 { font-size: 22px; }
@@ -62,7 +60,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrnWtXr83C9uTVrGHvqgKlGaRPOqSdFMRlGizbprwQ1bWH2g5eLPu5pOUrfQJvI_03/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
     
     const loginView = document.getElementById('loginView');
     const forgotView = document.getElementById('forgotView');
@@ -97,6 +95,7 @@
           showMsg('loginMsg', 'Login Successful!', 'msg-success');
           sessionStorage.setItem('pharmaAdminToken', data.token);
           sessionStorage.setItem('pharmaCurrentUsername', data.username);
+          sessionStorage.setItem('pharmaUserRole', data.role);
           setTimeout(() => { window.location.href = 'admin.html'; }, 800);
         } else {
           showMsg('loginMsg', data.message || 'Invalid details!', 'msg-error');
