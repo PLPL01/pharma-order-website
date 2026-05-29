@@ -157,13 +157,11 @@
       </div>
     </div>
 
-    <!-- 🗂️ TABS -->
     <div class="tabs-container">
        <button class="tab-btn active" id="tabToday">📦 Today's Orders</button>
        <button class="tab-btn" id="tabHistory">📜 Order History</button>
     </div>
 
-    <!-- ⚡ QUICK SHORTCUT FILTERS -->
     <div class="quick-filters-row">
        <span style="font-size:13px; font-weight:800; color:var(--text-muted); text-transform:uppercase; width: 100%; margin-bottom: 4px;">🔍 Quick Filter:</span>
        <button class="quick-btn active-all" id="quickAllBtn">📁 All Orders</button>
@@ -171,7 +169,6 @@
        <button class="quick-btn" id="quickNotAvailBtn">🔴 Not Available</button>
     </div>
 
-    <!-- 📊 STATS CARDS -->
     <div class="stats-container">
       <div class="stat-card">
         <div class="refresh-indicator" title="Live Auto-Refresh Active"></div>
@@ -188,7 +185,6 @@
       </div>
     </div>
 
-    <!-- Filters Panel -->
     <div class="controls-panel" id="controlsPanel" style="display: none;">
       <div class="filters-row">
         <div class="input-box">
@@ -206,12 +202,10 @@
       <div class="actions-row">
         <button class="btn btn-ghost" id="resetFiltersBtn">🧹 Reset Filters</button>
         <button class="btn btn-ghost" id="fetchDataBtn">🔄 Refresh Data</button>
-        <!-- 📥 EXPORT EXCEL (Admin Only) -->
         <button class="btn btn-primary admin-only" id="exportExcelBtn" style="width: auto; margin-top: 0;">📥 Export to Excel</button>
       </div>
     </div>
 
-    <!-- Search box specifically for Today's Tab -->
     <div id="todaySearchBox" style="margin-bottom: 20px;">
        <input type="text" id="todaySearchInput" placeholder="🔍 Search Today's Orders...">
     </div>
@@ -221,7 +215,6 @@
     </div>
   </div>
 
-  <!-- Modal 1: User & Password Manager (Admin Only) -->
   <div class="modal-backdrop" id="userModalBackdrop">
      <div class="modal-box">
         <div class="modal-header">
@@ -237,7 +230,6 @@
      </div>
   </div>
 
-  <!-- Modal 2: Customer History -->
   <div class="modal-backdrop" id="historyModalBackdrop">
     <div class="modal-box">
        <div class="modal-header">
@@ -254,7 +246,6 @@
     </div>
  </div>
 
- <!-- Modal 3: Audit Log (Admin Only) -->
  <div class="modal-backdrop" id="auditModalBackdrop">
   <div class="modal-box">
      <div class="modal-header">
@@ -269,7 +260,8 @@
 </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQ24DbTK65mGs8Xzm3k5hZIzlvGjCwaeWVHGVyApQUBuWA3QNSVDjkOukDYy4KXsEf/exec";
+    // 👇 તમારી નવી લિંક 
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4u4mNA85vAfEJLPmY2ebz0SX2aKzlt9gGlNeXkK6Jl0RoeQD0OtHFv0XZ0kyeTCY_/exec";
     
     document.getElementById('welcomeUser').innerText = currentAdminUser;
     const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
@@ -359,7 +351,7 @@
          
          const fileBadge = firstItem.fileUrl ? `<a href="${firstItem.fileUrl}" target="_blank" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; display:inline-block; border: 1px solid #bae6fd;">📎 View File</a>` : '';
          
-         // 👇 FIX: Processed By ONLY FOR ADMIN
+         // Processed By ONLY FOR ADMIN
          const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending' && isAdmin) ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
          
          const historyBtn = `<button class="btn-action" onclick="showCustomerHistory('${firstItem.mobile}', '${firstItem.customer.replace(/'/g, "\\'")}')">📜 History</button>`;
@@ -409,7 +401,7 @@
       }
     });
 
-    // 👇 FIX: History Search by Robust Mobile Number Matching
+    // History Search
     window.showCustomerHistory = function(mobile, name) {
        document.getElementById('historyCustomerDetails').innerText = `Customer: ${name} (${mobile})`;
        const tbody = document.getElementById('historyTableBody');
