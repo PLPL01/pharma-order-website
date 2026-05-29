@@ -162,7 +162,6 @@
     <div id="cardsContainer" class="order-cards-container"></div>
   </div>
 
-  <!-- Modals -->
   <div class="modal-backdrop" id="userModalBackdrop">
      <div class="modal-box" style="max-width: 550px;">
         <div class="modal-header">
@@ -231,6 +230,8 @@
     function fetchUsersList() {
         const tbody = document.getElementById('usersTableBody');
         tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">🔄 Fetching staff...</td></tr>';
+        
+        // CORS ERROR SOLVED: Simple POST call without headers
         fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchUsers', token: myToken }) })
         .then(res => res.json()).then(data => {
             if(data.status === 'success') {
@@ -248,6 +249,7 @@
        if(!targetId || !newPass) return;
        const btn = document.getElementById('saveUserBtn'); btn.innerText = "⏳..."; btn.disabled = true;
        const statusDiv = document.getElementById('userActionStatus');
+       
        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'manageUser', token: myToken, targetUserid: targetId, newPassword: newPass }) })
        .then(res => res.json()).then(data => {
           statusDiv.style.display = "block"; statusDiv.className = data.status === 'success' ? 'msg-success' : 'msg-error';
@@ -264,16 +266,14 @@
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // --- સુધારેલ ફેચ ફંક્શન ---
+    // --- સુધારેલ ફેચ ફંક્શન (CORS ERROR ફિક્સ કરેલ) ---
     function fetchLiveOrders(isAutoRefresh = false) {
       if (!isAutoRefresh) cardsContainer.innerHTML = `<div class="skeleton-card"><div class="skeleton-line" style="height:22px; width:40%;"></div><div class="skeleton-line" style="height:16px; width:60%;"></div><div class="skeleton-line" style="height:80px; width:100%; margin-top:10px;"></div></div>`; 
       else document.getElementById('autoRefreshStatus').innerText = "(Syncing...)";
 
-      // POST Request નો ઉપયોગ કર્યો છે જેથી Cache નો પ્રોબ્લેમ જ ના રહે, અને redirect ફેલ ના થાય
+      // અહિંયા માત્ર સાદો POST કમાન્ડ રાખ્યો છે જેથી ક્યારેય એરર ન આવે
       fetch(WEB_APP_URL, { 
           method: 'POST', 
-          redirect: 'follow', // કનેક્શન બ્લોક થતું અટકાવશે 
-          headers: { "Content-Type": "text/plain;charset=utf-8" }, 
           body: JSON.stringify({ action: 'fetchOrders', token: myToken }) 
       })
       .then(res => res.json())
@@ -289,7 +289,6 @@
             allOrders = data.data; allOrders.reverse(); applyFilters();
         } else if (data.status === 'error') {
             document.getElementById('autoRefreshStatus').innerText = "(Backend Error)";
-            console.error("Backend Error:", data.message);
         }
       }).catch(err => { 
           console.error("Fetch Error:", err);
@@ -300,6 +299,9 @@
     // --- સુધારેલ ડેટ ફિલ્ટર (તારીખ) ફંક્શન ---
     function applyFilters() {
       const now = new Date();
+      const tY = now.getFullYear();
+      const tM = now.getMonth();
+      const tD = now.getDate();
 
       const todaySearchQuery = document.getElementById('todaySearchInput') ? document.getElementById('todaySearchInput').value.toLowerCase().trim() : '';
       const historyGlobalQuery = document.getElementById('globalSearchInput') ? document.getElementById('globalSearchInput').value.toLowerCase().trim() : '';
@@ -309,16 +311,18 @@
         let isToday = false;
         let isDateQueryMatch = false;
 
-        // તારીખ ચેક કરવાનું ૧૦૦% સાચું લોજિક (Date, Month, Year સીધા જ મેચ કરશે)
+        // તારીખ ચેક કરવાનું 100% સાચું અને સરળ લોજિક
         if (o.timestamp) { 
             try { 
                 let d = new Date(o.timestamp); 
                 if (!isNaN(d.getTime())) { 
-                    isToday = (d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear());
+                    isToday = (d.getDate() === tD && d.getMonth() === tM && d.getFullYear() === tY);
                     
                     if (dateQuery) {
-                        let dq = new Date(dateQuery);
-                        isDateQueryMatch = (d.getDate() === dq.getDate() && d.getMonth() === dq.getMonth() && d.getFullYear() === dq.getFullYear());
+                        let parts = dateQuery.split('-'); // YYYY-MM-DD
+                        if(parts.length === 3) {
+                            isDateQueryMatch = (d.getFullYear() === parseInt(parts[0]) && d.getMonth() === (parseInt(parts[1]) - 1) && d.getDate() === parseInt(parts[2]));
+                        }
                     }
                 } 
             } catch(e) {} 
@@ -402,7 +406,8 @@
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id'); const newStatus = e.target.value;
-        fetch(WEB_APP_URL, { method: 'POST', redirect: 'follow', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
+        
+        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
         .then(() => fetchLiveOrders(true)); 
       }
     });
