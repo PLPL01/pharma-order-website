@@ -217,7 +217,7 @@
     </div>
 
     <div id="cardsContainer" class="order-cards-container">
-       <div class="loading-status">🔄 Authenticating & Fetching Secure Data...</div>
+       <div class="loading-status">🔄 Fetching Secure Data...</div>
     </div>
   </div>
 
@@ -228,18 +228,9 @@
            <h3 class="modal-title">👥 Manage Staff</h3>
            <button class="modal-close" onclick="document.getElementById('userModalBackdrop').style.display='none'">&times;</button>
         </div>
-        <p style="font-size: 12px; margin: 0 0 16px; color: var(--text-muted); line-height: 1.5;">
-           Enter a new name to create a staff ID. <br><b>To change the main admin password, use User ID "admin".</b>
-        </p>
         <div style="display:flex; flex-direction:column; gap:14px;">
-           <div>
-              <label style="font-size:12px; font-weight:700; color:var(--text-main);">User ID</label>
-              <input type="text" id="targetUserid" placeholder="e.g. admin or staff1" style="margin-top:4px;">
-           </div>
-           <div>
-              <label style="font-size:12px; font-weight:700; color:var(--text-main);">New Password</label>
-              <input type="password" id="newPassword" placeholder="Enter New Password" style="margin-top:4px;">
-           </div>
+           <input type="text" id="targetUserid" placeholder="User ID">
+           <input type="password" id="newPassword" placeholder="New Password">
            <button class="btn btn-primary" id="saveUserBtn">💾 Save Changes</button>
            <div id="userActionStatus" style="font-size: 13px; font-weight: 700; display: none; text-align:center; padding: 8px; border-radius: 8px;"></div>
         </div>
@@ -272,131 +263,65 @@
      </div>
      <div class="modal-content-scroll">
        <p id="auditOrderDetails" style="font-size: 14px; font-weight: 800; margin-top:0; color: var(--primary);"></p>
-       <pre id="auditLogText" style="font-size: 12px; background: #f1f5f9; padding: 12px; border-radius: 8px; border: 1px solid var(--border); white-space: pre-wrap; font-family: inherit; color: var(--text-main); line-height: 1.6;"></pre>
+       <pre id="auditLogText" style="font-size: 12px; background: #f1f5f9; padding: 12px; border-radius: 8px; white-space: pre-wrap; font-family: inherit; color: var(--text-main); line-height: 1.6;"></pre>
      </div>
   </div>
 </div>
 
   <script>
-    // 👇 તમારી નવી લિંક અહી નાખો 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzzqLopNzvsO9Nnor_oLsG-rjD-E7pafUAs0eFf87-C3f4PdSQeDQ7NDylcHqLKYVtY/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQ24DbTK65mGs8Xzm3k5hZIzlvGjCwaeWVHGVyApQUBuWA3QNSVDjkOukDYy4KXsEf/exec";
     
-    const welcomeEl = document.getElementById('welcomeUser');
-    if(welcomeEl) { welcomeEl.innerText = currentAdminUser; }
-
+    document.getElementById('welcomeUser').innerText = currentAdminUser;
     const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
-    
-    // 🔒 HIDE ADMIN FEATURES FROM STAFF (Bulletproof Security)
-    if(!isAdmin) {
-       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-    }
+    if(!isAdmin) { document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none'); }
 
     let currentTab = 'today'; 
     let currentStatusQuickFilter = ''; 
 
-    const profileToggleBtn = document.getElementById('profileToggleBtn');
-    const profileDropdownMenu = document.getElementById('profileDropdownMenu');
-    if(profileToggleBtn && profileDropdownMenu) {
-        profileToggleBtn.addEventListener('click', (e) => {
-           e.stopPropagation();
-           profileDropdownMenu.style.display = profileDropdownMenu.style.display === 'block' ? 'none' : 'block';
-        });
-        document.addEventListener('click', () => { profileDropdownMenu.style.display = 'none'; });
-    }
+    document.getElementById('profileToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('profileDropdownMenu').style.display = 'block'; });
+    document.addEventListener('click', () => { document.getElementById('profileDropdownMenu').style.display = 'none'; });
 
-    const openUserModalBtn = document.getElementById('openUserModalBtn');
-    if(openUserModalBtn) openUserModalBtn.addEventListener('click', () => { document.getElementById('userModalBackdrop').style.display = 'flex'; });
+    document.getElementById('openUserModalBtn').addEventListener('click', () => { document.getElementById('userModalBackdrop').style.display = 'flex'; });
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    if(logoutBtn) {
-        logoutBtn.addEventListener('click', () => {
-           sessionStorage.removeItem('pharmaAdminToken'); sessionStorage.removeItem('pharmaCurrentUsername'); sessionStorage.removeItem('pharmaUserRole');
-           window.location.href = 'login.html';
-        });
-    }
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+       sessionStorage.clear(); window.location.href = 'login.html';
+    });
 
-    const saveUserBtn = document.getElementById('saveUserBtn');
-    if(saveUserBtn) {
-        saveUserBtn.addEventListener('click', () => {
-           const targetId = document.getElementById('targetUserid').value.trim();
-           const newPass = document.getElementById('newPassword').value.trim();
-           const statusDiv = document.getElementById('userActionStatus');
-           
-           if(!targetId || !newPass) {
-              statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b";
-              statusDiv.innerText = "⚠️ Both ID and Password are required!"; return;
-           }
-           saveUserBtn.innerText = "Processing..."; saveUserBtn.disabled = true;
-
-           fetch(WEB_APP_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-              body: JSON.stringify({ action: 'manageUser', token: myToken, targetUserid: targetId, newPassword: newPass })
-           })
-           .then(res => res.json())
-           .then(data => {
-              statusDiv.style.display = "block";
-              if(data.status === 'success') {
-                 statusDiv.style.background = "#d1fae5"; statusDiv.style.color = "#065f46"; statusDiv.innerText = "✅ " + data.message;
-                 document.getElementById('targetUserid').value = ''; document.getElementById('newPassword').value = '';
-                 setTimeout(() => { document.getElementById('userModalBackdrop').style.display = 'none'; }, 1500);
-              } else { statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Error: " + data.message; }
-           })
-           .catch(err => { statusDiv.style.display = "block"; statusDiv.style.background = "#fee2e2"; statusDiv.style.color = "#991b1b"; statusDiv.innerText = "❌ Server Connection Failed!"; })
-           .finally(() => { saveUserBtn.innerText = "💾 Save Changes"; saveUserBtn.disabled = false; setTimeout(() => { statusDiv.style.display = "none"; }, 3000); });
-        });
-    }
+    document.getElementById('saveUserBtn').addEventListener('click', () => {
+       const targetId = document.getElementById('targetUserid').value.trim();
+       const newPass = document.getElementById('newPassword').value.trim();
+       const statusDiv = document.getElementById('userActionStatus');
+       fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'manageUser', token: myToken, targetUserid: targetId, newPassword: newPass }) })
+       .then(res => res.json()).then(data => {
+          statusDiv.style.display = "block"; statusDiv.innerText = data.message;
+          setTimeout(() => { document.getElementById('userModalBackdrop').style.display = 'none'; }, 1500);
+       });
+    });
 
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
     function fetchLiveOrders() {
-      if(!cardsContainer) return;
-      cardsContainer.innerHTML = '<div class="loading-status">🔄 Verifying Token & Fetching Data...</div>';
-      fetch(WEB_APP_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'fetchOrders', token: myToken })
-      })
-      .then(res => { if (!res.ok) throw new Error("HTTP Error"); return res.json(); })
+      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
+      .then(res => res.json())
       .then(data => {
-        if(data.status === 'unauthorized') { if(logoutBtn) logoutBtn.click(); return; }
-        if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) { allOrders = []; applyFilters(); return; }
+        if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
         allOrders = data.data; allOrders.reverse();
         applyFilters();
-      })
-      .catch(err => {
-        cardsContainer.innerHTML = `<div style="background:#fee2e2; border: 2px solid #ef4444; padding:30px 15px; border-radius:12px; text-align:center; grid-column: 1 / -1;"><h3 style="color:#991b1b; margin-top:0;">⚠️ Fetch Failed!</h3><p style="color:#1e293b; font-weight:600;">સિસ્ટમમાં એરર આવી રહી છે.</p></div>`;
       });
     }
-
-    function fetchOrdersQuietly() {
-       fetch(WEB_APP_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'fetchOrders', token: myToken }) })
-       .then(res => res.json())
-       .then(data => {
-         if(data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
-            if (!document.querySelector('.status-saving')) { allOrders = data.data; allOrders.reverse(); applyFilters(); }
-         } else if (data.status === 'unauthorized') { if(logoutBtn) logoutBtn.click(); }
-       }).catch(err => console.log("Quiet fetch ignored"));
-    }
-    setInterval(fetchOrdersQuietly, 30000); 
 
     function applyFilters() {
       const now = new Date();
       const todayIso = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
-      
       const todaySearchQuery = document.getElementById('todaySearchInput') ? document.getElementById('todaySearchInput').value.toLowerCase().trim() : '';
       const historyGlobalQuery = document.getElementById('globalSearchInput') ? document.getElementById('globalSearchInput').value.toLowerCase().trim() : '';
       const dateQuery = document.getElementById('dateFilterInput') ? document.getElementById('dateFilterInput').value : '';
-      const priorityQuery = document.getElementById('priorityFilter') ? document.getElementById('priorityFilter').value.toLowerCase().trim() : '';
 
       let filtered = allOrders.filter(o => {
         let rowDateIso = '';
-        if (o.timestamp) {
-           try { let d = new Date(o.timestamp); if (!isNaN(d.getTime())) { rowDateIso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); } } catch(e) {}
-        }
+        if (o.timestamp) { try { let d = new Date(o.timestamp); if (!isNaN(d.getTime())) { rowDateIso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); } } catch(e) {} }
         const rowStatus = (o.orderStatus || 'Pending').toLowerCase();
-        const rowPriority = (o.priority || 'Normal').toLowerCase();
 
         if (currentTab === 'today') {
            if (rowDateIso !== todayIso) return false; 
@@ -404,12 +329,10 @@
         } else if (currentTab === 'history') {
            if (dateQuery && rowDateIso !== dateQuery) return false;
            if (historyGlobalQuery) { const combined = Object.values(o).join(' ').toLowerCase(); if (!combined.includes(historyGlobalQuery)) return false; }
-           if (priorityQuery && rowPriority !== priorityQuery) return false;
         }
         if (currentStatusQuickFilter && rowStatus !== currentStatusQuickFilter) return false;
         return true;
       });
-
       renderCards(filtered);
     }
 
@@ -420,31 +343,25 @@
     }
 
     function renderCards(ordersList) {
-      if(!cardsContainer) return;
-      if(ordersList.length === 0) {
-        cardsContainer.innerHTML = '<div class="loading-status">📭 No matching orders found.</div>';
-        ['totalOrdersCount', 'pendingOrdersCount', 'skywayOrdersCount'].forEach(id => { if(document.getElementById(id)) document.getElementById(id).innerText = '0'; });
-        return;
-      }
-
       cardsContainer.innerHTML = '';
+      if(ordersList.length === 0) {
+        cardsContainer.innerHTML = '<div class="loading-status">📭 No matching orders found.</div>'; return;
+      }
       const groupedOrders = {};
       ordersList.forEach(order => { if (!groupedOrders[order.orderId]) groupedOrders[order.orderId] = []; groupedOrders[order.orderId].push(order); });
 
       let pendingCount = 0; let skywayCount = 0;
-      let totalGroups = Object.keys(groupedOrders).length;
 
       for (const [orderId, items] of Object.entries(groupedOrders)) {
          const firstItem = items[0];
-         const formattedDate = firstItem.timestamp ? new Date(firstItem.timestamp).toLocaleString('en-IN', {dateStyle: 'medium', timeStyle: 'short'}) : 'N/A';
-         const priorityBadge = firstItem.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal';
          const currentStatus = firstItem.orderStatus || 'Pending';
          const colors = getStatusColors(currentStatus);
          
          const fileBadge = firstItem.fileUrl ? `<a href="${firstItem.fileUrl}" target="_blank" style="background:#e0f2fe; color:#0369a1; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; display:inline-block; border: 1px solid #bae6fd;">📎 View File</a>` : '';
-         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending') ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
          
-         // 📜 History & 🕵️‍♂️ Log Buttons
+         // 👇 FIX: Processed By ONLY FOR ADMIN
+         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending' && isAdmin) ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
+         
          const historyBtn = `<button class="btn-action" onclick="showCustomerHistory('${firstItem.mobile}', '${firstItem.customer.replace(/'/g, "\\'")}')">📜 History</button>`;
          const auditBtn = isAdmin ? `<button class="btn-action" onclick="showAuditLog('${orderId}')">🕵️‍♂️ Log</button>` : '';
 
@@ -453,25 +370,22 @@
 
          const itemsHtml = items.map((item, index) => `<div class="item-row"><span class="item-name">${index + 1}. ${item.product}</span><span class="item-qty">Qty: ${item.qty}</span></div>`).join('');
 
-         const cardHtml = `
+         cardsContainer.innerHTML += `
             <div class="order-card" style="border: 2px solid ${colors.border}; box-shadow: 0 4px 12px ${colors.bg};">
                <div class="order-header">
                   <div style="flex:1;">
                      <div class="order-id">${orderId}</div>
-                     <div class="order-time">${formattedDate}</div>
+                     <div class="order-time">${new Date(firstItem.timestamp).toLocaleString('en-IN', {dateStyle: 'short', timeStyle: 'short'})}</div>
                      ${processedBadge}
                   </div>
-                  <span class="${priorityBadge}">${firstItem.priority || 'Normal'}</span>
+                  <span class="${firstItem.priority === 'Urgent' ? 'badge badge-urgent' : 'badge badge-normal'}">${firstItem.priority || 'Normal'}</span>
                </div>
                <div>
                   <div class="customer-info">${firstItem.customer} ${historyBtn}</div>
                   <div class="customer-mobile">📱 ${firstItem.mobile}</div>
                </div>
                ${fileBadge ? `<div style="margin-top:-5px;">${fileBadge}</div>` : ''}
-               <div class="items-box">
-                  <div class="items-title">Order Items (${items.length})</div>
-                  <div class="items-list-scroll">${itemsHtml}</div>
-               </div>
+               <div class="items-box"><div class="items-list-scroll">${itemsHtml}</div></div>
                <div class="order-footer">
                   <select class="status-dropdown" data-id="${orderId}" style="background:${colors.bg}; color:${colors.text}; border: 1px solid ${colors.border};">
                      <option value="Pending" ${currentStatus === 'Pending' ? 'selected' : ''}>Pending</option>
@@ -481,52 +395,34 @@
                   ${auditBtn}
                </div>
             </div>`;
-         cardsContainer.innerHTML += cardHtml;
       }
-      if(document.getElementById('totalOrdersCount')) document.getElementById('totalOrdersCount').innerText = totalGroups;
-      if(document.getElementById('pendingOrdersCount')) document.getElementById('pendingOrdersCount').innerText = pendingCount;
-      if(document.getElementById('skywayOrdersCount')) document.getElementById('skywayOrdersCount').innerText = skywayCount;
+      document.getElementById('totalOrdersCount').innerText = Object.keys(groupedOrders).length;
+      document.getElementById('pendingOrdersCount').innerText = pendingCount;
+      document.getElementById('skywayOrdersCount').innerText = skywayCount;
     }
 
-    if(cardsContainer) {
-        cardsContainer.addEventListener('change', (e) => {
-          if(e.target.classList.contains('status-dropdown')) {
-            const orderId = e.target.getAttribute('data-id');
-            const newStatus = e.target.value;
-            const selectEl = e.target;
-            const parentCard = selectEl.closest('.order-card');
-            selectEl.classList.add('status-saving');
-            
-            fetch(WEB_APP_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-              body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser })
-            })
-            .then(res => res.json())
-            .then(data => {
-              if(data.status === 'unauthorized') { if(logoutBtn) logoutBtn.click(); return; }
-              const colors = getStatusColors(newStatus);
-              selectEl.style.background = colors.bg; selectEl.style.color = colors.text; selectEl.style.borderColor = colors.border;
-              if(parentCard) { parentCard.style.border = `2px solid ${colors.border}`; parentCard.style.boxShadow = `0 4px 12px ${colors.bg}`; }
-              allOrders.forEach(o => { 
-                if(o.orderId === orderId) { o.orderStatus = newStatus; o.processedBy = newStatus !== 'Pending' ? currentAdminUser : ''; } 
-              });
-              // Note: Audit log updates on backend, will refresh locally on next fetch.
-              applyFilters();
-            })
-            .catch(err => alert("Error updating status."))
-            .finally(() => { selectEl.classList.remove('status-saving'); });
-          }
-        });
-    }
+    cardsContainer.addEventListener('change', (e) => {
+      if(e.target.classList.contains('status-dropdown')) {
+        const orderId = e.target.getAttribute('data-id'); const newStatus = e.target.value;
+        fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
+        .then(() => fetchLiveOrders());
+      }
+    });
 
-    // 📜 View Customer History Function
+    // 👇 FIX: History Search by Robust Mobile Number Matching
     window.showCustomerHistory = function(mobile, name) {
        document.getElementById('historyCustomerDetails').innerText = `Customer: ${name} (${mobile})`;
        const tbody = document.getElementById('historyTableBody');
        tbody.innerHTML = '';
        
-       const customerOrders = allOrders.filter(o => o.mobile === mobile);
+       const cleanMobile = String(mobile).replace(/\D/g, '').slice(-10);
+       
+       const customerOrders = allOrders.filter(o => {
+          if(!o.mobile) return false;
+          const oMobile = String(o.mobile).replace(/\D/g, '').slice(-10);
+          return oMobile === cleanMobile;
+       });
+
        if(customerOrders.length === 0) {
           tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No past orders found.</td></tr>`;
        } else {
@@ -539,7 +435,6 @@
        document.getElementById('historyModalBackdrop').style.display = 'flex';
     };
 
-    // 🕵️‍♂️ View Audit Log Function (Admin Only)
     window.showAuditLog = function(orderId) {
        if(!isAdmin) return;
        const order = allOrders.find(o => o.orderId === orderId);
@@ -548,82 +443,31 @@
        document.getElementById('auditModalBackdrop').style.display = 'flex';
     };
 
-    // 📥 EXPORT TO EXCEL (Admin Only)
-    const exportBtn = document.getElementById('exportExcelBtn');
-    if(exportBtn && isAdmin) {
-       exportBtn.addEventListener('click', () => {
-          let csvContent = "data:text/csv;charset=utf-8,";
-          csvContent += "Date,Order ID,Customer Name,Mobile,Product,Qty,Priority,Status,Processed By\n";
+    if(isAdmin) {
+       document.getElementById('exportExcelBtn').addEventListener('click', () => {
+          let csvContent = "data:text/csv;charset=utf-8,Date,Order ID,Customer Name,Mobile,Product,Qty,Priority,Status,Processed By\n";
           allOrders.forEach(o => {
              let d = o.timestamp ? new Date(o.timestamp).toLocaleString('en-IN') : '';
              let row = `"${d}","${o.orderId}","${o.customer}","${o.mobile}","${o.product}","${o.qty}","${o.priority}","${o.orderStatus}","${o.processedBy}"`;
              csvContent += row + "\n";
           });
           var encodedUri = encodeURI(csvContent);
-          var link = document.createElement("a");
-          link.setAttribute("href", encodedUri);
-          link.setAttribute("download", `Pharma_Orders_${new Date().toLocaleDateString('en-IN')}.csv`);
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          var link = document.createElement("a"); link.setAttribute("href", encodedUri); link.setAttribute("download", `Pharma_Orders_${new Date().toLocaleDateString('en-IN')}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link);
        });
     }
 
-    const tabToday = document.getElementById('tabToday');
-    const tabHistory = document.getElementById('tabHistory');
-    const controlsPanel = document.getElementById('controlsPanel');
-    const todaySearchBox = document.getElementById('todaySearchBox');
-
-    if(tabToday) {
-        tabToday.addEventListener('click', () => {
-           currentTab = 'today';
-           tabToday.classList.add('active'); if(tabHistory) tabHistory.classList.remove('active');
-           if(controlsPanel) controlsPanel.style.display = 'none'; 
-           if(todaySearchBox) todaySearchBox.style.display = 'block';
-           applyFilters();
-        });
-    }
-
-    if(tabHistory) {
-        tabHistory.addEventListener('click', () => {
-           currentTab = 'history';
-           tabHistory.classList.add('active'); if(tabToday) tabToday.classList.remove('active');
-           if(controlsPanel) controlsPanel.style.display = 'block'; 
-           if(todaySearchBox) todaySearchBox.style.display = 'none';
-           applyFilters();
-        });
-    }
-
-    const qAll = document.getElementById('quickAllBtn');
-    const qPending = document.getElementById('quickPendingBtn');
-    const qNotAvail = document.getElementById('quickNotAvailBtn');
-
-    function resetQuickBtnStyles() { 
-        if(qAll) qAll.className = 'quick-btn'; 
-        if(qPending) qPending.className = 'quick-btn'; 
-        if(qNotAvail) qNotAvail.className = 'quick-btn'; 
-    }
-
-    if(qAll) qAll.addEventListener('click', () => { currentStatusQuickFilter = ''; resetQuickBtnStyles(); qAll.classList.add('active-all'); applyFilters(); });
-    if(qPending) qPending.addEventListener('click', () => { currentStatusQuickFilter = 'pending'; resetQuickBtnStyles(); qPending.classList.add('active-pending'); applyFilters(); });
-    if(qNotAvail) qNotAvail.addEventListener('click', () => { currentStatusQuickFilter = 'not available'; resetQuickBtnStyles(); qNotAvail.classList.add('active-notavail'); applyFilters(); });
-
-    const sIn = document.getElementById('todaySearchInput'); if(sIn) sIn.addEventListener('input', applyFilters);
-    const gIn = document.getElementById('globalSearchInput'); if(gIn) gIn.addEventListener('input', applyFilters);
-    const dIn = document.getElementById('dateFilterInput'); if(dIn) dIn.addEventListener('change', applyFilters);
-    const pIn = document.getElementById('priorityFilter'); if(pIn) pIn.addEventListener('change', applyFilters);
-
-    const rBtn = document.getElementById('resetFiltersBtn');
-    if(rBtn) {
-        rBtn.addEventListener('click', () => {
-          if(gIn) gIn.value = ''; if(dIn) dIn.value = ''; if(pIn) pIn.value = '';
-          applyFilters();
-        });
-    }
-
-    const fBtn = document.getElementById('fetchDataBtn');
-    if(fBtn) fBtn.addEventListener('click', fetchLiveOrders);
+    document.getElementById('tabToday').addEventListener('click', () => { currentTab = 'today'; document.getElementById('tabToday').classList.add('active'); document.getElementById('tabHistory').classList.remove('active'); document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('todaySearchBox').style.display = 'block'; applyFilters(); });
+    document.getElementById('tabHistory').addEventListener('click', () => { currentTab = 'history'; document.getElementById('tabHistory').classList.add('active'); document.getElementById('tabToday').classList.remove('active'); document.getElementById('controlsPanel').style.display = 'block'; document.getElementById('todaySearchBox').style.display = 'none'; applyFilters(); });
     
+    document.getElementById('quickAllBtn').addEventListener('click', () => { currentStatusQuickFilter = ''; applyFilters(); });
+    document.getElementById('quickPendingBtn').addEventListener('click', () => { currentStatusQuickFilter = 'pending'; applyFilters(); });
+    document.getElementById('quickNotAvailBtn').addEventListener('click', () => { currentStatusQuickFilter = 'not available'; applyFilters(); });
+
+    if(document.getElementById('todaySearchInput')) document.getElementById('todaySearchInput').addEventListener('input', applyFilters);
+    if(document.getElementById('globalSearchInput')) document.getElementById('globalSearchInput').addEventListener('input', applyFilters);
+    if(document.getElementById('dateFilterInput')) document.getElementById('dateFilterInput').addEventListener('change', applyFilters);
+    if(document.getElementById('resetFiltersBtn')) document.getElementById('resetFiltersBtn').addEventListener('click', () => { document.getElementById('globalSearchInput').value = ''; document.getElementById('dateFilterInput').value = ''; applyFilters(); });
+
     document.addEventListener('DOMContentLoaded', fetchLiveOrders);
   </script>
 </body>
