@@ -6,57 +6,147 @@
   <title>Place Order - Secure Pharma</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --primary: #0f766e; --bg: #f0fdfa; --border: #e2e8f0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
-    .card { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; }
-    input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; }
-    .btn { padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
+    :root { 
+      --primary: #0f766e; --bg: #f0fdfa; --surface: #ffffff; 
+      --border: #e2e8f0; --text: #1e293b; --shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; box-sizing: border-box; }
+    .card { background: var(--surface); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { margin: 0; color: var(--primary); font-size: 26px; }
+    .input-group { margin-bottom: 18px; }
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--text); margin-bottom: 6px; text-transform: uppercase; }
+    input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: #f8fafc; }
+    input:focus { border-color: var(--primary); background: #fff; }
+    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
     .item-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; width: 100%; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-remove { background: #fee2e2; color: #991b1b; padding: 0 12px; }
+    .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; text-align: center; display: none; }
+    .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
+    .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
   </style>
 </head>
 <body>
+
   <div class="card">
-    <h1>📦 Place Order</h1>
+    <div class="header">
+      <h1>📦 Place New Order</h1>
+      <p>Enter details to request medicine</p>
+    </div>
+
     <form id="orderForm">
-      <input type="text" id="customerName" placeholder="Full Name" required>
-      <input type="tel" id="mobileNumber" placeholder="Mobile Number" required>
-      <div id="itemsWrapper">
-        <div class="item-row">
-          <input type="text" class="productName" placeholder="Medicine Name" required>
-          <input type="number" class="productQty" placeholder="Qty" required>
-        </div>
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="customerName" placeholder="Enter your name" required>
       </div>
-      <button type="button" class="btn" style="background:#e2e8f0; color:#334155; margin-bottom:10px;" onclick="addItem()">+ Add Item</button>
-      <input type="file" id="prescriptionFile" accept="image/*">
-      <button type="submit" class="btn" id="submitBtn">🚀 Submit</button>
+      
+      <div class="input-group">
+        <label>Mobile Number</label>
+        <input type="tel" id="mobileNumber" placeholder="10-digit number" pattern="[0-9]{10}" required>
+      </div>
+
+      <div class="items-container">
+        <label>Medicines</label>
+        <div id="itemsWrapper">
+          <div class="item-row">
+            <input type="text" class="productName" placeholder="Medicine Name" required>
+            <input type="number" class="productQty" placeholder="Qty" min="1" required>
+            <button type="button" class="btn-remove" disabled style="opacity:0.3">✖</button>
+          </div>
+        </div>
+        <button type="button" class="btn" style="background:#e2e8f0; color:#334155; margin-top:10px; padding:10px;" onclick="addItem()">+ Add More</button>
+      </div>
+
+      <div class="input-group">
+        <label>Priority</label>
+        <select id="priorityLevel">
+          <option value="Normal">🟢 Normal</option>
+          <option value="Urgent">🔴 Urgent</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label>Prescription (Photo)</label>
+        <input type="file" id="prescriptionFile" accept="image/*">
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Order</button>
+      <div id="statusMessage" class="status-msg"></div>
     </form>
   </div>
+
   <script>
+    // 👇 તમારી નવી લિંક અહી સેટ કરેલી છે
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
+
     function addItem() {
       const div = document.createElement('div');
       div.className = 'item-row';
-      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required><input type="number" class="productQty" placeholder="Qty" required><button type="button" class="btn" style="width:auto;" onclick="this.parentElement.remove()">✖</button>`;
+      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required>
+                       <input type="number" class="productQty" placeholder="Qty" min="1" required>
+                       <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>`;
       document.getElementById('itemsWrapper').appendChild(div);
     }
+
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true; submitBtn.innerText = "Processing...";
+      const statusMsg = document.getElementById('statusMessage');
+      
+      submitBtn.innerText = "⏳ Processing..."; 
+      submitBtn.disabled = true;
+
       const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+      const customer = document.getElementById('customerName').value.trim();
+      const mobile = document.getElementById('mobileNumber').value.trim();
+      const priority = document.getElementById('priorityLevel').value;
+      const fileInput = document.getElementById('prescriptionFile');
+      
       const items = [];
       document.querySelectorAll('.item-row').forEach(row => {
-        items.push({ orderId, customer: document.getElementById('customerName').value, mobile: document.getElementById('mobileNumber').value, product: row.querySelector('.productName').value, qty: row.querySelector('.productQty').value, priority: 'Normal' });
+        items.push({ 
+            orderId, customer, mobile, 
+            product: row.querySelector('.productName').value, 
+            qty: row.querySelector('.productQty').value, 
+            priority 
+        });
       });
-      const fileInput = document.getElementById('prescriptionFile');
+
       let fileBase64 = "", mimeType = "", fileName = "";
       if (fileInput.files.length > 0) {
         const file = fileInput.files[0];
-        mimeType = file.type; fileName = Date.now() + "_" + file.name;
-        fileBase64 = await new Promise(r => { const reader = new FileReader(); reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(file); });
+        mimeType = file.type; fileName = customer + "_" + Date.now() + "_" + file.name;
+        fileBase64 = await new Promise(r => { 
+            const reader = new FileReader(); 
+            reader.onload = () => r(reader.result.toString().split(',')[1]); 
+            reader.readAsDataURL(file); 
+        });
       }
-      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) })
-      .then(res => res.json()).then(r => { alert("Order Placed: " + orderId); location.reload(); });
+
+      fetch(WEB_APP_URL, { 
+        method: 'POST', 
+        body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) 
+      })
+      .then(res => res.json())
+      .then(r => {
+        if(r.status === 'success') {
+          statusMsg.style.display = "block"; 
+          statusMsg.innerHTML = "✅ Order placed! ID: " + orderId; 
+          statusMsg.className = "status-msg msg-success";
+          document.getElementById('orderForm').reset();
+        } else { throw new Error(); }
+      })
+      .catch(() => { 
+        statusMsg.style.display = "block"; 
+        statusMsg.innerHTML = "❌ Failed. Try again."; 
+        statusMsg.className = "status-msg msg-error"; 
+      })
+      .finally(() => { 
+        submitBtn.innerText = "🚀 Submit Order"; 
+        submitBtn.disabled = false; 
+      });
     });
   </script>
 </body>
