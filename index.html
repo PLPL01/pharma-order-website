@@ -4,148 +4,59 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Place Order - Secure Pharma</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
-      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --radius: 16px;
-      --shadow-lg: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
-    }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text-main); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box; }
-    
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-lg); width: 100%; max-width: 500px; box-sizing: border-box; }
-    
-    .header { text-align: center; margin-bottom: 25px; }
-    .header h1 { margin: 0 0 8px; color: var(--primary); font-size: 24px; font-weight: 800; }
-    .header p { color: var(--text-muted); margin: 0; font-size: 14px; }
-    
-    .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
-    
-    input[type="text"], input[type="tel"], input[type="number"], select, input[type="file"] { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 500; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
-    input:focus { border-color: var(--primary); background: #fff; }
-    
-    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+    :root { --primary: #0f766e; --bg: #f0fdfa; --border: #e2e8f0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); padding: 20px; display: flex; justify-content: center; }
+    .card { background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 15px rgba(0,0,0,0.1); width: 100%; max-width: 500px; box-sizing: border-box; }
+    input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; }
+    .btn { padding: 12px; background: var(--primary); color: #fff; border: none; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
     .item-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .btn-remove { background: #fee2e2; color: #991b1b; border: none; border-radius: 8px; padding: 0 12px; cursor: pointer; font-weight: 700; }
-    
-    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: 0.2s; width: 100%; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-primary:hover { background: var(--primary-hover); }
-    .btn-ghost { background: #e2e8f0; color: #334155; padding: 8px 12px; font-size: 12px; width: auto; margin-bottom: 10px; }
-    
-    .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 13px; text-align: center; display: none; }
-    .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
-    .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
-
-    @media (max-width: 480px) {
-      .card { padding: 20px; }
-      .item-row { flex-direction: column; gap: 8px; }
-      .btn-remove { padding: 10px; }
-    }
   </style>
 </head>
 <body>
-
   <div class="card">
-    <div class="header">
-      <h1>📦 Place New Order</h1>
-      <p>Enter details to request medicine</p>
-    </div>
-
+    <h1>📦 Place Order</h1>
     <form id="orderForm">
-      <div class="input-group">
-        <label>Name</label>
-        <input type="text" id="customerName" placeholder="Full Name" required>
-      </div>
-      
-      <div class="input-group">
-        <label>Mobile</label>
-        <input type="tel" id="mobileNumber" placeholder="10-digit number" pattern="[0-9]{10}" required>
-      </div>
-
-      <div class="items-container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <label style="margin:0;">Medicines</label>
-            <button type="button" class="btn btn-ghost" id="addItemBtn">+ Add</button>
-        </div>
-        <div id="itemsWrapper">
-          <div class="item-row">
-            <input type="text" class="productName" placeholder="Medicine Name" required>
-            <input type="number" class="productQty" placeholder="Qty" min="1" required>
-            <button type="button" class="btn-remove" disabled style="opacity:0.3">✖</button>
-          </div>
+      <input type="text" id="customerName" placeholder="Full Name" required>
+      <input type="tel" id="mobileNumber" placeholder="Mobile Number" required>
+      <div id="itemsWrapper">
+        <div class="item-row">
+          <input type="text" class="productName" placeholder="Medicine Name" required>
+          <input type="number" class="productQty" placeholder="Qty" required>
         </div>
       </div>
-
-      <div class="input-group">
-        <label>Priority</label>
-        <select id="priorityLevel">
-          <option value="Normal">🟢 Normal</option>
-          <option value="Urgent">🔴 Urgent</option>
-        </select>
-      </div>
-
-      <div class="input-group">
-        <label>Prescription</label>
-        <input type="file" id="prescriptionFile" accept="image/*">
-      </div>
-
-      <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Order</button>
-      <div id="statusMessage" class="status-msg"></div>
+      <button type="button" class="btn" style="background:#e2e8f0; color:#334155; margin-bottom:10px;" onclick="addItem()">+ Add Item</button>
+      <input type="file" id="prescriptionFile" accept="image/*">
+      <button type="submit" class="btn" id="submitBtn">🚀 Submit</button>
     </form>
   </div>
-
   <script>
-    // 👇 અહી તમારી નવી લિંક છે જે તમે આપી હતી
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
-
-    const itemsWrapper = document.getElementById('itemsWrapper');
-    document.getElementById('addItemBtn').addEventListener('click', () => {
+    function addItem() {
       const div = document.createElement('div');
       div.className = 'item-row';
-      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required>
-                       <input type="number" class="productQty" placeholder="Qty" min="1" required>
-                       <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>`;
-      itemsWrapper.appendChild(div);
-    });
-
+      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required><input type="number" class="productQty" placeholder="Qty" required><button type="button" class="btn" style="width:auto;" onclick="this.parentElement.remove()">✖</button>`;
+      document.getElementById('itemsWrapper').appendChild(div);
+    }
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('submitBtn');
-      const statusMsg = document.getElementById('statusMessage');
-      const customer = document.getElementById('customerName').value.trim();
-      const mobile = document.getElementById('mobileNumber').value.trim();
-      const priority = document.getElementById('priorityLevel').value;
-      const fileInput = document.getElementById('prescriptionFile');
-      
-      const items = [];
+      submitBtn.disabled = true; submitBtn.innerText = "Processing...";
       const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+      const items = [];
       document.querySelectorAll('.item-row').forEach(row => {
-        items.push({ orderId, customer, mobile, product: row.querySelector('.productName').value, qty: row.querySelector('.productQty').value, priority });
+        items.push({ orderId, customer: document.getElementById('customerName').value, mobile: document.getElementById('mobileNumber').value, product: row.querySelector('.productName').value, qty: row.querySelector('.productQty').value, priority: 'Normal' });
       });
-
-      submitBtn.innerText = "⏳ Submitting..."; submitBtn.disabled = true;
-
-      try {
-        let fileBase64 = "", mimeType = "", fileName = "";
-        if (fileInput.files.length > 0) {
-          const file = fileInput.files[0];
-          mimeType = file.type; fileName = customer + "_" + file.name;
-          fileBase64 = await new Promise((resolve) => {
-             const reader = new FileReader(); reader.onload = () => resolve(reader.result.toString().split(',')[1]); reader.readAsDataURL(file);
-          });
-        }
-        const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) });
-        const result = await res.json();
-        if(result.status === 'success') {
-          statusMsg.style.display = "block"; statusMsg.innerHTML = "✅ Order placed! ID: " + orderId; statusMsg.className = "status-msg msg-success";
-          document.getElementById('orderForm').reset();
-        } else { throw new Error(); }
-      } catch(e) { statusMsg.style.display = "block"; statusMsg.innerHTML = "❌ Failed. Try again."; statusMsg.className = "status-msg msg-error"; }
-      finally { submitBtn.innerText = "🚀 Submit Order"; submitBtn.disabled = false; }
+      const fileInput = document.getElementById('prescriptionFile');
+      let fileBase64 = "", mimeType = "", fileName = "";
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        mimeType = file.type; fileName = Date.now() + "_" + file.name;
+        fileBase64 = await new Promise(r => { const reader = new FileReader(); reader.onload = () => r(reader.result.split(',')[1]); reader.readAsDataURL(file); });
+      }
+      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) })
+      .then(res => res.json()).then(r => { alert("Order Placed: " + orderId); location.reload(); });
     });
   </script>
 </body>
