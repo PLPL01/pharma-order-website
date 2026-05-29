@@ -1,32 +1,133 @@
 <!DOCTYPE html>
-<html>
-<head><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Login</title>
-<style>
-  body { font-family: sans-serif; background: #f0fdfa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-  .box { background: #fff; padding: 30px; border-radius: 16px; width: 300px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-  input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-  .btn { width: 100%; padding: 12px; background: #0f766e; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
-</style>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Admin Login - Secure Pharma</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f0fdfa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+    .login-card { background: #ffffff; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(15, 118, 110, 0.1); width: 100%; max-width: 380px; text-align: center; box-sizing: border-box; }
+    h2 { color: #0f766e; margin-bottom: 8px; font-weight: 800; font-size: 26px; }
+    p { color: #64748b; font-size: 14px; margin-bottom: 24px; }
+    .input-group { margin-bottom: 16px; text-align: left; }
+    label { display: block; font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; }
+    input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; transition: 0.2s; text-align: center; letter-spacing: 1px; }
+    input:focus { border-color: #0f766e; box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1); }
+    .btn { background: #0f766e; color: #fff; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
+    .btn:hover { background: #115e59; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,118,110,0.2); }
+    .btn:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+    .forgot-link { display: inline-block; margin-top: 20px; font-size: 13px; color: #0f766e; text-decoration: none; font-weight: 600; cursor: pointer; padding: 5px; }
+    .forgot-link:hover { text-decoration: underline; }
+    .message { margin-top: 16px; font-size: 13px; font-weight: 600; display: none; padding: 12px; border-radius: 10px; }
+    .msg-error { background: #fee2e2; color: #991b1b; display: block; }
+    .msg-success { background: #d1fae5; color: #065f46; display: block; }
+    @media (max-width: 480px) {
+      .login-card { padding: 30px 20px; border-radius: 16px; }
+      h2 { font-size: 22px; }
+      input, .btn { padding: 12px; font-size: 14px; }
+    }
+  </style>
 </head>
 <body>
-  <div class="box">
-    <h2>Login</h2>
-    <input type="text" id="uid" placeholder="User ID">
-    <input type="password" id="pass" placeholder="Password">
-    <button class="btn" id="loginBtn">Login</button>
+
+  <div class="login-card" id="loginView">
+    <h2>Secure Login</h2>
+    <p>Multi-User Portal Active.</p>
+    <div class="input-group">
+      <label>User ID</label>
+      <input type="text" id="useridInput" placeholder="Enter User ID">
+    </div>
+    <div class="input-group">
+      <label>Password</label>
+      <input type="password" id="passwordInput" placeholder="••••••••">
+    </div>
+    <button class="btn" id="loginBtn">Login securely</button>
+    <a class="forgot-link" id="showForgotBtn">Forgot Password?</a>
+    <div id="loginMsg" class="message"></div>
   </div>
+
+  <div class="login-card" id="forgotView" style="display: none;">
+    <h2>Reset Password</h2>
+    <p>Receive password on recovery email.</p>
+    <div class="input-group">
+      <label>User ID</label>
+      <input type="text" id="forgotUseridInput" placeholder="Enter User ID">
+    </div>
+    <button class="btn" id="sendEmailBtn">Send Password</button>
+    <a class="forgot-link" id="showLoginBtn">Back to Login</a>
+    <div id="forgotMsg" class="message"></div>
+  </div>
+
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQ24DbTK65mGs8Xzm3k5hZIzlvGjCwaeWVHGVyApQUBuWA3QNSVDjkOukDYy4KXsEf/exec";
+    
+    const loginView = document.getElementById('loginView');
+    const forgotView = document.getElementById('forgotView');
+    
+    document.getElementById('showForgotBtn').addEventListener('click', () => { loginView.style.display='none'; forgotView.style.display='block'; });
+    document.getElementById('showLoginBtn').addEventListener('click', () => { forgotView.style.display='none'; loginView.style.display='block'; });
+
+    function showMsg(id, text, className) {
+      const el = document.getElementById(id);
+      el.textContent = text;
+      el.className = 'message ' + className;
+    }
+
     document.getElementById('loginBtn').addEventListener('click', () => {
-      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', userid: document.getElementById('uid').value, password: document.getElementById('pass').value }) })
-      .then(res => res.json()).then(data => {
+      const userid = document.getElementById('useridInput').value.trim();
+      const password = document.getElementById('passwordInput').value.trim();
+      const btn = document.getElementById('loginBtn');
+      
+      if(!userid || !password) return showMsg('loginMsg', 'Enter User ID and Password!', 'msg-error');
+
+      btn.innerText = "Authenticating...";
+      btn.disabled = true;
+      
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'login', userid: userid, password: password })
+      })
+      .then(res => res.json())
+      .then(data => {
         if(data.status === 'success') {
+          showMsg('loginMsg', 'Login Successful!', 'msg-success');
           sessionStorage.setItem('pharmaAdminToken', data.token);
           sessionStorage.setItem('pharmaCurrentUsername', data.username);
           sessionStorage.setItem('pharmaUserRole', data.role);
-          window.location.href = 'admin.html';
-        } else { alert(data.message); }
-      });
+          setTimeout(() => { window.location.href = 'admin.html'; }, 800);
+        } else {
+          showMsg('loginMsg', data.message || 'Invalid details!', 'msg-error');
+        }
+      })
+      .catch(err => showMsg('loginMsg', 'Internet error. Try again.', 'msg-error'))
+      .finally(() => { btn.innerText = "Login securely"; btn.disabled = false; });
+    });
+
+    document.getElementById('sendEmailBtn').addEventListener('click', () => {
+      const userid = document.getElementById('forgotUseridInput').value.trim();
+      const btn = document.getElementById('sendEmailBtn');
+      if(!userid) return showMsg('forgotMsg', 'Enter User ID!', 'msg-error');
+
+      btn.innerText = "Sending...";
+      btn.disabled = true;
+
+      fetch(WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'forgotPassword', userid: userid })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if(data.status === 'success') {
+          showMsg('forgotMsg', 'Password sent to email!', 'msg-success');
+        } else {
+          showMsg('forgotMsg', data.message, 'msg-error');
+        }
+      })
+      .catch(err => showMsg('forgotMsg', 'Internet error.', 'msg-error'))
+      .finally(() => { btn.innerText = "Send Password"; btn.disabled = false; });
     });
   </script>
 </body>
