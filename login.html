@@ -20,6 +20,11 @@
     .message { margin-top: 16px; font-size: 13px; font-weight: 600; display: none; padding: 12px; border-radius: 10px; }
     .msg-error { background: #fee2e2; color: #991b1b; display: block; }
     .msg-success { background: #d1fae5; color: #065f46; display: block; }
+    @media (max-width: 480px) {
+      .login-card { padding: 30px 20px; border-radius: 16px; }
+      h2 { font-size: 22px; }
+      input, .btn { padding: 12px; font-size: 14px; }
+    }
   </style>
 </head>
 <body>
@@ -40,8 +45,8 @@
   </div>
 
   <script>
-    // 👇 તમારી લિંક અહીં સેટ જ છે
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
+    // 👇 Tamari link ahiya set j chhe
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwQ24DbTK65mGs8Xzm3k5hZIzlvGjCwaeWVHGVyApQUBuWA3QNSVDjkOukDYy4KXsEf/exec";
 
     document.getElementById('loginBtn').addEventListener('click', () => {
       const userid = document.getElementById('useridInput').value.trim();
