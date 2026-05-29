@@ -73,7 +73,8 @@
       toggleBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     });
 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz6D6dN9LvFJpYZiTs0tteQde3RcaxfBZM34fdyctnznA_lCfsN96Lw8kylsod9wiIO/exec";
+    // Navi URL update kari chhe
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRju9C_1S14BJcPlRyOCnb03vjvqGx1ZdSPu3X8_PicTLSCpWHv4T2tn3OtP7hJ07E/exec";
 
     document.getElementById('loginForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -86,7 +87,11 @@
 
       btn.innerText = "Authenticating..."; btn.disabled = true; errorDiv.style.display = "none";
 
-      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'login', userid: useridVal, password: passwordVal }) })
+      fetch(WEB_APP_URL, { 
+          method: 'POST', 
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: 'login', userid: useridVal, password: passwordVal }) 
+      })
       .then(res => res.json())
       .then(data => {
         if (data.status === 'success') {
