@@ -338,10 +338,8 @@
       .then(res => res.json())
       .then(data => {
         if(data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); return; }
-        if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) {
-          cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">No data found.</div>'; return;
-        }
         
+        // Update tab names dynamically
         if(data.tabTodayName) {
            document.getElementById('tabToday').innerText = data.tabTodayName;
            document.getElementById('inputTabToday').value = data.tabTodayName;
@@ -351,11 +349,18 @@
            document.getElementById('inputTabHistory').value = data.tabHistoryName;
         }
 
+        // Handle empty data perfectly so it doesn't crash
+        if(data.status === "error" || !Array.isArray(data.data) || data.data.length === 0) {
+          allOrders = [];
+          applyFilters();
+          return;
+        }
+        
         allOrders = data.data; 
         allOrders.reverse();
         applyFilters();
       })
-      .catch(err => { cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">Fetch Failed.</div>'; });
+      .catch(err => { cardsContainer.innerHTML = '<div class="loading-status" style="color:#b42318;">⚠️ Fetch Failed. કૃપા કરીને પેજ રિફ્રેશ કરો.</div>'; });
     }
 
     // Quiet Refresh
@@ -370,13 +375,15 @@
          if(data.status === 'success' && Array.isArray(data.data) && data.data.length > 0) {
             if (!document.querySelector('.status-saving')) { allOrders = data.data; allOrders.reverse(); applyFilters(); }
          } else if (data.status === 'unauthorized') { document.getElementById('logoutBtn').click(); }
-       });
+       })
+       .catch(err => console.log("Quiet fetch ignored"));
     }
     setInterval(fetchOrdersQuietly, 30000); 
 
-    // FILTER MASTER LOGIC
+    // FILTER MASTER LOGIC (BUG FIXED)
     function applyFilters() {
       const now = new Date();
+      // Local IST Date format properly matched
       const todayIso = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
       
       const todaySearchQuery = document.getElementById('todaySearchInput').value.toLowerCase().trim();
@@ -385,7 +392,18 @@
       const priorityQuery = document.getElementById('priorityFilter').value.toLowerCase().trim();
 
       let filtered = allOrders.filter(o => {
-        const rowDateIso = o.timestamp ? new Date(o.timestamp).toISOString().split('T')[0] : '';
+        let rowDateIso = '';
+        
+        // 100% Safe Local Time Extraction
+        if (o.timestamp) {
+           try {
+               let d = new Date(o.timestamp);
+               if (!isNaN(d.getTime())) {
+                  rowDateIso = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+               }
+           } catch(e) {}
+        }
+
         const rowStatus = (o.orderStatus || 'Pending').toLowerCase();
         const rowPriority = (o.priority || 'Normal').toLowerCase();
 
@@ -420,7 +438,7 @@
 
     function renderCards(ordersList) {
       if(ordersList.length === 0) {
-        cardsContainer.innerHTML = '<div class="loading-status">No matching orders found.</div>';
+        cardsContainer.innerHTML = '<div class="loading-status">📭 No matching orders found.</div>';
         document.getElementById('totalOrdersCount').innerText = '0';
         document.getElementById('pendingOrdersCount').innerText = '0';
         document.getElementById('skywayOrdersCount').innerText = '0';
