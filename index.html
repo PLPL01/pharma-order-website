@@ -11,55 +11,39 @@
     :root {
       --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
       --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --radius: 16px;
-      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
       --shadow-lg: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
     }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 40px 20px; color: var(--text-main); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text-main); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; box-sizing: border-box; }
     
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px; box-shadow: var(--shadow-lg); width: 100%; max-width: 600px; box-sizing: border-box; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-lg); width: 100%; max-width: 500px; box-sizing: border-box; }
     
-    .header { text-align: center; margin-bottom: 30px; }
-    .header h1 { margin: 0 0 8px; color: var(--primary); font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
-    .header p { color: var(--text-muted); margin: 0; font-size: 15px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h1 { margin: 0 0 8px; color: var(--primary); font-size: 24px; font-weight: 800; }
+    .header p { color: var(--text-muted); margin: 0; font-size: 14px; }
     
     .input-group { margin-bottom: 20px; }
-    .input-group label { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .input-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
     
-    input[type="text"], input[type="tel"], input[type="number"], select, input[type="file"] { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; font-weight: 500; color: var(--text-main); background: #f8fafc; outline: none; font-family: inherit; box-sizing: border-box; transition: all 0.2s; }
-    input:focus, select:focus { background: #fff; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1); }
-    input[type="file"] { padding: 10px; background: #fff; border: 1px dashed var(--primary); cursor: pointer; }
+    input[type="text"], input[type="tel"], input[type="number"], select, input[type="file"] { width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; font-weight: 500; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
+    input:focus { border-color: var(--primary); background: #fff; }
     
-    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 24px; }
-    .items-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .items-header h3 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .items-container { background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
+    .item-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .btn-remove { background: #fee2e2; color: #991b1b; border: none; border-radius: 8px; padding: 0 12px; cursor: pointer; font-weight: 700; }
     
-    .item-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
-    .item-row input[type="text"] { flex: 2; }
-    .item-row input[type="number"] { flex: 1; }
+    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; transition: 0.2s; width: 100%; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-ghost { background: #e2e8f0; color: #334155; padding: 8px 12px; font-size: 12px; width: auto; margin-bottom: 10px; }
     
-    .btn { padding: 14px 24px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; transition: all 0.2s; box-sizing: border-box; }
-    .btn-primary { background: var(--primary); color: #fff; width: 100%; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2); margin-top: 10px; }
-    .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(15, 118, 110, 0.3); }
-    .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
-    
-    .btn-ghost { background: #e2e8f0; color: var(--text-main); padding: 8px 16px; font-size: 13px; }
-    .btn-ghost:hover { background: #cbd5e1; }
-    
-    .btn-remove { background: #fee2e2; color: #991b1b; padding: 14px; font-size: 16px; border-radius: 12px; cursor: pointer; border: none; transition: 0.2s; }
-    .btn-remove:hover { background: #fca5a5; }
-
-    .status-msg { margin-top: 20px; padding: 16px; border-radius: 12px; font-weight: 600; font-size: 14px; text-align: center; display: none; }
+    .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 13px; text-align: center; display: none; }
     .msg-success { background: #d1fae5; color: #065f46; border: 1px solid #34d399; }
     .msg-error { background: #fee2e2; color: #991b1b; border: 1px solid #f87171; }
 
-    /* 📱 MOBILE RESPONSIVE CSS */
-    @media (max-width: 600px) {
-      body { padding: 15px; }
-      .card { padding: 24px 20px; border-radius: 20px; }
-      .header h1 { font-size: 24px; }
-      .item-row { flex-direction: column; gap: 10px; align-items: stretch; background: #fff; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0; }
-      .btn-remove { padding: 10px; font-size: 14px; margin-top: 5px; }
-      input[type="text"], input[type="tel"], input[type="number"], select { padding: 12px 14px; font-size: 14px; }
+    @media (max-width: 480px) {
+      .card { padding: 20px; }
+      .item-row { flex-direction: column; gap: 8px; }
+      .btn-remove { padding: 10px; }
     }
   </style>
 </head>
@@ -68,46 +52,45 @@
   <div class="card">
     <div class="header">
       <h1>📦 Place New Order</h1>
-      <p>Fill details carefully to generate an order.</p>
+      <p>Enter details to request medicine</p>
     </div>
 
     <form id="orderForm">
       <div class="input-group">
-        <label>Customer Name *</label>
-        <input type="text" id="customerName" placeholder="Enter full name" required>
+        <label>Name</label>
+        <input type="text" id="customerName" placeholder="Full Name" required>
       </div>
       
       <div class="input-group">
-        <label>Mobile Number *</label>
-        <input type="tel" id="mobileNumber" placeholder="10-digit mobile number" pattern="[0-9]{10}" required>
+        <label>Mobile</label>
+        <input type="tel" id="mobileNumber" placeholder="10-digit number" pattern="[0-9]{10}" required>
       </div>
 
       <div class="items-container">
-        <div class="items-header">
-          <h3>💊 Order Items</h3>
-          <button type="button" class="btn btn-ghost" id="addItemBtn">+ Add Item</button>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <label style="margin:0;">Medicines</label>
+            <button type="button" class="btn btn-ghost" id="addItemBtn">+ Add</button>
         </div>
         <div id="itemsWrapper">
           <div class="item-row">
-            <input type="text" class="productName" placeholder="Product / Medicine Name" required>
+            <input type="text" class="productName" placeholder="Medicine Name" required>
             <input type="number" class="productQty" placeholder="Qty" min="1" required>
-            <button type="button" class="btn-remove" disabled style="opacity: 0.5;">✖</button>
+            <button type="button" class="btn-remove" disabled style="opacity:0.3">✖</button>
           </div>
         </div>
       </div>
 
       <div class="input-group">
-        <label>Priority Level</label>
+        <label>Priority</label>
         <select id="priorityLevel">
-          <option value="Normal">🟢 Normal Delivery</option>
-          <option value="Urgent">🔴 Urgent Delivery</option>
+          <option value="Normal">🟢 Normal</option>
+          <option value="Urgent">🔴 Urgent</option>
         </select>
       </div>
 
       <div class="input-group">
-        <label>Upload Prescription (Optional)</label>
-        <input type="file" id="prescriptionFile" accept="image/*, .pdf">
-        <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">Supported: JPG, PNG, PDF (Max 5MB)</p>
+        <label>Prescription</label>
+        <input type="file" id="prescriptionFile" accept="image/*">
       </div>
 
       <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Order</button>
@@ -116,137 +99,54 @@
   </div>
 
   <script>
-    // 👇 તમારી નવી લિંક અહીં સેટ જ છે
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxrnWtXr83C9uTVrGHvqgKlGaRPOqSdFMRlGizbprwQ1bWH2g5eLPu5pOUrfQJvI_03/exec";
+    // 👇 અહી તમારી નવી લિંક છે જે તમે આપી હતી
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbznm1w4OTRlnrO1VwMv1vUHSlo2vrMgieVLowjte4lCR2_lwvSbHiigFBJy3OnjSes-/exec";
 
-    // Item Add/Remove Logic
     const itemsWrapper = document.getElementById('itemsWrapper');
-    const addItemBtn = document.getElementById('addItemBtn');
-
-    addItemBtn.addEventListener('click', () => {
-      const newRow = document.createElement('div');
-      newRow.className = 'item-row';
-      newRow.innerHTML = `
-        <input type="text" class="productName" placeholder="Product / Medicine Name" required>
-        <input type="number" class="productQty" placeholder="Qty" min="1" required>
-        <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>
-      `;
-      itemsWrapper.appendChild(newRow);
+    document.getElementById('addItemBtn').addEventListener('click', () => {
+      const div = document.createElement('div');
+      div.className = 'item-row';
+      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required>
+                       <input type="number" class="productQty" placeholder="Qty" min="1" required>
+                       <button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>`;
+      itemsWrapper.appendChild(div);
     });
 
-    // Handle Form Submit
     document.getElementById('orderForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const submitBtn = document.getElementById('submitBtn');
       const statusMsg = document.getElementById('statusMessage');
-      
       const customer = document.getElementById('customerName').value.trim();
       const mobile = document.getElementById('mobileNumber').value.trim();
       const priority = document.getElementById('priorityLevel').value;
       const fileInput = document.getElementById('prescriptionFile');
-
-      // Gather Items
-      const itemRows = document.querySelectorAll('.item-row');
+      
       const items = [];
-      const generateOrderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000); // Generate Unique ID
-
-      itemRows.forEach(row => {
-        const product = row.querySelector('.productName').value.trim();
-        const qty = row.querySelector('.productQty').value.trim();
-        if(product && qty) {
-          items.push({ orderId: generateOrderId, customer, mobile, product, qty, priority });
-        }
+      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+      document.querySelectorAll('.item-row').forEach(row => {
+        items.push({ orderId, customer, mobile, product: row.querySelector('.productName').value, qty: row.querySelector('.productQty').value, priority });
       });
 
-      if(items.length === 0) {
-        showStatus('error', '⚠️ Please add at least one item.');
-        return;
-      }
-
-      submitBtn.innerText = "⏳ Processing Securely...";
-      submitBtn.disabled = true;
-      statusMsg.style.display = "none";
+      submitBtn.innerText = "⏳ Submitting..."; submitBtn.disabled = true;
 
       try {
-        let fileBase64 = "";
-        let mimeType = "";
-        let fileName = "";
-
-        // If file selected, read as base64
+        let fileBase64 = "", mimeType = "", fileName = "";
         if (fileInput.files.length > 0) {
           const file = fileInput.files[0];
-          
-          if(file.size > 5 * 1024 * 1024) {
-             showStatus('error', '⚠️ File size must be less than 5MB.');
-             submitBtn.innerText = "🚀 Submit Order";
-             submitBtn.disabled = false;
-             return;
-          }
-
-          mimeType = file.type;
-          fileName = customer.replace(/\s+/g, '_') + '_' + file.name;
-          fileBase64 = await toBase64(file);
+          mimeType = file.type; fileName = customer + "_" + file.name;
+          fileBase64 = await new Promise((resolve) => {
+             const reader = new FileReader(); reader.onload = () => resolve(reader.result.toString().split(',')[1]); reader.readAsDataURL(file);
+          });
         }
-
-        const payload = {
-          action: 'newOrder',
-          items: items,
-          fileBase64: fileBase64,
-          mimeType: mimeType,
-          fileName: fileName
-        };
-
-        const response = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-
-        if (result.status === 'success') {
-          showStatus('success', `✅ Order placed successfully! ID: <b>${generateOrderId}</b>`);
+        const res = await fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) });
+        const result = await res.json();
+        if(result.status === 'success') {
+          statusMsg.style.display = "block"; statusMsg.innerHTML = "✅ Order placed! ID: " + orderId; statusMsg.className = "status-msg msg-success";
           document.getElementById('orderForm').reset();
-          // Keep only one item row
-          itemsWrapper.innerHTML = `
-            <div class="item-row">
-              <input type="text" class="productName" placeholder="Product / Medicine Name" required>
-              <input type="number" class="productQty" placeholder="Qty" min="1" required>
-              <button type="button" class="btn-remove" disabled style="opacity: 0.5;">✖</button>
-            </div>
-          `;
-        } else {
-          showStatus('error', '❌ Failed to place order. ' + (result.message || ''));
-        }
-
-      } catch (error) {
-        showStatus('error', '❌ Network Error. Please try again.');
-      } finally {
-        submitBtn.innerText = "🚀 Submit Order";
-        submitBtn.disabled = false;
-      }
+        } else { throw new Error(); }
+      } catch(e) { statusMsg.style.display = "block"; statusMsg.innerHTML = "❌ Failed. Try again."; statusMsg.className = "status-msg msg-error"; }
+      finally { submitBtn.innerText = "🚀 Submit Order"; submitBtn.disabled = false; }
     });
-
-    // Helper: Convert File to Base64
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-          let encoded = reader.result.toString().replace(/^data:(.*,)?/, '');
-          if ((encoded.length % 4) > 0) { encoded += '='.repeat(4 - (encoded.length % 4)); }
-          resolve(encoded);
-        };
-        reader.onerror = error => reject(error);
-      });
-    }
-
-    function showStatus(type, msg) {
-      const statusMsg = document.getElementById('statusMessage');
-      statusMsg.style.display = "block";
-      statusMsg.innerHTML = msg;
-      statusMsg.className = type === 'success' ? 'status-msg msg-success' : 'status-msg msg-error';
-    }
   </script>
 </body>
 </html>
