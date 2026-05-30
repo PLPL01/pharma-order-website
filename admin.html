@@ -91,7 +91,7 @@
     .order-id { font-weight: 800; color: var(--primary); font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .order-time { font-size: 13px; color: var(--text-muted); font-weight: 500; }
     
-    /* Processed Badge Design */
+    /* Processed Badge Design (Order Logs) */
     .processed-badge { font-size: 11px; font-weight: 700; color: var(--primary); background: rgba(15, 118, 110, 0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 8px; border: 1px solid rgba(15, 118, 110, 0.2); }
     
     .customer-info { font-weight: 700; color: var(--text-main); font-size: 16px; display: flex; align-items: center; }
@@ -150,6 +150,7 @@
           <div class="profile-dropdown" id="profileDropdownMenu">
             <button class="dropdown-item admin-only" id="openUserModalBtn">🔑 Manage Staff</button>
             <hr class="admin-only" style="border:0; border-top:1px solid var(--border); margin:4px 0;">
+            
             <button class="dropdown-item logout-item" id="logoutBtn">🚪 Logout Securely</button>
           </div>
         </div>
@@ -247,8 +248,15 @@
     });
 
     document.getElementById('welcomeUser').innerText = currentAdminUser;
-    const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
-    if(!isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+    
+    // --- ADMIN SECURITY CHECK (Strong Logic) ---
+    const isAdmin = (String(currentUserRole).trim().toLowerCase() === 'admin');
+    if(!isAdmin) {
+        // જો સ્ટાફ હશે, તો એડમિન બટન 100% ગાયબ થઈ જશે
+        document.querySelectorAll('.admin-only').forEach(el => {
+            el.style.setProperty('display', 'none', 'important');
+        });
+    }
 
     let currentTab = 'today'; 
     let currentStatusQuickFilter = ''; 
@@ -434,8 +442,10 @@
          const colors = getStatusColors(currentStatus);
          const fileBadge = firstItem.fileUrl ? `<a href="${firstItem.fileUrl}" target="_blank" style="background:var(--btn-action-bg); color:var(--primary); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; border: 1px solid var(--border);">📎 View File</a>` : '';
          
-         // અહિંયા PROCESSED BY વાળું ફીચર 100% વિઝિબલ કર્યું છે
-         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending') ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
+         // -------------------------------------------------------------------------
+         // ORDER LOGS SECURITY FEATURE: ફક્ત Admin હશે તો જ દેખાશે કે કોણે ઓર્ડર પ્રોસેસ કર્યો!
+         // -------------------------------------------------------------------------
+         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending' && isAdmin) ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
          
          const historyBtn = `<button class="btn-action" onclick="showCustomerHistory('${firstItem.mobile}', '${firstItem.customer.replace(/'/g, "\\'")}')">📜 History</button>`;
 
@@ -463,6 +473,8 @@
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id'); const newStatus = e.target.value;
         const noCacheUrl = WEB_APP_URL + "?t=" + new Date().getTime();
+        
+        // ડેટા અપડેટ કરતી વખતે કરન્ટ લોગિન થયેલા યુઝર (સ્ટાફ/એડમિન) નું નામ સર્વરમાં મોકલવામાં આવે છે
         fetch(noCacheUrl, { method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) })
         .then(() => fetchLiveOrders(true)); 
       }
