@@ -146,9 +146,10 @@
       </div>
     </div>
 
+    <!-- અહીં Today's Orders ડિફોલ્ટ એક્ટિવ કર્યું છે -->
     <div class="tabs-container">
-       <button class="tab-btn" id="tabToday">📦 Today's Orders</button>
-       <button class="tab-btn active" id="tabHistory">📜 Order History</button>
+       <button class="tab-btn active" id="tabToday">📦 Today's Orders</button>
+       <button class="tab-btn" id="tabHistory">📜 Order History</button>
     </div>
 
     <div class="quick-filters-row">
@@ -164,7 +165,8 @@
       <div class="stat-card"><span class="stat-label">Skyway (Clear)</span><span class="stat-value" style="color:#10b981;" id="skywayOrdersCount">0</span></div>
     </div>
 
-    <div class="controls-panel" id="controlsPanel" style="display: block;">
+    <!-- Controls panel (History) ડિફોલ્ટ છુપાવેલું છે -->
+    <div class="controls-panel" id="controlsPanel" style="display: none;">
       <div class="filters-row">
         <div class="input-box"><input type="text" id="globalSearchInput" placeholder="🔍 Search Order or Mobile..."></div>
         <div class="filter-box"><input type="date" id="dateFilterInput" class="modern-datepicker" title="Select Date"></div>
@@ -175,7 +177,8 @@
       </div>
     </div>
 
-    <div id="todaySearchBox" style="display: none; margin-bottom: 20px;">
+    <!-- Today's search box ડિફોલ્ટ દેખાશે -->
+    <div id="todaySearchBox" style="display: block; margin-bottom: 20px;">
        <input type="text" id="todaySearchInput" placeholder="🔍 Search Today's Orders...">
     </div>
 
@@ -240,7 +243,8 @@
     const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
     if(!isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
 
-    let currentTab = 'history'; 
+    // અહીં ડિફોલ્ટ ટેબ 'today' સેટ કર્યું છે
+    let currentTab = 'today'; 
     let currentStatusQuickFilter = ''; 
 
     // કેલેન્ડર મોડર્ન પોપઅપ
