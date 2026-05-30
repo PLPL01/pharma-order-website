@@ -78,7 +78,9 @@
     .filters-row, .actions-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
     .actions-row { justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 16px; }
     .input-box, .filter-box { flex: 1; min-width: 150px; }
-    input[type="text"], select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; background: var(--surface); color: var(--text-main); outline: none; box-sizing: border-box; }
+    
+    input[type="text"], input[type="password"], select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; background: var(--surface); color: var(--text-main); outline: none; box-sizing: border-box; }
+    
     .btn { padding: 11px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; border: none; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 8px; }
     .btn-primary { background: var(--primary); color: #fff; }
     .btn-ghost { background: var(--btn-ghost-bg); color: var(--text-main); border: 1px solid var(--border); }
@@ -88,7 +90,10 @@
     .order-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid var(--border); padding-bottom: 12px; }
     .order-id { font-weight: 800; color: var(--primary); font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .order-time { font-size: 13px; color: var(--text-muted); font-weight: 500; }
-    .processed-badge { font-size: 11px; font-weight: 700; color: var(--text-muted); background: var(--btn-action-bg); padding: 4px 8px; border-radius: 6px; display: inline-block; margin-top: 8px; border: 1px solid var(--border); }
+    
+    /* Processed Badge Design */
+    .processed-badge { font-size: 11px; font-weight: 700; color: var(--primary); background: rgba(15, 118, 110, 0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 8px; border: 1px solid rgba(15, 118, 110, 0.2); }
+    
     .customer-info { font-weight: 700; color: var(--text-main); font-size: 16px; display: flex; align-items: center; }
     .customer-mobile { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
     .items-box { background: var(--item-bg); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
@@ -101,9 +106,13 @@
     .badge-normal { background: var(--btn-action-bg); color: var(--text-main); }
     .badge-urgent { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
     .status-dropdown { border: 2px solid transparent; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; width: 150px; }
+    
+    /* Skeleton Loader */
     .skeleton-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; height: 320px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; }
     .skeleton-line { background: linear-gradient(90deg, var(--item-bg) 25%, var(--border) 50%, var(--item-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    
+    /* Modals */
     .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
     .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 500px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: var(--shadow-lg); box-sizing: border-box; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -114,6 +123,7 @@
     .history-table th { background: var(--item-bg); font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
     .msg-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; }
     .msg-error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; }
+    
     @media (max-width: 768px) {
       body { padding: 10px; }
       .card { padding: 15px; border-radius: 12px; }
@@ -146,7 +156,6 @@
       </div>
     </div>
 
-    <!-- અહીં Today's Orders ડિફોલ્ટ એક્ટિવ કર્યું છે -->
     <div class="tabs-container">
        <button class="tab-btn active" id="tabToday">📦 Today's Orders</button>
        <button class="tab-btn" id="tabHistory">📜 Order History</button>
@@ -165,7 +174,6 @@
       <div class="stat-card"><span class="stat-label">Skyway (Clear)</span><span class="stat-value" style="color:#10b981;" id="skywayOrdersCount">0</span></div>
     </div>
 
-    <!-- Controls panel (History) ડિફોલ્ટ છુપાવેલું છે -->
     <div class="controls-panel" id="controlsPanel" style="display: none;">
       <div class="filters-row">
         <div class="input-box"><input type="text" id="globalSearchInput" placeholder="🔍 Search Order or Mobile..."></div>
@@ -177,7 +185,6 @@
       </div>
     </div>
 
-    <!-- Today's search box ડિફોલ્ટ દેખાશે -->
     <div id="todaySearchBox" style="display: block; margin-bottom: 20px;">
        <input type="text" id="todaySearchInput" placeholder="🔍 Search Today's Orders...">
     </div>
@@ -185,7 +192,6 @@
     <div id="cardsContainer" class="order-cards-container"></div>
   </div>
 
-  <!-- Modals -->
   <div class="modal-backdrop" id="userModalBackdrop">
      <div class="modal-box" style="max-width: 550px;">
         <div class="modal-header">
@@ -229,6 +235,7 @@
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRju9C_1S14BJcPlRyOCnb03vjvqGx1ZdSPu3X8_PicTLSCpWHv4T2tn3OtP7hJ07E/exec";
     
+    // Theme Management
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
     themeBtn.addEventListener('click', () => {
@@ -243,16 +250,18 @@
     const isAdmin = (currentUserRole === 'Admin' || currentUserRole === 'admin');
     if(!isAdmin) document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
 
-    // અહીં ડિફોલ્ટ ટેબ 'today' સેટ કર્યું છે
     let currentTab = 'today'; 
     let currentStatusQuickFilter = ''; 
 
     // કેલેન્ડર મોડર્ન પોપઅપ
     const dateInput = document.getElementById('dateFilterInput');
     if (dateInput) {
-        dateInput.addEventListener('focus', function() { this.showPicker(); });
+        dateInput.addEventListener('focus', function() { 
+            try { this.showPicker(); } catch(e) {} 
+        });
     }
 
+    // Profile Dropdown
     document.getElementById('profileToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('profileDropdownMenu').style.display = 'block'; });
     document.addEventListener('click', () => { document.getElementById('profileDropdownMenu').style.display = 'none'; });
     document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.clear(); window.location.href = 'login.html'; });
@@ -275,6 +284,7 @@
             } else { tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load users.</td></tr>'; }
         });
     }
+    
     document.getElementById('saveUserBtn').addEventListener('click', () => {
        const targetId = document.getElementById('targetUserid').value.trim(); const newPass = document.getElementById('newPassword').value.trim();
        if(!targetId || !newPass) return;
@@ -288,6 +298,7 @@
           fetchUsersList(); setTimeout(() => { statusDiv.style.display = 'none'; }, 3000);
        }).finally(() => { btn.innerText = "Save"; btn.disabled = false; });
     });
+    
     window.deleteStaff = function(userid) {
         if(!confirm(`Delete staff ID: "${userid}"?`)) return;
         fetch(WEB_APP_URL, { method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action: 'deleteUser', token: myToken, targetUserid: userid }) })
@@ -297,7 +308,7 @@
     const cardsContainer = document.getElementById('cardsContainer');
     let allOrders = [];
 
-    // --- સુપર-ફાસ્ટ ઓટો-રિફ્રેશ (કેશ બાયપાસ સાથે) ---
+    // --- Data Fetching ---
     function fetchLiveOrders(isAutoRefresh = false) {
       const syncStatus = document.getElementById('autoRefreshStatus');
       if (!isAutoRefresh) {
@@ -342,47 +353,42 @@
       });
     }
 
-    // સુધારેલું તારીખ ફિલ્ટર (100% કામ કરશે)
-    function applyFilters() {
-      const now = new Date();
-      const tY = now.getFullYear(); const tM = now.getMonth(); const tD = now.getDate();
+    // --- Perfect Date Logic ---
+    function getLocalDateStr(dateObj) {
+        if (!dateObj || isNaN(dateObj.getTime())) return '';
+        const y = dateObj.getFullYear();
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
 
+    function applyFilters() {
+      const todayDateStr = getLocalDateStr(new Date());
+      const dateQuery = document.getElementById('dateFilterInput') ? document.getElementById('dateFilterInput').value : '';
       const todaySearchQuery = document.getElementById('todaySearchInput') ? document.getElementById('todaySearchInput').value.toLowerCase().trim() : '';
       const historyGlobalQuery = document.getElementById('globalSearchInput') ? document.getElementById('globalSearchInput').value.toLowerCase().trim() : '';
-      const dateQuery = document.getElementById('dateFilterInput') ? document.getElementById('dateFilterInput').value : '';
 
       let tabFiltered = allOrders.filter(o => {
-        let isToday = false; 
-        let isDateQueryMatch = false;
-
-        if (o.timestamp) { 
-            try { 
-                let d = new Date(o.timestamp); 
-                if (!isNaN(d.getTime())) { 
-                    isToday = (d.getDate() === tD && d.getMonth() === tM && d.getFullYear() === tY);
-                    
-                    if (dateQuery) {
-                        let dq = new Date(dateQuery);
-                        // તારીખ, મહિનો અને વર્ષ મેચ કરવું
-                        isDateQueryMatch = (d.getFullYear() === dq.getFullYear() && d.getMonth() === dq.getMonth() && d.getDate() === dq.getDate());
-                    }
-                } 
-            } catch(e) {} 
-        }
-
-        // જો તારીખ સિલેક્ટ ન કરી હોય તો બધું બતાવો
-        if (!dateQuery) isDateQueryMatch = true;
-
+        let orderDateStr = o.timestamp ? getLocalDateStr(new Date(o.timestamp)) : '';
+        
+        // Tab wise filter logic
         if (currentTab === 'today') {
-           if (!isToday) return false; 
-           if (todaySearchQuery) { const combined = Object.values(o).join(' ').toLowerCase(); if (!combined.includes(todaySearchQuery)) return false; }
+            if (orderDateStr !== todayDateStr) return false;
+            if (todaySearchQuery) {
+                const combined = Object.values(o).join(' ').toLowerCase();
+                if (!combined.includes(todaySearchQuery)) return false;
+            }
         } else if (currentTab === 'history') {
-           if (dateQuery && !isDateQueryMatch) return false;
-           if (historyGlobalQuery) { const combined = Object.values(o).join(' ').toLowerCase(); if (!combined.includes(historyGlobalQuery)) return false; }
+            if (dateQuery && orderDateStr !== dateQuery) return false;
+            if (historyGlobalQuery) {
+                const combined = Object.values(o).join(' ').toLowerCase();
+                if (!combined.includes(historyGlobalQuery)) return false;
+            }
         }
         return true;
       });
 
+      // Update Stats
       const groupedForStats = {};
       tabFiltered.forEach(o => { if(!groupedForStats[o.orderId]) groupedForStats[o.orderId] = []; groupedForStats[o.orderId].push(o); });
       let pCount = 0, sCount = 0;
@@ -395,6 +401,7 @@
       document.getElementById('pendingOrdersCount').innerText = pCount;
       document.getElementById('skywayOrdersCount').innerText = sCount;
 
+      // Final Render with Quick Status Filter
       let finalFiltered = tabFiltered.filter(o => {
         const rowStatus = (o.orderStatus || 'Pending').toLowerCase().trim();
         if (currentStatusQuickFilter && rowStatus !== currentStatusQuickFilter) return false;
@@ -426,7 +433,10 @@
          
          const colors = getStatusColors(currentStatus);
          const fileBadge = firstItem.fileUrl ? `<a href="${firstItem.fileUrl}" target="_blank" style="background:var(--btn-action-bg); color:var(--primary); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; border: 1px solid var(--border);">📎 View File</a>` : '';
-         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending' && isAdmin) ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
+         
+         // અહિંયા PROCESSED BY વાળું ફીચર 100% વિઝિબલ કર્યું છે
+         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending') ? `<div class="processed-badge">🧑‍💻 Processed by: ${firstItem.processedBy}</div>` : '';
+         
          const historyBtn = `<button class="btn-action" onclick="showCustomerHistory('${firstItem.mobile}', '${firstItem.customer.replace(/'/g, "\\'")}')">📜 History</button>`;
 
          const itemsHtml = items.map((item, index) => `<div class="item-row"><span class="item-name">${index + 1}. ${item.product}</span><span class="item-qty">Qty: ${item.qty}</span></div>`).join('');
@@ -448,6 +458,7 @@
       }
     }
 
+    // Event Listeners
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const orderId = e.target.getAttribute('data-id'); const newStatus = e.target.value;
@@ -482,10 +493,22 @@
     if(document.getElementById('todaySearchInput')) document.getElementById('todaySearchInput').addEventListener('input', applyFilters);
     if(document.getElementById('globalSearchInput')) document.getElementById('globalSearchInput').addEventListener('input', applyFilters);
     if(document.getElementById('dateFilterInput')) document.getElementById('dateFilterInput').addEventListener('change', applyFilters);
-    if(document.getElementById('resetFiltersBtn')) document.getElementById('resetFiltersBtn').addEventListener('click', () => { document.getElementById('globalSearchInput').value = ''; document.getElementById('dateFilterInput').value = ''; applyFilters(); });
     if(document.getElementById('fetchDataBtn')) document.getElementById('fetchDataBtn').addEventListener('click', () => fetchLiveOrders(false));
+    
+    // Reset Filters Button
+    if(document.getElementById('resetFiltersBtn')) {
+        document.getElementById('resetFiltersBtn').addEventListener('click', () => { 
+            document.getElementById('globalSearchInput').value = ''; 
+            document.getElementById('dateFilterInput').value = ''; 
+            document.getElementById('todaySearchInput').value = ''; 
+            currentStatusQuickFilter = ''; 
+            document.querySelectorAll('.quick-btn').forEach(b=>b.classList.remove('active-all','active-pending','active-notavail')); 
+            document.getElementById('quickAllBtn').classList.add('active-all'); 
+            applyFilters(); 
+        });
+    }
 
-    // દર 20 સેકન્ડે ઓટો-રિફ્રેશ થશે
+    // Auto-refresh (20 seconds)
     document.addEventListener('DOMContentLoaded', () => { 
         fetchLiveOrders(false); 
         setInterval(() => fetchLiveOrders(true), 20000); 
