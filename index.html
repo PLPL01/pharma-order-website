@@ -3,133 +3,288 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Place Order - Secure Pharma</title>
+  <title>Order Medicines - Secure Pharma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
   <script>
+    // Theme setup
     const savedTheme = localStorage.getItem('pharmaTheme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
-
   <style>
-    /* 🌞 LIGHT MODE */
-    :root { 
-      --primary: #0f766e; --bg: #f0fdfa; --surface: #ffffff; 
-      --border: #e2e8f0; --text: #1e293b; --input-bg: #f8fafc;
-      --shadow: 0 10px 15px -3px rgba(15, 118, 110, 0.1); 
+    :root {
+      --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
+      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --radius: 16px;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05); --shadow-lg: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
+      --card-bg: #fff; --btn-ghost-bg: #fff; --btn-action-bg: #e2e8f0; --item-bg: #f8fafc;
     }
-    
-    /* 🌙 OLED DARK MODE */
-    [data-theme="dark"] { 
-      --primary: #14b8a6; --bg: #000000; --surface: #0f0f0f; 
-      --border: #27272a; --text: #f8fafc; --input-bg: #18181b;
-      --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    [data-theme="dark"] {
+      --bg: #000000; --surface: #0f0f0f; --primary: #14b8a6; --primary-hover: #0d9488;
+      --text-main: #f8fafc; --text-muted: #94a3b8; --border: #27272a;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5); --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.8);
+      --card-bg: #0a0a0a; --btn-ghost-bg: #18181b; --btn-action-bg: #27272a; --item-bg: #111111;
     }
 
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; min-height: 100vh; box-sizing: border-box; transition: 0.3s; }
+    body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text-main); transition: 0.3s; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     
-    .card { background: var(--surface); padding: 30px; border-radius: 20px; box-shadow: var(--shadow); width: 100%; max-width: 500px; box-sizing: border-box; border: 1px solid var(--border); transition: 0.3s; }
+    .card { width: 100%; max-width: 550px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow-lg); transition: 0.3s; box-sizing: border-box; }
     
-    .header { text-align: center; margin-bottom: 25px; position: relative; }
-    .header h1 { margin: 0; color: var(--primary); font-size: 26px; }
+    .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+    h1 { margin: 0 0 4px; color: var(--primary); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+    p { color: var(--text-muted); margin: 0; font-size: 13px; font-weight: 500; }
     
-    /* Theme Toggle Button */
-    #themeToggle { position: absolute; top: -10px; right: 0; background: var(--input-bg); border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 20px; transition: 0.3s; }
+    .theme-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; box-shadow: var(--shadow-sm); transition: 0.2s; color: var(--text-main); outline: none; }
     
-    .input-group { margin-bottom: 18px; }
-    label { display: block; font-size: 12px; font-weight: 700; color: var(--text); opacity: 0.8; margin-bottom: 6px; text-transform: uppercase; }
-    input, select { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; background: var(--input-bg); color: var(--text); transition: 0.3s; }
-    input:focus { border-color: var(--primary); }
+    .form-group { margin-bottom: 20px; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: var(--text-main); }
     
-    .items-container { background: var(--input-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 20px; }
-    .item-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    input[type="text"], input[type="tel"], select, input[type="file"] { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; background: var(--item-bg); color: var(--text-main); outline: none; box-sizing: border-box; transition: all 0.3s ease; font-family: 'Inter', sans-serif; font-weight: 500; }
+    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1); background: var(--surface); }
     
-    .btn { padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; border: none; cursor: pointer; width: 100%; transition: 0.2s; }
-    .btn-primary { background: var(--primary); color: #fff; }
-    .btn-remove { background: #fee2e2; color: #991b1b; padding: 0 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; }
+    input[type="file"] { padding: 10px; cursor: pointer; }
+    input[type="file"]::-webkit-file-upload-button { background: var(--btn-action-bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text-main); font-weight: 700; cursor: pointer; font-family: 'Inter', sans-serif; transition: 0.2s; margin-right: 10px; }
+
+    /* Dynamic Items Container */
+    .items-container { background: var(--item-bg); padding: 16px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; }
+    .item-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; }
+    .item-row:last-child { margin-bottom: 0; }
+    .item-row input[type="text"] { flex: 2; }
+    .item-row input[type="tel"] { flex: 1; text-align: center; }
+    .remove-btn { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; transition: 0.2s; }
+    .remove-btn:hover { background: #ef4444; color: #fff; }
     
-    .status-msg { margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; text-align: center; display: none; }
-    .msg-success { background: #d1fae5; color: #065f46; }
-    .msg-error { background: #fee2e2; color: #991b1b; }
+    .add-item-btn { background: none; border: 2px dashed var(--border); color: var(--text-muted); width: 100%; padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 13px; margin-top: 10px; }
+    .add-item-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(20, 184, 166, 0.05); }
+
+    .btn-submit { width: 100%; padding: 16px; border-radius: 12px; font-weight: 800; font-size: 16px; border: none; cursor: pointer; background: var(--primary); color: #fff; transition: 0.3s; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 10px; }
+    .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(15, 118, 110, 0.4); }
+    .btn-submit:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
+
+    /* Success Message Box */
+    .success-box { display: none; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 20px; border-radius: 16px; text-align: center; margin-top: 20px; }
+    .success-box h3 { color: #10b981; margin: 0 0 8px 0; font-size: 18px; }
+    .success-box p { color: var(--text-main); font-size: 14px; margin: 0; }
+
+    /* Error Text */
+    .error-text { color: #ef4444; font-size: 12px; font-weight: 600; margin-top: 6px; display: none; }
+
+    @media (max-width: 480px) {
+      body { padding: 15px; }
+      .card { padding: 20px; }
+      .item-row { flex-direction: column; align-items: stretch; gap: 8px; border-bottom: 1px dashed var(--border); padding-bottom: 12px; }
+      .item-row:last-child { border-bottom: none; padding-bottom: 0; }
+      .remove-btn { width: 100%; height: 40px; border-radius: 8px; font-size: 14px; }
+      .remove-btn::after { content: " Remove Item"; }
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <div class="header">
-      <button id="themeToggle">☀️</button>
-      <h1>📦 Place New Order</h1>
-      <p>Enter details to request medicine</p>
+  <div class="card" id="orderCard">
+    <div class="header-section">
+      <div>
+        <h1>💊 Secure Pharma</h1>
+        <p>Quick & Secure Home Delivery</p>
+      </div>
+      <button class="theme-btn" id="themeToggleBtn">☀️</button>
     </div>
 
     <form id="orderForm">
-      <div class="input-group"><label>Full Name</label><input type="text" id="customerName" required></div>
-      <div class="input-group"><label>Mobile Number</label><input type="tel" id="mobileNumber" pattern="[0-9]{10}" required></div>
+      
+      <div class="form-group">
+        <label for="customerName">🧑‍💼 Patient / Customer Name *</label>
+        <input type="text" id="customerName" placeholder="e.g. Rahul Patel" required>
+      </div>
 
-      <div class="items-container">
-        <label>Medicines</label>
-        <div id="itemsWrapper">
-          <div class="item-row"><input type="text" class="productName" placeholder="Medicine Name" required><input type="number" class="productQty" placeholder="Qty" min="1" required><button type="button" class="btn-remove" disabled style="opacity:0.3">✖</button></div>
+      <div class="form-group">
+        <label for="mobileNumber">📱 Mobile Number (WhatsApp) *</label>
+        <input type="tel" id="mobileNumber" placeholder="10 Digit Number" maxlength="10" pattern="[0-9]{10}" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <div class="error-text" id="mobileError">Please enter a valid 10-digit number.</div>
+      </div>
+
+      <label>📦 Order Items *</label>
+      <div class="items-container" id="itemsWrapper">
+        <div class="item-row">
+          <input type="text" class="product-input" placeholder="Medicine Name (e.g. Paracetamol 500mg)" required>
+          <input type="tel" class="qty-input" placeholder="Qty" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
         </div>
-        <button type="button" class="btn" style="background:var(--border); color:var(--text); margin-top:10px; padding:10px;" onclick="addItem()">+ Add More</button>
+      </div>
+      <button type="button" class="add-item-btn" id="addItemBtn">➕ Add More Medicine</button>
+
+      <div class="form-group" style="margin-top: 20px;">
+        <label for="prescriptionFile">📎 Upload Prescription (Optional)</label>
+        <input type="file" id="prescriptionFile" accept="image/png, image/jpeg, application/pdf">
+        <div class="error-text" id="fileError" style="color:#f59e0b;">File size must be less than 5MB.</div>
       </div>
 
-      <div class="input-group">
-        <label>Priority</label>
-        <select id="priorityLevel"><option value="Normal">🟢 Normal</option><option value="Urgent">🔴 Urgent</option></select>
+      <div class="form-group">
+        <label for="priority">⚡ Delivery Priority</label>
+        <select id="priority">
+          <option value="Normal">🟢 Normal (Standard Time)</option>
+          <option value="Urgent">🔴 Urgent (As soon as possible)</option>
+        </select>
       </div>
 
-      <div class="input-group"><label>Prescription (Photo)</label><input type="file" id="prescriptionFile" accept="image/*"></div>
-
-      <button type="submit" class="btn btn-primary" id="submitBtn">🚀 Submit Order</button>
-      <div id="statusMessage" class="status-msg"></div>
+      <button type="submit" class="btn-submit" id="submitBtn">🚀 Place Order Now</button>
     </form>
+
+    <div class="success-box" id="successBox">
+      <h3>🎉 Order Placed Successfully!</h3>
+      <p>Your order ID is <strong id="displayOrderId" style="color:var(--text-main);"></strong>. Our team will contact you shortly.</p>
+      <button class="add-item-btn" onclick="location.reload()" style="margin-top: 15px;">Place Another Order</button>
+    </div>
   </div>
 
   <script>
-    // Theme Toggle Logic
-    const toggleBtn = document.getElementById('themeToggle');
-    toggleBtn.addEventListener('click', () => {
+    // --- 1. System Setup ---
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRju9C_1S14BJcPlRyOCnb03vjvqGx1ZdSPu3X8_PicTLSCpWHv4T2tn3OtP7hJ07E/exec";
+    
+    // Theme logic
+    const themeBtn = document.getElementById('themeToggleBtn');
+    themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
+    themeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('pharmaTheme', next);
-      toggleBtn.innerText = next === 'dark' ? '🌙' : '☀️';
+      themeBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     });
-    toggleBtn.innerText = savedTheme === 'dark' ? '🌙' : '☀️';
 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwgSqRCK9BDyxXPdac6clcXzSS1kY0tlA0AIK_C1io030Mxi0BpUoMjMO31Bhq_BcKa/exec";
+    // --- 2. Dynamic Items Logic (UI/UX) ---
+    const itemsWrapper = document.getElementById('itemsWrapper');
+    const addItemBtn = document.getElementById('addItemBtn');
 
-    function addItem() {
-      const div = document.createElement('div'); div.className = 'item-row';
-      div.innerHTML = `<input type="text" class="productName" placeholder="Medicine Name" required><input type="number" class="productQty" placeholder="Qty" min="1" required><button type="button" class="btn-remove" onclick="this.parentElement.remove()">✖</button>`;
-      document.getElementById('itemsWrapper').appendChild(div);
+    addItemBtn.addEventListener('click', () => {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `
+          <input type="text" class="product-input" placeholder="Medicine Name" required>
+          <input type="tel" class="qty-input" placeholder="Qty" required oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          <button type="button" class="remove-btn" onclick="this.parentElement.remove()">🗑️</button>
+        `;
+        itemsWrapper.appendChild(row);
+    });
+
+    // --- 3. File Size Validation (Bug Fix) ---
+    const fileInput = document.getElementById('prescriptionFile');
+    const fileError = document.getElementById('fileError');
+    let validFile = true;
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            const fileSizeMB = this.files[0].size / (1024 * 1024);
+            if (fileSizeMB > 5) {
+                fileError.style.display = 'block';
+                this.value = ''; // Clear file
+                validFile = false;
+            } else {
+                fileError.style.display = 'none';
+                validFile = true;
+            }
+        }
+    });
+
+    // Utility: File to Base64 Converter
+    function getBase64(file) {
+       return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => resolve(reader.result.split(',')[1]); // extract base64 part
+          reader.onerror = error => reject(error);
+       });
     }
 
-    document.getElementById('orderForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const submitBtn = document.getElementById('submitBtn'); const statusMsg = document.getElementById('statusMessage');
-      submitBtn.innerText = "⏳ Processing..."; submitBtn.disabled = true;
+    // --- 4. Form Submission & Validation ---
+    const orderForm = document.getElementById('orderForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const mobileNumber = document.getElementById('mobileNumber');
+    const mobileError = document.getElementById('mobileError');
 
-      const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-      const items = [];
-      document.querySelectorAll('.item-row').forEach(row => {
-        items.push({ orderId, customer: document.getElementById('customerName').value, mobile: document.getElementById('mobileNumber').value, product: row.querySelector('.productName').value, qty: row.querySelector('.productQty').value, priority: document.getElementById('priorityLevel').value });
-      });
+    orderForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      let fileBase64 = "", mimeType = "", fileName = "";
-      if (document.getElementById('prescriptionFile').files.length > 0) {
-        const file = document.getElementById('prescriptionFile').files[0];
-        mimeType = file.type; fileName = Date.now() + "_" + file.name;
-        fileBase64 = await new Promise(r => { const reader = new FileReader(); reader.onload = () => r(reader.result.toString().split(',')[1]); reader.readAsDataURL(file); });
-      }
+        // Mobile Validation
+        if(mobileNumber.value.length !== 10) {
+            mobileError.style.display = 'block';
+            mobileNumber.focus();
+            return;
+        } else {
+            mobileError.style.display = 'none';
+        }
 
-      fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'newOrder', items, fileBase64, mimeType, fileName }) })
-      .then(res => res.json()).then(r => {
-        if(r.status === 'success') { statusMsg.style.display = "block"; statusMsg.innerHTML = "✅ Order placed! ID: " + orderId; statusMsg.className = "status-msg msg-success"; document.getElementById('orderForm').reset(); } else { throw new Error(); }
-      }).catch(() => { statusMsg.style.display = "block"; statusMsg.innerHTML = "❌ Failed. Try again."; statusMsg.className = "status-msg msg-error"; })
-      .finally(() => { submitBtn.innerText = "🚀 Submit Order"; submitBtn.disabled = false; });
+        // Anti-Double Click Lock
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '⏳ Processing securely...';
+
+        try {
+            // Generate Order ID (ORD-XXXXXX)
+            const orderId = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+            
+            // Gather Items
+            const products = document.querySelectorAll('.product-input');
+            const qtys = document.querySelectorAll('.qty-input');
+            let itemsArray = [];
+            const priorityVal = document.getElementById('priority').value;
+
+            for(let i=0; i<products.length; i++) {
+                if(products[i].value.trim() !== '' && qtys[i].value.trim() !== '') {
+                    itemsArray.push({
+                        orderId: orderId,
+                        product: products[i].value.trim(),
+                        qty: qtys[i].value.trim(),
+                        priority: priorityVal
+                    });
+                }
+            }
+
+            // Prepare Payload
+            let payload = {
+                action: 'newOrder',
+                customer: document.getElementById('customerName').value.trim(),
+                mobile: mobileNumber.value.trim(),
+                items: itemsArray,
+                fileBase64: "",
+                fileName: "",
+                mimeType: ""
+            };
+
+            // Handle File Upload smoothly
+            if (fileInput.files.length > 0 && validFile) {
+                const file = fileInput.files[0];
+                payload.fileBase64 = await getBase64(file);
+                payload.fileName = orderId + '_' + file.name;
+                payload.mimeType = file.type;
+            }
+
+            // Send to Google Sheet
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if(data.status === 'success') {
+                // Show Success Screen
+                orderForm.style.display = 'none';
+                document.getElementById('successBox').style.display = 'block';
+                document.getElementById('displayOrderId').innerText = orderId;
+            } else {
+                alert("Something went wrong! Please try again.");
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '🚀 Place Order Now';
+            }
+
+        } catch (error) {
+            alert("Network Error: Please check your internet connection.");
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '🚀 Place Order Now';
+        }
     });
+
   </script>
 </body>
 </html>
