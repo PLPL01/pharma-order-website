@@ -4,76 +4,99 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Admin Login - Secure Pharma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
+    // જો પહેલેથી લોગિન હોય તો ડાયરેક્ટ admin.html પર મોકલી દો
+    if (sessionStorage.getItem('pharmaAdminToken')) {
+        window.location.href = 'admin.html';
+    }
     const savedTheme = localStorage.getItem('pharmaTheme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
   <style>
     :root {
       --bg: #f0fdfa; --surface: #ffffff; --primary: #0f766e; --primary-hover: #115e59;
-      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0;
-      --shadow: 0 10px 25px rgba(15, 118, 110, 0.1); --input-bg: #ffffff;
+      --text-main: #1e293b; --text-muted: #64748b; --border: #e2e8f0; --radius: 16px;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05); --shadow-lg: 0 10px 15px -3px rgba(15, 118, 110, 0.1);
+      --input-bg: #f8fafc;
     }
-    
     [data-theme="dark"] {
       --bg: #000000; --surface: #0f0f0f; --primary: #14b8a6; --primary-hover: #0d9488;
       --text-main: #f8fafc; --text-muted: #94a3b8; --border: #27272a;
-      --shadow: 0 10px 25px rgba(0, 0, 0, 0.8); --input-bg: #111111;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5); --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.8);
+      --input-bg: #111111;
     }
 
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; transition: background 0.3s ease, color 0.3s ease; }
+    body { font-family: 'Inter', Arial, sans-serif; background: var(--bg); margin: 0; padding: 20px; color: var(--text-main); transition: 0.3s; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
     
-    .theme-btn { position: absolute; top: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; font-size: 18px; cursor: pointer; box-shadow: var(--shadow); transition: 0.2s; color: var(--text-main); }
-    .theme-btn:hover { border-color: var(--primary); }
+    .login-card { width: 100%; max-width: 400px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 40px 30px; box-shadow: var(--shadow-lg); transition: 0.3s; box-sizing: border-box; text-align: center; position: relative; }
+    
+    .theme-btn { position: absolute; top: 20px; right: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; width: 36px; height: 36px; display: flex; justify-content: center; align-items: center; font-size: 16px; cursor: pointer; box-shadow: var(--shadow-sm); transition: 0.2s; color: var(--text-main); outline: none; }
+    
+    .logo-icon { font-size: 48px; margin-bottom: 10px; }
+    h1 { margin: 0 0 8px; color: var(--text-main); font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+    p { color: var(--text-muted); margin: 0 0 30px 0; font-size: 14px; font-weight: 500; }
+    
+    .form-group { margin-bottom: 20px; text-align: left; }
+    label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 700; color: var(--text-main); }
+    
+    input[type="text"], input[type="password"] { width: 100%; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; font-size: 14px; background: var(--input-bg); color: var(--text-main); outline: none; box-sizing: border-box; transition: all 0.3s ease; font-family: 'Inter', sans-serif; font-weight: 500; }
+    input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.1); background: var(--surface); }
+    
+    .btn-submit { width: 100%; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 15px; border: none; cursor: pointer; background: var(--primary); color: #fff; transition: 0.3s; box-shadow: 0 4px 12px rgba(15, 118, 110, 0.3); margin-top: 10px; }
+    .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(15, 118, 110, 0.4); }
+    .btn-submit:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
 
-    .login-card { background: var(--surface); padding: 40px; border-radius: 20px; box-shadow: var(--shadow); border: 1px solid var(--border); width: 100%; max-width: 380px; text-align: center; box-sizing: border-box; transition: all 0.3s ease; }
-    h2 { color: var(--primary); margin-bottom: 8px; font-weight: 800; font-size: 26px; }
-    p { color: var(--text-muted); font-size: 14px; margin-bottom: 24px; }
-    .input-group { margin-bottom: 16px; text-align: left; }
-    label { display: block; font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
-    input { width: 100%; padding: 14px; border: 1px solid var(--border); border-radius: 12px; font-size: 15px; box-sizing: border-box; outline: none; transition: 0.2s; text-align: center; letter-spacing: 1px; background: var(--input-bg); color: var(--text-main); }
-    input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2); }
-    .btn { background: var(--primary); color: #fff; width: 100%; padding: 14px; border: none; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: 0.2s; margin-top: 10px; }
-    .btn:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20, 184, 166, 0.2); }
-    .btn:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; }
-    .message { margin-top: 16px; font-size: 13px; font-weight: 600; display: none; padding: 12px; border-radius: 10px; }
+    /* Error Message Box - ફિક્સ કરેલું છે */
+    .error-box { display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 20px; text-align: left; animation: shake 0.4s ease-in-out; }
     
-    .msg-error { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid #ef4444; display: block; }
-    .msg-success { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid #10b981; display: block; }
-    
-    @media (max-width: 480px) {
-      .login-card { padding: 30px 20px; border-radius: 16px; }
-      h2 { font-size: 22px; }
-      input, .btn { padding: 12px; font-size: 14px; }
-      .theme-btn { top: 15px; right: 15px; width: 38px; height: 38px; font-size: 16px; }
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-5px); }
+        50% { transform: translateX(5px); }
+        75% { transform: translateX(-5px); }
     }
+
+    .footer-text { margin-top: 24px; font-size: 12px; color: var(--text-muted); font-weight: 500; }
   </style>
 </head>
 <body>
 
-  <button class="theme-btn" id="themeToggleBtn" title="Toggle Theme"></button>
-
   <div class="login-card">
-    <h2>Secure Login</h2>
-    <p>Multi-User Portal Active.</p>
-    <div class="input-group">
-      <label>User ID</label>
-      <input type="text" id="useridInput" placeholder="Enter User ID">
-    </div>
-    <div class="input-group">
-      <label>Password</label>
-      <input type="password" id="passwordInput" placeholder="••••••••">
-    </div>
-    <button class="btn" id="loginBtn">Login securely</button>
-    <div id="loginMsg" class="message"></div>
+    <button class="theme-btn" id="themeToggleBtn">☀️</button>
+    <div class="logo-icon">🔐</div>
+    <h1>Secure Login</h1>
+    <p>Admin & Staff Portal</p>
+
+    <div class="error-box" id="errorMsg"></div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="userid">👤 User ID</label>
+        <input type="text" id="userid" placeholder="Enter your ID" autocomplete="off" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">🔑 Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+
+      <button type="submit" class="btn-submit" id="loginBtn">Log In</button>
+    </form>
+    
+    <div class="footer-text">Protected by Premium ERP Security</div>
   </div>
 
   <script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRju9C_1S14BJcPlRyOCnb03vjvqGx1ZdSPu3X8_PicTLSCpWHv4T2tn3OtP7hJ07E/exec";
+    
+    // Theme logic
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
-    
-    themeBtn.addEventListener('click', () => {
+    themeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
       const current = document.documentElement.getAttribute('data-theme');
       const next = current === 'dark' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-theme', next);
@@ -81,50 +104,64 @@
       themeBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     });
 
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwgSqRCK9BDyxXPdac6clcXzSS1kY0tlA0AIK_C1io030Mxi0BpUoMjMO31Bhq_BcKa/exec";
+    // Login Logic & Error Handling
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMsgBox = document.getElementById('errorMsg');
 
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      const userid = document.getElementById('useridInput').value.trim();
-      const password = document.getElementById('passwordInput').value.trim();
-      const btn = document.getElementById('loginBtn');
-      const msgDiv = document.getElementById('loginMsg');
-      
-      if(!userid || !password) {
-        msgDiv.innerText = "Please enter User ID and Password!";
-        msgDiv.className = 'message msg-error';
-        return;
-      }
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // દર નવી ટ્રાય પર પહેલા એરર બોક્સ છુપાવી દો
+        errorMsgBox.style.display = 'none';
+        
+        const useridVal = document.getElementById('userid').value.trim();
+        const passwordVal = document.getElementById('password').value.trim();
+        
+        // બટન લોક કરો
+        loginBtn.disabled = true;
+        loginBtn.innerText = 'Verifying...';
 
-      btn.innerText = "Authenticating..."; 
-      btn.disabled = true;
-      msgDiv.style.display = 'none';
-      
-      fetch(WEB_APP_URL, { 
-        method: 'POST', 
-        body: JSON.stringify({ action: 'login', userid: userid, password: password }) 
-      })
-      .then(res => res.json())
-      .then(data => {
-        if(data.status === 'success') {
-          msgDiv.innerText = "Login Successful!";
-          msgDiv.className = 'message msg-success';
-          sessionStorage.setItem('pharmaAdminToken', data.token);
-          sessionStorage.setItem('pharmaCurrentUsername', data.username);
-          sessionStorage.setItem('pharmaUserRole', data.role);
-          setTimeout(() => { window.location.href = 'admin.html'; }, 800);
-        } else {
-          msgDiv.innerText = data.message || "Invalid details!";
-          msgDiv.className = 'message msg-error';
+        try {
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ 
+                    action: 'login', 
+                    userid: useridVal, 
+                    password: passwordVal 
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                // લોગિન સાચું છે - ડેટા સેવ કરીને admin પેજ પર મોકલો
+                sessionStorage.setItem('pharmaAdminToken', data.token);
+                sessionStorage.setItem('pharmaCurrentUsername', data.userid);
+                sessionStorage.setItem('pharmaUserRole', data.role);
+                window.location.href = 'admin.html';
+            } else {
+                // લોગિન ખોટું છે - એરર બતાવો
+                errorMsgBox.innerHTML = `<b>❌ Access Denied:</b> Invalid User ID or Password.`;
+                errorMsgBox.style.display = 'block'; // આ લાઈન જ એરર બોક્સ બતાવશે
+                
+                // પાસવર્ડ ખાલી કરી દો જેથી યુઝર ફરીથી ટાઈપ કરી શકે
+                document.getElementById('password').value = ''; 
+                
+                // બટન પાછું નોર્મલ કરો
+                loginBtn.disabled = false;
+                loginBtn.innerText = 'Log In';
+            }
+
+        } catch (error) {
+            // ઇન્ટરનેટ કે સર્વર પ્રોબ્લેમ આવે ત્યારે
+            errorMsgBox.innerHTML = `<b>⚠️ Network Error:</b> Please check your internet connection and try again.`;
+            errorMsgBox.style.display = 'block';
+            
+            loginBtn.disabled = false;
+            loginBtn.innerText = 'Log In';
         }
-      })
-      .catch(err => {
-        msgDiv.innerText = "Internet error. Try again.";
-        msgDiv.className = 'message msg-error';
-      })
-      .finally(() => { 
-        btn.innerText = "Login securely"; 
-        btn.disabled = false; 
-      });
     });
   </script>
 </body>
