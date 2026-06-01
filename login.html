@@ -49,7 +49,6 @@
     .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 15px rgba(15, 118, 110, 0.4); }
     .btn-submit:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; box-shadow: none; opacity: 0.7; }
 
-    /* Error Message Box - ફિક્સ કરેલું છે */
     .error-box { display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #ef4444; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; margin-bottom: 20px; text-align: left; animation: shake 0.4s ease-in-out; }
     
     @keyframes shake {
@@ -104,7 +103,6 @@
       themeBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     });
 
-    // Login Logic & Error Handling
     const loginForm = document.getElementById('loginForm');
     const loginBtn = document.getElementById('loginBtn');
     const errorMsgBox = document.getElementById('errorMsg');
@@ -112,13 +110,11 @@
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // દર નવી ટ્રાય પર પહેલા એરર બોક્સ છુપાવી દો
         errorMsgBox.style.display = 'none';
         
         const useridVal = document.getElementById('userid').value.trim();
         const passwordVal = document.getElementById('password').value.trim();
         
-        // બટન લોક કરો
         loginBtn.disabled = true;
         loginBtn.innerText = 'Verifying...';
 
@@ -136,29 +132,24 @@
             const data = await response.json();
 
             if (data.status === 'success') {
-                // લોગિન સાચું છે - ડેટા સેવ કરીને admin પેજ પર મોકલો
                 sessionStorage.setItem('pharmaAdminToken', data.token);
-                sessionStorage.setItem('pharmaCurrentUsername', data.userid);
+                
+                // MAIN BUG FIX: ડેટાબેઝ પર આધાર રાખ્યા વગર યુઝરે જે ટાઈપ કર્યું તે જ સીધું સેવ કરો!
+                sessionStorage.setItem('pharmaCurrentUsername', useridVal); 
+                
                 sessionStorage.setItem('pharmaUserRole', data.role);
                 window.location.href = 'admin.html';
             } else {
-                // લોગિન ખોટું છે - એરર બતાવો
                 errorMsgBox.innerHTML = `<b>❌ Access Denied:</b> Invalid User ID or Password.`;
-                errorMsgBox.style.display = 'block'; // આ લાઈન જ એરર બોક્સ બતાવશે
-                
-                // પાસવર્ડ ખાલી કરી દો જેથી યુઝર ફરીથી ટાઈપ કરી શકે
+                errorMsgBox.style.display = 'block'; 
                 document.getElementById('password').value = ''; 
-                
-                // બટન પાછું નોર્મલ કરો
                 loginBtn.disabled = false;
                 loginBtn.innerText = 'Log In';
             }
 
         } catch (error) {
-            // ઇન્ટરનેટ કે સર્વર પ્રોબ્લેમ આવે ત્યારે
             errorMsgBox.innerHTML = `<b>⚠️ Network Error:</b> Please check your internet connection and try again.`;
             errorMsgBox.style.display = 'block';
-            
             loginBtn.disabled = false;
             loginBtn.innerText = 'Log In';
         }
