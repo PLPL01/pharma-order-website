@@ -9,9 +9,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <script>
     const myToken = sessionStorage.getItem('pharmaAdminToken');
-    const currentAdminUser = sessionStorage.getItem('pharmaCurrentUsername') || 'User';
-    const currentUserRole = sessionStorage.getItem('pharmaUserRole') || 'Staff'; 
     if (!myToken) { window.location.href = 'login.html'; }
+    
+    // યુઝરનેમ ફિક્સ અને કેપિટલાઇઝેશન
+    let currentAdminUser = sessionStorage.getItem('pharmaCurrentUsername');
+    if (!currentAdminUser || currentAdminUser === 'undefined' || currentAdminUser.trim() === '') {
+        currentAdminUser = 'Admin';
+    } else {
+        currentAdminUser = currentAdminUser.charAt(0).toUpperCase() + currentAdminUser.slice(1).toLowerCase();
+    }
+    
+    const currentUserRole = sessionStorage.getItem('pharmaUserRole') || 'Staff'; 
     const savedTheme = localStorage.getItem('pharmaTheme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
   </script>
@@ -29,7 +37,6 @@
       --card-bg: #0a0a0a; --btn-ghost-bg: #18181b; --btn-action-bg: #27272a; --item-bg: #111111;
     }
     
-    /* મોડર્ન ડેટ પીકર સ્ટાઇલ */
     .modern-datepicker {
         background: var(--surface) !important;
         border: 1px solid var(--border) !important;
@@ -92,7 +99,6 @@
     .order-id { font-weight: 800; color: var(--primary); font-size: 18px; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
     .order-time { font-size: 13px; color: var(--text-muted); font-weight: 500; }
     
-    /* Processed Badge Design (Order Logs) */
     .processed-badge { font-size: 11px; font-weight: 700; color: var(--primary); background: rgba(15, 118, 110, 0.1); padding: 4px 10px; border-radius: 6px; display: inline-block; margin-top: 8px; border: 1px solid rgba(15, 118, 110, 0.2); }
     
     .customer-info { font-weight: 700; color: var(--text-main); font-size: 16px; display: flex; align-items: center; }
@@ -108,12 +114,10 @@
     .badge-urgent { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
     .status-dropdown { border: 2px solid transparent; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; outline: none; width: 150px; transition: all 0.3s ease; }
     
-    /* Skeleton Loader */
     .skeleton-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; height: 320px; display: flex; flex-direction: column; gap: 16px; box-sizing: border-box; }
     .skeleton-line { background: linear-gradient(90deg, var(--item-bg) 25%, var(--border) 50%, var(--item-bg) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     
-    /* Modals */
     .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px); z-index: 2000; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
     .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 500px; max-height: 80vh; display: flex; flex-direction: column; padding: 24px; box-shadow: var(--shadow-lg); box-sizing: border-box; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
@@ -149,7 +153,6 @@
         <div class="profile-container">
           <button class="profile-btn" id="profileToggleBtn"><span class="avatar">👤</span><span id="welcomeUser">User</span><span style="font-size:10px; margin-left:2px;">▼</span></button>
           <div class="profile-dropdown" id="profileDropdownMenu">
-            <!-- ફક્ત ADMIN માટે જ દેખાશે -->
             <button class="dropdown-item admin-only" id="openUserModalBtn">🔑 Manage Staff</button>
             <hr class="admin-only" style="border:0; border-top:1px solid var(--border); margin:4px 0;">
             <button class="dropdown-item logout-item" id="logoutBtn">🚪 Logout Securely</button>
@@ -158,7 +161,6 @@
       </div>
     </div>
 
-    <!-- Today's Orders ડિફોલ્ટ એક્ટિવ -->
     <div class="tabs-container">
        <button class="tab-btn active" id="tabToday">📦 Today's Orders</button>
        <button class="tab-btn" id="tabHistory">📜 Order History</button>
@@ -240,7 +242,6 @@
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyRju9C_1S14BJcPlRyOCnb03vjvqGx1ZdSPu3X8_PicTLSCpWHv4T2tn3OtP7hJ07E/exec";
     
-    // Theme Management
     const themeBtn = document.getElementById('themeToggleBtn');
     themeBtn.innerText = savedTheme === 'dark' ? '☀️' : '🌙';
     themeBtn.addEventListener('click', () => {
@@ -251,9 +252,9 @@
       themeBtn.innerText = next === 'dark' ? '☀️' : '🌙';
     });
 
+    // Profile Name Fix (Set UI element)
     document.getElementById('welcomeUser').innerText = currentAdminUser;
     
-    // --- ADMIN SECURITY CHECK ---
     const isAdmin = (String(currentUserRole).trim().toLowerCase() === 'admin');
     if(!isAdmin) {
         document.querySelectorAll('.admin-only').forEach(el => {
@@ -264,7 +265,6 @@
     let currentTab = 'today'; 
     let currentStatusQuickFilter = ''; 
 
-    // કેલેન્ડર મોડર્ન પોપઅપ
     const dateInput = document.getElementById('dateFilterInput');
     if (dateInput) {
         dateInput.addEventListener('focus', function() { 
@@ -272,17 +272,14 @@
         });
     }
 
-    // Profile Dropdown
     document.getElementById('profileToggleBtn').addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('profileDropdownMenu').style.display = 'block'; });
     document.addEventListener('click', () => { document.getElementById('profileDropdownMenu').style.display = 'none'; });
     document.getElementById('logoutBtn').addEventListener('click', () => { sessionStorage.clear(); window.location.href = 'login.html'; });
 
-    // --- Data Escaping (Bug Fix) ---
     function escapeHtml(unsafe) {
         return String(unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
     }
 
-    // --- Smooth Search (Debouncing) ---
     function debounce(func, wait) {
         let timeout;
         return function(...args) {
@@ -291,7 +288,6 @@
         };
     }
 
-    // --- Users Code ---
     document.getElementById('openUserModalBtn').addEventListener('click', () => { document.getElementById('userModalBackdrop').style.display = 'flex'; fetchUsersList(); });
     function fetchUsersList() {
         const tbody = document.getElementById('usersTableBody');
@@ -335,11 +331,10 @@
     let refreshTimer;
     let isFetching = false;
 
-    // --- Safe Auto-Refresh (Error Control) ---
     function fetchLiveOrders(isAutoRefresh = false) {
       if(isFetching) return; 
       isFetching = true;
-      clearTimeout(refreshTimer); // જૂનું ટાઈમર બંધ કરો
+      clearTimeout(refreshTimer); 
 
       const syncStatus = document.getElementById('autoRefreshStatus');
       if (!isAutoRefresh && allOrders.length === 0) {
@@ -387,7 +382,6 @@
       })
       .finally(() => {
           isFetching = false;
-          // એક રિકવેસ્ટ પૂરી થાય પછી જ નવી 20 સેકન્ડ ગણાશે
           refreshTimer = setTimeout(() => fetchLiveOrders(true), 20000);
       });
     }
@@ -469,9 +463,9 @@
          const colors = getStatusColors(currentStatus);
          const fileBadge = firstItem.fileUrl ? `<a href="${firstItem.fileUrl}" target="_blank" style="background:var(--btn-action-bg); color:var(--primary); padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700; text-decoration:none; border: 1px solid var(--border);">📎 View File</a>` : '';
          
-         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending' && isAdmin) ? `<div class="processed-badge">🧑‍💻 Processed by: ${escapeHtml(firstItem.processedBy)}</div>` : '';
+         let processTimeText = firstItem.processedTime ? ` | 🕒 ${escapeHtml(firstItem.processedTime)}` : '';
+         const processedBadge = (firstItem.processedBy && currentStatus !== 'Pending' && isAdmin) ? `<div class="processed-badge">🧑‍💻 Processed by: ${escapeHtml(firstItem.processedBy)}${processTimeText}</div>` : '';
          
-         // Data Attributes (Bug Fix)
          const historyBtn = `<button class="btn-action history-btn" data-mobile="${escapeHtml(firstItem.mobile)}" data-name="${escapeHtml(firstItem.customer)}">📜 History</button>`;
 
          const itemsHtml = items.map((item, index) => `<div class="item-row"><span class="item-name">${index + 1}. ${escapeHtml(item.product)}</span><span class="item-qty">Qty: ${escapeHtml(item.qty)}</span></div>`).join('');
@@ -493,14 +487,13 @@
       }
     }
 
-    // --- Optimistic UI & Event Delegation ---
     cardsContainer.addEventListener('change', (e) => {
       if(e.target.classList.contains('status-dropdown')) {
         const dropdown = e.target;
         const orderId = dropdown.getAttribute('data-id'); 
         const newStatus = dropdown.value;
+        const nowTime = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }); 
         
-        // ૧. તરત જ કલર બદલી નાખો (Optimistic UI)
         const colors = getStatusColors(newStatus);
         dropdown.style.background = colors.bg;
         dropdown.style.color = colors.text;
@@ -508,10 +501,8 @@
         const card = dropdown.closest('.order-card');
         if(card) card.style.border = `2px solid ${colors.border}`;
 
-        // ૨. લોકલ ડેટામાં પણ અપડેટ કરો
-        allOrders.forEach(o => { if(o.orderId === orderId) { o.orderStatus = newStatus; o.processedBy = currentAdminUser; } });
+        allOrders.forEach(o => { if(o.orderId === orderId) { o.orderStatus = newStatus; o.processedBy = currentAdminUser; o.processedTime = nowTime; } });
         
-        // ૩. બેકગ્રાઉન્ડમાં સાયલન્ટલી સેવ કરો
         const syncStatus = document.getElementById('autoRefreshStatus');
         syncStatus.innerText = "(Saving ⏳...)";
         syncStatus.style.color = "#f59e0b";
@@ -520,7 +511,7 @@
         fetch(noCacheUrl, { 
             method: 'POST', 
             headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-            body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser }) 
+            body: JSON.stringify({ action: 'updateStatus', orderId: orderId, status: newStatus, token: myToken, username: currentAdminUser, processedTime: nowTime }) 
         })
         .then(res => res.json())
         .then(data => {
@@ -535,7 +526,6 @@
       }
     });
 
-    // History Button Click (Delegation - Bug Fix)
     cardsContainer.addEventListener('click', (e) => {
         if(e.target.classList.contains('history-btn')) {
             const mobile = e.target.getAttribute('data-mobile');
@@ -560,14 +550,12 @@
        document.getElementById('historyModalBackdrop').style.display = 'flex';
     };
 
-    // Tab & Quick Filter listeners...
     document.getElementById('tabToday').addEventListener('click', () => { currentTab = 'today'; document.getElementById('tabToday').classList.add('active'); document.getElementById('tabHistory').classList.remove('active'); document.getElementById('controlsPanel').style.display = 'none'; document.getElementById('todaySearchBox').style.display = 'block'; applyFilters(); });
     document.getElementById('tabHistory').addEventListener('click', () => { currentTab = 'history'; document.getElementById('tabHistory').classList.add('active'); document.getElementById('tabToday').classList.remove('active'); document.getElementById('controlsPanel').style.display = 'block'; document.getElementById('todaySearchBox').style.display = 'none'; applyFilters(); });
     document.getElementById('quickAllBtn').addEventListener('click', () => { currentStatusQuickFilter = ''; document.querySelectorAll('.quick-btn').forEach(b=>b.classList.remove('active-all','active-pending','active-notavail')); document.getElementById('quickAllBtn').classList.add('active-all'); applyFilters(); });
     document.getElementById('quickPendingBtn').addEventListener('click', () => { currentStatusQuickFilter = 'pending'; document.querySelectorAll('.quick-btn').forEach(b=>b.classList.remove('active-all','active-pending','active-notavail')); document.getElementById('quickPendingBtn').classList.add('active-pending'); applyFilters(); });
     document.getElementById('quickNotAvailBtn').addEventListener('click', () => { currentStatusQuickFilter = 'not available'; document.querySelectorAll('.quick-btn').forEach(b=>b.classList.remove('active-all','active-pending','active-notavail')); document.getElementById('quickNotAvailBtn').classList.add('active-notavail'); applyFilters(); });
 
-    // Smooth Debounced Search Setup
     const debouncedApplyFilters = debounce(applyFilters, 300);
     if(document.getElementById('todaySearchInput')) document.getElementById('todaySearchInput').addEventListener('input', debouncedApplyFilters);
     if(document.getElementById('globalSearchInput')) document.getElementById('globalSearchInput').addEventListener('input', debouncedApplyFilters);
@@ -587,7 +575,6 @@
         });
     }
 
-    // Start App
     document.addEventListener('DOMContentLoaded', () => { 
         fetchLiveOrders(false); 
     });
